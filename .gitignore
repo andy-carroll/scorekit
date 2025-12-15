@@ -1,0 +1,33 @@
+# dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+
+# build outputs
+/dist/
+build/
+
+# env
+.env
+.env.*
+
+# logs
+*.log
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/
+
+# Beads runtime artifacts (keep issues.jsonl etc in repo)
+.beads/*.db
+.beads/*.db-*
+.beads/daemon.lock
+.beads/daemon.log
+.beads/daemon.pid
+.beads/bd.sock
+
+# misc
+*.swp
