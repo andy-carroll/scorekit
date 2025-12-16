@@ -9,9 +9,10 @@
 
 Read and internalize:
 
-1. **PRD**: `docs/01-product/PRD-ASSESSMENT-FRAMEWORK.md` — the what and why
-2. **NOW**: `docs/00-overview/NOW.md` — current status and immediate focus
-3. **ARCHITECTURE**: `docs/03-engineering/ARCHITECTURE.md` — tech stack and file structure
+1. **NOW**: `docs/00-overview/NOW.md` — current status and immediate focus
+2. **WORKFLOW**: `docs/00-overview/WORKFLOW.md` — the development loop we follow
+3. **PRD**: `docs/01-product/PRD-ASSESSMENT-FRAMEWORK.md` — the what and why
+4. **ARCHITECTURE**: `docs/03-engineering/ARCHITECTURE.md` — tech stack and file structure
 
 ## 2. Check Git Status
 

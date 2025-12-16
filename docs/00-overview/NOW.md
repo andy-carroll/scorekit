@@ -2,7 +2,7 @@
 
 ## Current status (Dec 2025)
 
-V1 thin-slice **complete**. PRD **updated** with business case framing. Implementation plan **ready**.
+**Phase 1 complete.** Core data model and template system in place.
 
 ## Completed
 
@@ -10,19 +10,23 @@ V1 thin-slice **complete**. PRD **updated** with business case framing. Implemen
 - ✅ PRD updated: business case builder, value quantification, context questions
 - ✅ 17 granular Beads tickets created across 7 implementation phases
 - ✅ Session start/finish workflow commands created
+- ✅ **Phase 1: Data Model**
+  - `@scorekit/core` package with Question + Template types
+  - Template loader with validation
+  - Type guards and helpers
+- ✅ Development workflow defined (`WORKFLOW.md`)
 
-## Next session: Phase 1 — Data Model
+## Next: Phase 2 — Question Framework (UI)
 
 | Ticket | Description |
 |--------|-------------|
-| `scorekit-hlx` | Define enhanced Question interface (diagnostic + context types) |
-| `scorekit-20m` | Define Template schema (pillars, recommendations, copy) |
-| `scorekit-85p` | Build template loader and validation |
+| `scorekit-iun` | QuestionCard variants for all 12 question types |
+| `scorekit-97w` | Pillar-grouped quiz flow with section intros |
 
 ## Implementation phases
 
-1. **Data Model** ← Next
-2. Question Framework (UI)
+1. ~~Data Model~~ ✓
+2. **Question Framework (UI)** ← Current
 3. Scoring Engine
 4. Value Calculation
 5. Report Generator + UI
