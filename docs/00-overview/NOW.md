@@ -1,6 +1,9 @@
 # Now
 
-## Current status (16 Dec 2025)
+## NOW: Current Focus
+
+**Status**: Building  
+**Last Updated**: 16 Dec 2025 (evening)
 
 **Report redesign complete.** Insight-driven narrative with band/pillar content.
 
@@ -39,14 +42,18 @@
   - Pillar insights based on score level (low/medium/high)
   - Strength callout + personalised next steps
   - Premium dark hero section with score badge
+- ✅ **Template Content System** (Phase 6)
+  - `packages/core/src/templates/ai-readiness/content.ts`
+  - Band intros, pillar labels, pillar insights, recommendations
+  - Template registry for multi-template support
+  - Report page imports from template (clean separation)
 
 ## Next: PDF + Polish
 
-**Priority:** PDF generation and template content file.
+**Priority:** PDF generation for shareable reports.
 
 | Ticket | Description |
 |--------|-------------|
-| `scorekit-577` | Create AI Readiness template content file |
 | `scorekit-qzo` | PDF generation & sharing |
 | `scorekit-su6` | Write recommendations + patterns |
 
@@ -56,9 +63,9 @@
 2. ~~Question Framework (UI)~~ ✓
 3. Scoring Engine (defer — current scoring works for MVP)
 4. Value Calculation (defer — needs cost/value questions)
-5. **Report Generator + UI** ← Current priority
-6. AI Readiness Template Content
-7. Polish & Integration
+5. ~~Report Generator + UI~~ ✓
+6. ~~AI Readiness Template Content~~ ✓
+7. **Polish & Integration** ← Current priority (PDF, GHL)
 
 ## V1 completion definition
 
