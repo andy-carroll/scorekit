@@ -296,6 +296,145 @@ The report must be:
 
 ---
 
+## 9. Implementation Approach
+
+### 9.1 Mock-First Development
+
+Build the report UI with **hardcoded mock data** first:
+
+1. **Mock a "perfect" report** — handcraft the narrative, insights, and recommendations for a fictional company
+2. **Design the UI** — get the layout, typography, and visual hierarchy right
+3. **Test shareability** — would you put this on screen in a team meeting?
+4. **Then automate** — once the output is right, build the generation engine
+
+**Why mock first?**
+- Faster iteration on what "good" looks like
+- Separates design from engineering complexity
+- Creates a reference standard for AI-generated output
+
+### 9.2 Report Generation Strategy
+
+| Layer | Approach | Complexity |
+|-------|----------|------------|
+| **Structure** | Template-driven | Low — fixed sections, dynamic content |
+| **Headlines** | Rule-based with AI fallback | Medium — pattern matching + LLM polish |
+| **Insights** | AI-generated from answers | Medium-High — requires prompt engineering |
+| **Recommendations** | Curated library + AI selection | Medium — pre-written, contextually selected |
+| **Cost narrative** | Calculation + AI framing | High — requires value engine + natural language |
+
+**Recommended approach:**
+- Start with **rule-based generation** (conditional logic based on scores)
+- Add **AI polish layer** for natural language (e.g., headline phrasing)
+- Reserve **full AI generation** for premium/enterprise tier
+
+### 9.3 AI Tooling Considerations
+
+**If using LLMs for report generation:**
+
+| Concern | Mitigation |
+|---------|------------|
+| **Hallucination** | Ground all claims in actual user data; no invented statistics |
+| **Consistency** | Use structured prompts with explicit constraints |
+| **Quality variance** | Human-curated templates with AI filling slots |
+| **Latency** | Pre-generate on quiz completion, not on report view |
+| **Cost** | Cache reports; don't regenerate on each view |
+
+**Token cost estimates (GPT-4o-mini):**
+- Input: ~500 tokens (user answers + context)
+- Output: ~1,500 tokens (report sections)
+- Cost per report: ~$0.003–$0.005
+- At 1,000 reports/month: ~$3–$5/month
+
+---
+
+## 10. Data Security & Privacy
+
+### 10.1 Data Collected
+
+| Data Type | Sensitivity | Storage |
+|-----------|-------------|---------|
+| Email + name | PII | Encrypted, GDPR-compliant |
+| Company name | Business | User-provided, not verified |
+| Assessment answers | Business | Stored with report |
+| Industry/size | Demographic | Aggregatable |
+
+### 10.2 Privacy Considerations
+
+**What we must get right:**
+- Clear consent at email capture ("We'll send your report + may follow up")
+- Easy opt-out / data deletion request
+- No sharing of individual data externally
+- Aggregate benchmarks only (if/when we add them)
+
+**What's NOT sensitive:**
+- Pillar scores are self-reported opinion, not confidential data
+- No financial data, no employee names, no IP
+
+**Report sharing:**
+- Shareable link = unique token, not guessable URL
+- Optional: password-protect or email-gate shared reports
+- Consider expiry (30 days? 90 days?)
+
+### 10.3 GDPR/Compliance Notes
+
+- **Legal basis**: Legitimate interest (assessment they requested)
+- **Data retention**: Until deletion requested or 2 years inactive
+- **Third-party processors**: Email (GHL), Hosting (Vercel), AI (OpenAI — if used)
+- **DPA required**: If using OpenAI API, ensure DPA in place
+
+---
+
+## 11. Cost & Abuse Prevention
+
+### 11.1 Cost Drivers
+
+| Resource | Cost Driver | Mitigation |
+|----------|-------------|------------|
+| **AI generation** | Per-report LLM calls | Cache aggressively; rule-based fallback |
+| **PDF generation** | Server-side rendering | Generate async; queue if high volume |
+| **Storage** | Report data + PDFs | Expire old reports; compress PDFs |
+| **Bandwidth** | PDF downloads | CDN; reasonable file size |
+
+### 11.2 Abuse Scenarios
+
+| Scenario | Risk | Mitigation |
+|----------|------|------------|
+| **Spam submissions** | Junk data, wasted compute | Rate limit by IP; require email verification |
+| **Bot traffic** | Fake leads, inflated costs | Honeypot fields; CAPTCHA on suspicious patterns |
+| **Competitor scraping** | Template/logic exposure | Reports are unique to inputs; no sensitive IP |
+| **Email harvesting** | Fake emails to download reports | Email verification before full report access |
+
+### 11.3 Recommended Guardrails
+
+**MVP (low-cost, low-risk):**
+- Rate limit: 5 submissions per IP per hour
+- Email required for full report
+- Basic bot detection (honeypot field)
+
+**Growth phase:**
+- Email verification (click link to view full report)
+- Suspicious pattern detection (same answers, rapid submissions)
+- Optional CAPTCHA on high-volume days
+
+**Enterprise:**
+- SSO integration for verified business emails
+- Custom domains for branded reports
+- Audit logging
+
+---
+
+## 12. Report Tiers (Future Consideration)
+
+| Tier | Audience | Content | AI Usage |
+|------|----------|---------|----------|
+| **Basic** | Free / lead gen | Summary + top insight + CTA | Rule-based only |
+| **Standard** | Email-gated | Full report + recommendations | Light AI polish |
+| **Premium** | Paid / enterprise | Detailed appendices + benchmarks + PDF | Full AI generation |
+
+This allows cost control while reserving premium AI features for paying customers.
+
+---
+
 ## Appendix: Current Report Screenshot
 
 [See attached screenshot showing 10+ bars, generic recommendations, overwhelming layout]
