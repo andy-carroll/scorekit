@@ -5,6 +5,18 @@
 
 ---
 
+## 0. The Golden Rule
+
+**Complete the loop** per `docs/00-overview/WORKFLOW.md`:
+
+```
+... → VERIFY → COMMIT → CLOSE
+```
+
+If you skip CLOSE, things rot. Don't skip CLOSE.
+
+---
+
 ## 1. Commit All Work
 
 Ensure all changes are committed:
