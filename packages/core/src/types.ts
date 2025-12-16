@@ -239,3 +239,224 @@ export const DEFAULT_BANDS: Band[] = [
   { id: 'leading', name: 'Leading', minScore: 80, maxScore: 100, color: '#22c55e' },
 ];
 
+// =============================================================================
+// Recommendation Types
+// =============================================================================
+
+/**
+ * Recommendation triggered by pillar score range
+ */
+export interface Recommendation {
+  pillarId: string;
+  scoreRange: [number, number];     // [min, max] percentage
+  headline: string;                  // Bold headline
+  bodyTemplate: string;              // Supports {{placeholders}}
+  actions: string[];                 // Specific action items
+  ifTriedBefore?: string;            // Additional copy if history indicates prior attempts
+}
+
+/**
+ * Pattern detection rule for contradictions/insights
+ */
+export interface Pattern {
+  id: string;
+  name: string;
+  description: string;               // What this pattern reveals
+  conditions: PatternCondition[];    // All must be true
+  insight: string;                   // Insight text for report
+}
+
+export interface PatternCondition {
+  type: 'pillar_score' | 'answer_value' | 'answer_exists';
+  pillarId?: string;
+  questionId?: string;
+  operator: 'gt' | 'gte' | 'lt' | 'lte' | 'eq' | 'neq' | 'in';
+  value: number | string | string[];
+}
+
+// =============================================================================
+// Copy Types (for landing page and report)
+// =============================================================================
+
+/**
+ * Landing page copy for a template
+ */
+export interface LandingCopy {
+  headline: string;
+  subheadline: string;
+  valueProps: string[];              // Bullet points
+  timeEstimate: string;              // e.g., "15-20 minutes"
+  trustSignals?: string[];           // e.g., "Used by 500+ companies"
+  ctaText: string;                   // e.g., "Start Your Assessment"
+}
+
+/**
+ * Report copy and templates
+ */
+export interface ReportCopy {
+  title: string;                     // e.g., "Your AI Readiness Report"
+  openingInsightTemplates: Record<string, string>; // By band id
+  pillarDescriptions: Record<string, string>;      // By pillar id
+  roadmapIntro: string;
+  businessCaseIntro: string;
+  ctaHeadline: string;
+  ctaText: string;
+  ctaUrl?: string;
+}
+
+// =============================================================================
+// Template Type
+// =============================================================================
+
+/**
+ * Complete assessment template definition
+ */
+export interface Template {
+  id: string;                        // e.g., "ai-readiness-v1"
+  version: string;                   // Semantic version, e.g., "1.0.0"
+  name: string;                      // e.g., "AI Readiness Assessment"
+  description: string;
+  estimatedMinutes: number;
+
+  // Structure
+  pillars: Pillar[];
+  questions: Question[];
+  
+  // Scoring configuration
+  bands?: Band[];                    // Override DEFAULT_BANDS if needed
+  pillarWeights?: Record<string, number>; // pillarId → weight (default 1)
+
+  // Report content
+  recommendations: Recommendation[];
+  patterns?: Pattern[];              // Optional pattern detection rules
+
+  // Copy
+  copy: {
+    landing: LandingCopy;
+    report: ReportCopy;
+  };
+
+  // Metadata
+  createdAt?: string;
+  updatedAt?: string;
+  author?: string;
+}
+
+// =============================================================================
+// Scoring Result Types
+// =============================================================================
+
+/**
+ * Score result for a single pillar
+ */
+export interface PillarScore {
+  pillarId: string;
+  score: number;                     // Percentage 0-100
+  band: Band;
+  rawScore: number;                  // Sum of answer values
+  maxScore: number;                  // Maximum possible
+  questionCount: number;
+  subDimensions?: Record<string, number>; // subDimensionId → score
+}
+
+/**
+ * Complete scoring result for an assessment
+ */
+export interface ScoringResult {
+  overall: number;                   // Percentage 0-100
+  overallBand: Band;
+  pillars: Record<string, PillarScore>; // pillarId → score
+  primaryConstraint: string;         // pillarId of lowest scoring pillar
+  patterns?: Pattern[];              // Detected patterns
+}
+
+// =============================================================================
+// Value Calculation Types
+// =============================================================================
+
+/**
+ * Value calculation result
+ */
+export interface ValueCalculation {
+  annualCost?: number;               // Cost of current state
+  potentialValue?: number;           // Value of transformation
+  roi?: number;                      // Return on investment multiplier
+  inputs: {
+    hoursLostWeekly?: number;
+    teamSize?: number;
+    hourlyRate?: number;
+    revenueBand?: number;
+  };
+}
+
+// =============================================================================
+// Report Data Types
+// =============================================================================
+
+/**
+ * Complete report data structure
+ */
+export interface ReportData {
+  // Header
+  templateName: string;
+  respondentName?: string;
+  companyName?: string;
+  generatedAt: string;
+
+  // Opening
+  openingInsight: string;
+
+  // Context (their words)
+  yourContext: {
+    companyProfile: string;
+    trigger?: string;
+    goals?: string;
+  };
+  whatYouToldUs: string[];           // Pain points quoted back
+
+  // Diagnosis
+  costOfCurrentState?: {
+    narrative: string;
+    annualCost?: number;
+  };
+  
+  scoring: ScoringResult;
+  pillarNarratives: Record<string, string>; // pillarId → narrative
+  patternsNoticed?: string[];
+  whatYouveTried?: string;
+  biggestConstraint: {
+    pillarId: string;
+    pillarName: string;
+    narrative: string;
+    recommendation: Recommendation;
+  };
+
+  // Value
+  transformationValue?: {
+    narrative: string;
+    potentialValue?: number;
+  };
+
+  // Actions
+  singlePriority: string;
+  roadmap: {
+    day30: string[];
+    day60: string[];
+    day90: string[];
+  };
+
+  // Business case
+  businessCase?: {
+    costOfInaction: string;
+    valueOfTransformation: string;
+    investmentCase: string;
+  };
+
+  // CTA
+  nextSteps: {
+    headline: string;
+    ctaText: string;
+    ctaUrl?: string;
+  };
+}
+
