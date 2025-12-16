@@ -2,7 +2,7 @@
 
 ## Current status (16 Dec 2025)
 
-**30 questions complete.** Full AI Readiness assessment ready. Report redesign next.
+**Report redesign complete.** Insight-driven narrative with band/pillar content.
 
 ## Completed
 
@@ -34,16 +34,21 @@
 - ✅ **Content Structure** (`CONTENT-STRUCTURE.md`)
   - File-based multi-template CMS approach
   - Template registry pattern for future templates
+- ✅ **Report Redesign** (Phase 5 MVP)
+  - Band-specific headlines and intros
+  - Pillar insights based on score level (low/medium/high)
+  - Strength callout + personalised next steps
+  - Premium dark hero section with score badge
 
-## Next: Phase 5 — Report Generator + UI
+## Next: PDF + Polish
 
-**Priority:** Build mock report with hardcoded "ideal" content, then template it.
+**Priority:** PDF generation and template content file.
 
 | Ticket | Description |
 |--------|-------------|
-| `scorekit-ym7` | Report redesign: Structure & narrative (MVP) |
 | `scorekit-577` | Create AI Readiness template content file |
 | `scorekit-qzo` | PDF generation & sharing |
+| `scorekit-su6` | Write recommendations + patterns |
 
 ## Implementation phases
 
