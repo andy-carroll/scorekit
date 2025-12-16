@@ -1,30 +1,38 @@
 # Now
 
-## Current status (Dec 2024)
+## Current status (Dec 2025)
 
-V1 thin-slice is **complete**. Working end-to-end flow at `localhost:3000`.
+V1 thin-slice **complete**. PRD **updated** with business case framing. Implementation plan **ready**.
 
 ## Completed
 
-- ✅ 5-question quiz flow with auto-advance
-- ✅ Email capture gate
-- ✅ Report page with score, pillar breakdown, recommendations
-- ✅ Scoring engine (`apps/web/src/lib/questions.ts`)
+- ✅ V1 thin-slice: 5-question quiz → email gate → report page
+- ✅ PRD updated: business case builder, value quantification, context questions
+- ✅ 17 granular Beads tickets created across 7 implementation phases
+- ✅ Session start/finish workflow commands created
 
-## In progress
+## Next session: Phase 1 — Data Model
 
-- 🔄 UI polish (remove AI-cookie-cutter look) – `scorekit-19l`
-- 🔄 GHL webhook integration – `scorekit-skz`
+| Ticket | Description |
+|--------|-------------|
+| `scorekit-hlx` | Define enhanced Question interface (diagnostic + context types) |
+| `scorekit-20m` | Define Template schema (pillars, recommendations, copy) |
+| `scorekit-85p` | Build template loader and validation |
 
-## Next up
+## Implementation phases
 
-- PDF generation + email delivery – `scorekit-9w5`
-- Share card generation – `scorekit-br6`
-- Expand to full 25–35 question template
+1. **Data Model** ← Next
+2. Question Framework (UI)
+3. Scoring Engine
+4. Value Calculation
+5. Report Generator + UI
+6. AI Readiness Template Content
+7. Polish & Integration
 
 ## V1 completion definition
 
-- Full template working (25–35 questions)
-- Report + share card
+- Full 30-question template with context questions
+- Business case report (cost of inaction, value of transformation)
 - PDF emailed
 - GHL tags + workflow triggered
+- Premium UI (not AI cookie-cutter)
