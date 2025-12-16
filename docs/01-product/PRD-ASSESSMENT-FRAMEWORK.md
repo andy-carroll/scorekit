@@ -2,7 +2,7 @@
 
 > **Status**: Draft  
 > **Author**: Andy Carroll  
-> **Created**: Dec 2024  
+> **Created**: Dec 2025  
 > **Related tickets**: scorekit-6r3, scorekit-nqr, scorekit-hr0
 
 ---
@@ -15,12 +15,23 @@ Business leaders are drowning in generic "how mature is your X" quizzes that pro
 
 ### What we're building
 
-A **template-driven assessment engine** that produces genuinely useful diagnostic reports—the kind that get shared internally, spark discussion, and equip sales conversations with real insight.
+A **template-driven assessment engine** that helps respondents:
+
+1. **Articulate their pain** in their own words
+2. **Quantify the business cost** of their current constraints
+3. **See the value** of removing those constraints
+4. **Build their own business case** for transformation
+
+The output is not a scorecard—it's a **business case document** that justifies investment in change.
+
+### The commercial logic
+
+If the assessment helps someone see they're losing £300k–£500k annually to inefficiency, friction, or missed opportunity, then a £30k–£50k transformation programme is an obvious investment. The assessment's job is to help them see and articulate that value.
 
 ### Why it matters
 
-1. **For the respondent**: Clarity on where they actually stand, not flattery or vague bands
-2. **For the business owner (us)**: Rich lead qualification data before the first call
+1. **For the respondent**: Clarity on what's costing them, in terms they can take to their board
+2. **For us**: Rich qualification data + a pre-built business case before the first call
 3. **For the platform**: Reusable engine across multiple verticals without code changes
 
 ---
@@ -28,6 +39,7 @@ A **template-driven assessment engine** that produces genuinely useful diagnosti
 ## 2. Target Use Cases (Templates)
 
 The assessment engine must support multiple templates with different:
+
 - Questions and answer options
 - Pillars and sub-dimensions
 - Scoring weights and band thresholds
@@ -43,10 +55,13 @@ The assessment engine must support multiple templates with different:
 | **Talent Acquisition** | TA lead or recruitment agency owner | "What's holding back your hiring function?" | 12–15 min |
 
 Each template produces a report that:
-- Reveals strengths and weaknesses the respondent may not have articulated
-- Provides specific, actionable focus areas (not generic advice)
-- Is worth sharing with colleagues and discussing in leadership meetings
-- Gives us (the business) insight into their real pain points before a call
+
+- **Reflects their words back**: Uses their own language about pain and goals
+- **Quantifies the cost**: Shows what current constraints are costing them
+- **Projects the value**: Shows what transformation could deliver
+- **Builds the business case**: Makes investment decisions obvious
+- **Sparks internal discussion**: Worth sharing with colleagues and leadership
+- **Equips our sales conversation**: We arrive knowing their pain, history, and goals
 
 ---
 
@@ -57,6 +72,7 @@ Each template produces a report that:
 Each template defines **3–6 pillars** that represent distinct diagnostic dimensions.
 
 **Example: AI Readiness Template**
+
 | Pillar | What it measures |
 |--------|------------------|
 | Leadership & Vision | Executive commitment, strategy clarity, investment appetite |
@@ -66,6 +82,7 @@ Each template defines **3–6 pillars** that represent distinct diagnostic dimen
 | Culture & Experimentation | Risk tolerance, learning culture, speed of adoption |
 
 **Example: Project & Admin Chaos Template**
+
 | Pillar | What it measures |
 |--------|------------------|
 | Visibility & Tracking | Do you know what's happening across projects? |
@@ -102,37 +119,73 @@ For V1, target **25–30 questions** (5–6 per pillar).
 
 ## 4. Question Types
 
-All question types render as **single-select radio buttons** in V1. The type describes the *nature* of the question, not the UI.
+Questions fall into two categories:
 
-### 4.1 Type definitions
+- **Diagnostic questions** (scored) — assess current state
+- **Context questions** (not scored) — capture pain, history, goals, and value
+
+Both types can render as radio buttons, dropdowns, or (for some context questions) short text input.
+
+### 4.1 Diagnostic question types (scored)
 
 | Type | Purpose | Answer pattern | Example |
-|------|---------|----------------|---------|
+|------|---------|----------------|--------|
 | **Maturity** | Assess current state | 5 scenarios from lowest to highest maturity | "Which best describes your AI strategy?" |
 | **Frequency** | Reveal actual behaviour | Never → Rarely → Sometimes → Often → Always | "How often does leadership discuss AI in strategy meetings?" |
 | **Capability** | Gauge confidence | Not at all → Slightly → Somewhat → Fairly → Very | "How confident are you that your team could run an AI pilot?" |
 | **Specificity** | Check concrete facts | Yes / No / Partial / Planned / Don't know | "Do you have documented AI use cases?" |
+| **History** | What's been tried | No / Yes, unsuccessfully / Yes, partially / Yes, working | "Have you invested in AI training before?" |
 | **Priority** | Force trade-offs | Choose A or B (both are valid blockers) | "Which is the bigger obstacle: lack of budget or lack of skills?" |
 
-### 4.2 Why multiple types matter
+### 4.2 Context question types (not scored, but critical for report)
 
-- **Maturity** questions reveal where they *think* they are
-- **Frequency** questions reveal what they *actually do*
-- **Capability** questions reveal confidence gaps
-- **Specificity** questions cut through aspiration to reality
-- **Priority** questions expose what leadership perceives as the real problem
+| Type | Purpose | Answer pattern | Example |
+|------|---------|----------------|--------|
+| **Demographics** | Company profile | Select / number input | "How many employees?" "What's your industry?" |
+| **Pain** | Current frustrations | Multi-select or text | "What's your biggest frustration with [X]?" |
+| **Trigger** | Why now? | Select or text | "What prompted you to look at this area?" |
+| **Cost** | Quantify the problem | Number or range | "Roughly how many hours/week does your team lose to [X]?" |
+| **Aspiration** | Goals and outcomes | Select or text | "What would success look like in 12 months?" |
+| **Value** | Quantify the opportunity | Number or range | "If you doubled your team's capacity, what would that be worth?" |
 
-Mixing types within a pillar produces richer, more diagnostic insight.
+### 4.3 Why this mix matters
 
-### 4.3 Question mix per pillar (recommendation)
+**Diagnostic questions** tell us where they are:
+- **Maturity** → where they *think* they are
+- **Frequency** → what they *actually do*
+- **Capability** → confidence gaps
+- **Specificity** → concrete facts vs. aspiration
+- **History** → what's been tried (and whether it worked)
+- **Priority** → what leadership perceives as the real blocker
+
+**Context questions** tell us why it matters *to them*:
+- **Pain** → what's frustrating them (in their words)
+- **Trigger** → why they're looking at this now
+- **Cost** → what the problem is costing them (quantified)
+- **Aspiration** → what success looks like to them
+- **Value** → what solving it would be worth (quantified)
+
+The report weaves both together: "You scored X on [pillar], and you told us this is costing you [Y hours/week]. Based on your team size, that's approximately £[Z] annually."
+
+### 4.4 Question mix per pillar (recommendation)
 
 For a 6-question pillar:
+
 - 2 × Maturity
 - 2 × Frequency
-- 1 × Capability
+- 1 × Capability or History
 - 1 × Specificity
 
-Priority questions are optional and best used sparingly (1–2 per assessment).
+**Plus, per assessment (not per pillar):**
+
+- 3–5 × Demographics (company context)
+- 2–3 × Pain (in their words)
+- 1–2 × Trigger (why now)
+- 2–3 × Cost quantification
+- 1–2 × Aspiration
+- 1–2 × Value quantification
+
+Total: ~30 diagnostic + ~12 context = ~42 questions, but context questions are faster.
 
 ---
 
@@ -189,51 +242,102 @@ The **lowest-scoring pillar** is flagged as the primary constraint:
 
 ## 6. Report Output
 
-The report is the core deliverable. It must be:
-- **Worth sharing**: Colleagues should want to discuss it
-- **Actionable**: Clear focus areas, not vague advice
-- **Traceable**: Every insight maps to specific answers
-- **Branded**: Premium design, not generic PDF
+The report is not a scorecard—it's a **business case document**.
 
-### 6.1 Report sections
+### 6.1 Report principles
+
+- **Their words, not ours**: Quote their pain and goals back to them
+- **Quantified impact**: Show the cost of inaction in pounds/hours
+- **Value projection**: Show what solving this could be worth
+- **Narrative first, scores second**: Lead with insight, not methodology
+- **One clear priority**: If you do nothing else, do this
+- **Discussion-ready**: Structured for sharing with leadership
+
+### 6.2 Report sections
 
 | Section | Content |
-|---------|---------|
-| **Header** | Respondent name, company, date, template name |
-| **Executive summary** | 2–3 sentences: overall band, primary constraint, top strength |
-| **Overall score** | Percentage + band + visual (gauge or score card) |
-| **Pillar breakdown** | Score per pillar + band + sub-dimension detail (if applicable) |
-| **Strengths** | Top 2–3 highest-scoring areas with "what this means" |
-| **Focus areas** | Top 3 lowest-scoring areas with specific recommendations |
-| **Primary constraint deep-dive** | Expanded analysis of the weakest pillar |
-| **30/60/90-day roadmap** | Template-specific actions based on score profile |
-| **Next steps** | CTA (book a call, share with team, etc.) |
+|---------|--------|
+| **Opening insight** | 1 paragraph: The single most important thing this assessment reveals |
+| **Your context** | Company profile, what prompted this, your stated goals |
+| **What you told us** | Their pain points and frustrations, quoted back |
+| **The cost of the current state** | Quantified: "You estimated X hours/week lost. For a team of Y, that's £Z annually." |
+| **The diagnosis** | Pillar breakdown with "so what" narrative for each |
+| **Patterns we noticed** | Contradictions or notable combinations across answers |
+| **What you've tried** | Acknowledge history, explain why this time could be different |
+| **Your biggest constraint** | Deep-dive on the primary blocker |
+| **What transformation could deliver** | Value projection based on their inputs |
+| **Your single priority** | If you do one thing, do this |
+| **30/60/90 roadmap** | Specific actions connected to *their* goals |
+| **The business case** | Summary: Cost of inaction vs. value of transformation |
+| **What happens next** | CTA: Book a call, share with team |
 
-### 6.2 Recommendation mapping
+### 6.3 Recommendation mapping
 
-Each pillar (or sub-dimension) has **pre-written recommendations** that trigger based on score:
+Recommendations are **contextual**, drawing on both scores AND context answers:
 
 ```yaml
 pillar: data_infrastructure
 recommendations:
   - score_range: [0, 39]
-    headline: "Data foundations need urgent attention"
-    body: "Before pursuing AI initiatives, focus on..."
+    headline: "Data foundations are blocking your AI ambitions"
+    body_template: |
+      You scored {{score}}% on Data & Infrastructure, and you told us 
+      {{pain_quote}}. For a company of {{company_size}} employees, 
+      this typically costs {{estimated_cost}} annually in manual workarounds 
+      and missed opportunities.
+      
+      Before pursuing AI initiatives, you need to address:
     actions:
       - "Audit current data sources and quality"
       - "Establish basic data governance policies"
-  - score_range: [40, 59]
-    headline: "Data foundations are emerging"
-    body: "You have some data infrastructure, but gaps remain..."
+    if_tried_before: |
+      You mentioned you've attempted to address data issues before. 
+      Common reasons previous efforts stall: ...
 ```
 
-### 6.3 Share card
+### 6.4 Value calculation logic
+
+The report should calculate projected value based on their inputs:
+
+```typescript
+// Example: Time savings calculation
+const hoursLostPerWeek = answers.hours_lost_weekly; // from Cost question
+const teamSize = answers.team_size; // from Demographics
+const avgHourlyCost = 50; // £50/hour loaded cost (or ask them)
+
+const annualCost = hoursLostPerWeek * teamSize * 48 * avgHourlyCost;
+// "You're losing approximately £X annually to this friction"
+
+// Example: Capacity unlock calculation  
+const capacityIncrease = answers.capacity_value; // from Value question
+const revenuePerHead = answers.revenue_band / teamSize;
+const potentialValue = capacityIncrease * revenuePerHead;
+// "Unlocking this capacity could be worth £X annually"
+```
+
+### 6.5 The business case summary
+
+The report should end with a clear business case:
+
+> **The Cost of Inaction**  
+> Based on your inputs, the current state is costing you approximately **£X annually** in lost productivity, missed opportunities, and operational friction.
+>
+> **The Value of Transformation**  
+> You told us that [aspiration]. Achieving this could deliver **£Y annually** in [efficiency gains / revenue growth / capacity unlock].
+>
+> **The Investment Case**  
+> A focused transformation programme typically requires an investment of £30k–£50k. Based on your numbers, that's a **[X]x return** in the first year alone.
+
+This framing makes the follow-up conversation about ROI, not about whether they need help.
+
+### 6.6 Share card
 
 A visual summary card for social sharing:
+
 - Overall score + band
+- Key insight (1 sentence)
 - Pillar radar or bar chart
-- Template branding
-- Call to action (take the assessment)
+- "Take the assessment" CTA
 
 ---
 
@@ -384,6 +488,7 @@ Rather than showing 30 questions in one stream, group by pillar:
 ```
 
 Benefits:
+
 - Respondent understands the structure
 - Natural "checkpoints" create sense of progress
 - Easier to return to specific sections if reviewing
@@ -409,6 +514,7 @@ Benefits:
 ### 9.2 Tags
 
 Apply tags based on:
+
 - Template: `assessment:ai-readiness`
 - Band: `ai-band:starting`, `ai-band:emerging`, etc.
 - Primary constraint: `ai-constraint:data-infrastructure`
@@ -416,6 +522,7 @@ Apply tags based on:
 ### 9.3 Workflow triggers
 
 Fire webhook to trigger GHL automations based on:
+
 - Template + band combination
 - Specific primary constraint
 - Score thresholds
@@ -446,18 +553,21 @@ Fire webhook to trigger GHL automations based on:
 ## 11. Implementation Phases
 
 ### Phase 1: Framework (current)
+
 - [ ] Enhanced data model (Question types, pillars, sub-dimensions)
 - [ ] Scoring engine with pillar breakdown
 - [ ] Template config loader
 - [ ] Basic report with pillar breakdown
 
 ### Phase 2: Full template
+
 - [ ] 25–30 question AI Readiness template
 - [ ] Recommendation mapping
 - [ ] Enhanced report (strengths, focus areas, roadmap)
 - [ ] PDF generation
 
 ### Phase 3: Polish & integration
+
 - [ ] Premium UI (brand guidelines)
 - [ ] Share card generation
 - [ ] GHL integration
@@ -480,6 +590,7 @@ Fire webhook to trigger GHL automations based on:
 ## 13. Appendix: Example Questions by Type
 
 ### Maturity question
+
 ```
 Which best describes your organisation's AI strategy?
 
@@ -491,6 +602,7 @@ Which best describes your organisation's AI strategy?
 ```
 
 ### Frequency question
+
 ```
 How often does your leadership team discuss AI initiatives in strategy meetings?
 
@@ -502,6 +614,7 @@ How often does your leadership team discuss AI initiatives in strategy meetings?
 ```
 
 ### Capability question
+
 ```
 How confident are you that your team could successfully implement an AI pilot project?
 
@@ -513,6 +626,7 @@ How confident are you that your team could successfully implement an AI pilot pr
 ```
 
 ### Specificity question
+
 ```
 Do you have documented AI use cases for your business?
 
@@ -524,6 +638,7 @@ Do you have documented AI use cases for your business?
 ```
 
 ### Priority question
+
 ```
 Which is the bigger obstacle to AI adoption in your organisation?
 
@@ -540,4 +655,3 @@ Which is the bigger obstacle to AI adoption in your organisation?
 3. **Build scoring engine** – Pillar breakdown, sub-dimensions, band calculation
 4. **Create AI Readiness template** – Start with 15–20 questions, expand to 30
 5. **Enhance report page** – Pillar breakdown, strengths, focus areas
-
