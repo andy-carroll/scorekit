@@ -2,7 +2,7 @@
 
 ## Current status (Dec 2025)
 
-**Phase 1 complete.** Core data model and template system in place.
+**Phase 2 complete.** Question framework UI with pillar-grouped flow.
 
 ## Completed
 
@@ -15,21 +15,29 @@
   - Template loader with validation
   - Type guards and helpers
 - ✅ Development workflow defined (`WORKFLOW.md`)
+- ✅ **Phase 2: Question Framework (UI)**
+  - `QuestionCard` component with all input types (radio, select, multi-select, text, number, range, choice)
+  - `PillarIntro` component for section intros
+  - `SectionProgress` component with completion checkmarks
+  - Pillar-grouped quiz flow (7 sections, 14 questions)
 
-## Next: Phase 2 — Question Framework (UI)
+## Next: Phase 5 — Report Generator + UI
 
-| Ticket | Description |
-|--------|-------------|
-| `scorekit-iun` | QuestionCard variants for all 12 question types |
-| `scorekit-97w` | Pillar-grouped quiz flow with section intros |
+**Priority:** Redesign report page for clarity and shareability.
+
+| Focus | Description |
+|-------|-------------|
+| JTBD analysis | Understand user context, goals, and sharing motivations |
+| Report structure | Simplify from data dump to insight-driven narrative |
+| Visual design | Premium, professional, worth sharing |
 
 ## Implementation phases
 
 1. ~~Data Model~~ ✓
-2. **Question Framework (UI)** ← Current
-3. Scoring Engine
-4. Value Calculation
-5. Report Generator + UI
+2. ~~Question Framework (UI)~~ ✓
+3. Scoring Engine (defer — current scoring works for MVP)
+4. Value Calculation (defer — needs cost/value questions)
+5. **Report Generator + UI** ← Current priority
 6. AI Readiness Template Content
 7. Polish & Integration
 
