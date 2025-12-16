@@ -1,26 +1,54 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/**
+ * Theme Import
+ * 
+ * Change this import to switch themes:
+ * - ./styles/themes/default.css     (ScoreKit default)
+ * - ./styles/themes/accelerator.css (Accelerator Solutions)
+ */
+@import "../styles/themes/accelerator.css";
 
+/* ========================================
+ * Tailwind Theme Integration
+ * ======================================== */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Colors */
+  --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-highlight: var(--color-highlight);
+  --color-bg-dark: var(--color-bg-dark);
+  --color-bg-light: var(--color-bg-light);
+  --color-bg-surface: var(--color-bg-surface);
+  --color-text-primary: var(--color-text-on-light);
+  --color-text-secondary: var(--color-text-on-light-secondary);
+  --color-text-muted: var(--color-text-on-light-muted);
+  --color-border: var(--color-border);
+  
+  /* Typography */
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --font-mono: var(--font-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* ========================================
+ * Base Styles
+ * ======================================== */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-bg-light);
+  color: var(--color-text-on-light);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ========================================
+ * Subtle Background Texture (optional)
+ * Adds tactile, premium feel
+ * ======================================== */
+.bg-textured {
+  background-color: var(--color-bg-light);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  background-blend-mode: soft-light;
+  background-size: 200px 200px;
 }

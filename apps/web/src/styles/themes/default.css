@@ -1,0 +1,185 @@
+/**
+ * Default ScoreKit Theme
+ * 
+ * A refined, high-end consultancy aesthetic.
+ * Deep teal + warm neutrals + premium typography.
+ */
+
+@import '../tokens/base.css';
+@import '../tokens/typography.css';
+@import '../tokens/animations.css';
+
+:root {
+  /* ========================================
+   * Brand Identity
+   * ======================================== */
+  --brand-name: 'ScoreKit';
+  --brand-logo-height: 32px;
+
+  /* ========================================
+   * Color Palette
+   * ======================================== */
+  
+  /* Primary - Deep teal (sophisticated, not startup-purple) */
+  --color-primary: #0D4F4F;
+  --color-primary-hover: #0A3D3D;
+  --color-primary-light: #E6F2F2;
+  
+  /* Highlight - Warm amber */
+  --color-highlight: #B45309;
+  --color-highlight-hover: #92400E;
+  
+  /* Secondary accents */
+  --color-accent-teal: #0D9488;
+  --color-accent-green: #059669;
+  --color-accent-amber: #D97706;
+  
+  /* Backgrounds (warm palette) */
+  --color-bg-dark: #1C1917;            /* Warm charcoal */
+  --color-bg-dark-secondary: #292524;  /* Slightly lighter */
+  --color-bg-light: #FAF9F7;           /* Warm off-white */
+  --color-bg-surface: #FFFFFF;         /* Cards */
+  --color-bg-muted: #F5F5F4;           /* Stone-100 */
+  
+  /* Text colors (warm grays) */
+  --color-text-on-dark: #FAFAF9;
+  --color-text-on-dark-muted: #A8A29E;
+  --color-text-on-light: #1C1917;       /* Stone-900 */
+  --color-text-on-light-secondary: #57534E;  /* Stone-600 */
+  --color-text-on-light-muted: #A8A29E;      /* Stone-400 */
+  
+  /* Borders */
+  --color-border: #E7E5E4;              /* Stone-200 */
+  --color-border-strong: #D6D3D1;       /* Stone-300 */
+  
+  /* Semantic colors */
+  --color-success: #059669;
+  --color-warning: #D97706;
+  --color-error: #DC2626;
+  --color-info: #0284C7;
+
+  /* ========================================
+   * Typography
+   * ======================================== */
+  
+  /* Headline font - Editorial serif */
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  
+  /* Body font - Clean, polished sans */
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  
+  /* Mono font */
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* ========================================
+   * Gradients
+   * ======================================== */
+  --gradient-hero: linear-gradient(135deg, var(--color-bg-dark) 0%, var(--color-bg-dark-secondary) 100%);
+  --gradient-subtle: linear-gradient(180deg, var(--color-bg-light) 0%, var(--color-bg-muted) 100%);
+  --gradient-primary: linear-gradient(135deg, var(--color-primary) 0%, #0A3D3D 100%);
+
+  /* ========================================
+   * Card Styles
+   * ======================================== */
+  --card-border-width: 1px;
+  --card-bg: var(--color-bg-surface);
+  --card-border-color: var(--color-border);
+  --card-radius: var(--radius-xl);
+  --card-shadow: var(--shadow-sm);
+
+  /* ========================================
+   * Button Styles
+   * ======================================== */
+  --button-primary-bg: var(--color-primary);
+  --button-primary-text: var(--color-text-on-dark);
+  --button-primary-hover: var(--color-primary-hover);
+  
+  --button-secondary-bg: transparent;
+  --button-secondary-text: var(--color-text-on-light);
+  --button-secondary-border: var(--color-border-strong);
+  --button-secondary-hover: var(--color-bg-muted);
+  
+  --button-accent-bg: var(--color-highlight);
+  --button-accent-text: var(--color-text-on-dark);
+  --button-accent-hover: var(--color-highlight-hover);
+
+  /* ========================================
+   * Input Styles
+   * ======================================== */
+  --input-bg: var(--color-bg-surface);
+  --input-border: var(--color-border);
+  --input-border-focus: var(--color-primary);
+  --input-text: var(--color-text-on-light);
+  --input-placeholder: var(--color-text-on-light-muted);
+  --input-radius: var(--radius-lg);
+
+  /* ========================================
+   * Special Elements
+   * ======================================== */
+  --highlight-box-bg: var(--color-primary-light);
+  --highlight-box-text: var(--color-primary);
+  --highlight-box-padding: 0.125em 0.5em;
+  --highlight-box-radius: var(--radius-sm);
+  
+  --underline-accent-color: var(--color-highlight);
+  --underline-accent-height: 4px;
+  --underline-accent-offset: -2px;
+}
+
+/* ========================================
+ * Utility Classes - Default Theme
+ * ======================================== */
+
+.text-highlight {
+  background-color: var(--highlight-box-bg);
+  color: var(--highlight-box-text);
+  padding: var(--highlight-box-padding);
+  border-radius: var(--highlight-box-radius);
+  display: inline;
+}
+
+.underline-accent {
+  position: relative;
+  display: inline-block;
+}
+
+.underline-accent::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: var(--underline-accent-offset);
+  height: var(--underline-accent-height);
+  background-color: var(--underline-accent-color);
+  border-radius: var(--radius-full);
+  z-index: -1;
+}
+
+.card-accent {
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  border: var(--card-border-width) solid var(--card-border-color);
+  box-shadow: var(--card-shadow);
+  padding: var(--space-6);
+}
+
+.hero-dark {
+  background: var(--gradient-hero);
+  color: var(--color-text-on-dark);
+}
+
+.text-display {
+  font-family: var(--font-display);
+  font-weight: var(--font-semibold);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-tight);
+}
+
+.stat-box {
+  display: inline-block;
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  font-weight: var(--font-bold);
+}

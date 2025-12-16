@@ -1,0 +1,219 @@
+/**
+ * Accelerator Solutions Theme
+ * 
+ * Brand colors, typography, and visual identity for
+ * AI Product Accelerator assessments.
+ * 
+ * Based on: acceleratorsolutions.com
+ * Style guide: Accelerator_Solutions_-_The_Human_Advantage_2025.pptx
+ */
+
+@import '../tokens/base.css';
+@import '../tokens/typography.css';
+@import '../tokens/animations.css';
+
+:root {
+  /* ========================================
+   * Brand Identity
+   * ======================================== */
+  --brand-name: 'Accelerator Solutions';
+  --brand-logo-height: 32px;
+
+  /* ========================================
+   * Color Palette
+   * ======================================== */
+  
+  /* Primary brand color - Orange/Amber (logo, key accents) */
+  --color-primary: #E8A33C;
+  --color-primary-hover: #D4922F;
+  --color-primary-light: #FEF3E2;
+  
+  /* Highlight blue (text highlight boxes) */
+  --color-highlight: #3B82F6;
+  --color-highlight-hover: #2563EB;
+  
+  /* Secondary accents */
+  --color-accent-teal: #14B8A6;
+  --color-accent-green: #10B981;
+  --color-accent-pink: #EC4899;
+  
+  /* Backgrounds */
+  --color-bg-dark: #0F172A;           /* Deep navy - hero sections */
+  --color-bg-dark-secondary: #1E293B; /* Slightly lighter navy */
+  --color-bg-light: #FAFAFA;          /* Off-white - content sections */
+  --color-bg-surface: #FFFFFF;        /* Cards, elevated surfaces */
+  --color-bg-muted: #F1F5F9;          /* Subtle backgrounds */
+  
+  /* Text colors */
+  --color-text-on-dark: #FFFFFF;
+  --color-text-on-dark-muted: #94A3B8;
+  --color-text-on-light: #1A1A1A;
+  --color-text-on-light-secondary: #64748B;
+  --color-text-on-light-muted: #94A3B8;
+  
+  /* Borders */
+  --color-border: #E2E8F0;
+  --color-border-strong: #CBD5E1;
+  
+  /* Semantic colors */
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+  --color-info: #3B82F6;
+
+  /* ========================================
+   * Typography
+   * ======================================== */
+  
+  /* Headline font - Italic serif for impact statements */
+  --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  
+  /* Body font - Clean, professional sans-serif */
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  
+  /* Mono font - Code, data */
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* ========================================
+   * Gradients
+   * ======================================== */
+  --gradient-hero: linear-gradient(135deg, var(--color-bg-dark) 0%, var(--color-bg-dark-secondary) 100%);
+  --gradient-subtle: linear-gradient(180deg, var(--color-bg-light) 0%, var(--color-bg-muted) 100%);
+  --gradient-primary: linear-gradient(135deg, var(--color-primary) 0%, #D4922F 100%);
+
+  /* ========================================
+   * Card Styles (colored left border)
+   * ======================================== */
+  --card-border-width: 4px;
+  --card-bg: var(--color-bg-surface);
+  --card-border-color: var(--color-border);
+  --card-radius: var(--radius-lg);
+  --card-shadow: var(--shadow-md);
+  
+  /* Card accent variants */
+  --card-accent-teal: var(--color-accent-teal);
+  --card-accent-orange: var(--color-primary);
+  --card-accent-pink: var(--color-accent-pink);
+  --card-accent-blue: var(--color-highlight);
+
+  /* ========================================
+   * Button Styles
+   * ======================================== */
+  --button-primary-bg: var(--color-bg-dark);
+  --button-primary-text: var(--color-text-on-dark);
+  --button-primary-hover: var(--color-bg-dark-secondary);
+  
+  --button-secondary-bg: transparent;
+  --button-secondary-text: var(--color-text-on-light);
+  --button-secondary-border: var(--color-border-strong);
+  --button-secondary-hover: var(--color-bg-muted);
+  
+  --button-accent-bg: var(--color-primary);
+  --button-accent-text: var(--color-bg-dark);
+  --button-accent-hover: var(--color-primary-hover);
+
+  /* ========================================
+   * Input Styles
+   * ======================================== */
+  --input-bg: var(--color-bg-surface);
+  --input-border: var(--color-border);
+  --input-border-focus: var(--color-primary);
+  --input-text: var(--color-text-on-light);
+  --input-placeholder: var(--color-text-on-light-muted);
+  --input-radius: var(--radius-md);
+
+  /* ========================================
+   * Special Elements
+   * ======================================== */
+  
+  /* Text highlight box (like "adapt faster to an") */
+  --highlight-box-bg: var(--color-highlight);
+  --highlight-box-text: var(--color-text-on-dark);
+  --highlight-box-padding: 0.125em 0.5em;
+  --highlight-box-radius: var(--radius-sm);
+  
+  /* Underline accent (like "Testimonials" yellow underline) */
+  --underline-accent-color: var(--color-primary);
+  --underline-accent-height: 8px;
+  --underline-accent-offset: -4px;
+}
+
+/* ========================================
+ * Utility Classes - Accelerator Specific
+ * ======================================== */
+
+/* Text highlight box */
+.text-highlight {
+  background-color: var(--highlight-box-bg);
+  color: var(--highlight-box-text);
+  padding: var(--highlight-box-padding);
+  border-radius: var(--highlight-box-radius);
+  display: inline;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* Underline accent (hand-drawn style) */
+.underline-accent {
+  position: relative;
+  display: inline-block;
+}
+
+.underline-accent::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: var(--underline-accent-offset);
+  height: var(--underline-accent-height);
+  background-color: var(--underline-accent-color);
+  border-radius: var(--radius-full);
+  z-index: -1;
+  opacity: 0.8;
+}
+
+/* Card with colored left border */
+.card-accent {
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  border-left: var(--card-border-width) solid var(--card-accent-teal);
+  box-shadow: var(--card-shadow);
+  padding: var(--space-6);
+}
+
+.card-accent-orange {
+  border-left-color: var(--card-accent-orange);
+}
+
+.card-accent-pink {
+  border-left-color: var(--card-accent-pink);
+}
+
+.card-accent-blue {
+  border-left-color: var(--card-accent-blue);
+}
+
+/* Hero section dark background */
+.hero-dark {
+  background: var(--gradient-hero);
+  color: var(--color-text-on-dark);
+}
+
+/* Display text (italic serif headlines) */
+.text-display {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: var(--font-bold);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-tight);
+}
+
+/* Stat box (like "Over 400 clients") */
+.stat-box {
+  display: inline-block;
+  background-color: var(--color-primary);
+  color: var(--color-bg-dark);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  font-weight: var(--font-bold);
+}
