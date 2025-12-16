@@ -1,0 +1,15 @@
+{
+  "name": "scorekit",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Template-driven assessment platform for business diagnostics",
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "build": "pnpm --filter web build",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "packageManager": "pnpm@10.18.3"
+}
