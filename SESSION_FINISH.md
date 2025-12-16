@@ -29,6 +29,7 @@ git push origin main
 ```
 
 Report:
+
 - What was committed?
 - Any files intentionally left uncommitted? Why?
 
@@ -59,6 +60,7 @@ git push origin main
 ## 3. Update NOW.md
 
 Update `docs/00-overview/NOW.md` with:
+
 - What was completed this session
 - What's in progress
 - What's next up
@@ -67,18 +69,21 @@ Update `docs/00-overview/NOW.md` with:
 ## 4. Stop Dev Server
 
 If running:
+
 - Stop the dev server (Ctrl+C)
 - Note any errors or warnings observed
 
 ## 5. Document Decisions
 
 If any architectural or product decisions were made:
+
 - Add to `docs/adr/` if significant
 - Or note in relevant doc file
 
 ## 6. Flag Blockers
 
 If anything is blocking progress:
+
 - Document clearly in Beads ticket
 - Note in session summary below
 - Tag with priority if urgent

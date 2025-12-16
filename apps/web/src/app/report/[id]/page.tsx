@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { aiReadinessContent, type ScoreLevel } from "@scorekit/core";
 
 interface ScoreResult {
   total: number;
@@ -18,112 +19,11 @@ interface Lead {
   reportId: string;
 }
 
-// =============================================================================
-// MOCK CONTENT - Hardcoded for design validation
-// This will be templated later based on band + pillar scores
-// =============================================================================
+// Use content from template
+const { bandIntros, pillarLabels, pillarInsights, nextSteps, cta } =
+  aiReadinessContent;
 
-const bandContent: Record<string, { headline: string; intro: string }> = {
-  Starting: {
-    headline: "You're at the starting line — and that's a great place to be",
-    intro: "Most organisations at your stage are overwhelmed by AI hype but unclear on where to begin. The good news? You're now armed with clarity. This report identifies exactly where to focus first, so you can make meaningful progress without wasted effort or budget.",
-  },
-  Emerging: {
-    headline: "You've taken the first steps — now it's time to build momentum",
-    intro: "Your organisation has begun its AI journey, but like many at this stage, progress may feel inconsistent. Some pockets of experimentation exist, but they're not yet connected to a coherent strategy. This report shows you how to turn scattered efforts into systematic progress.",
-  },
-  Progressing: {
-    headline: "You're making real progress — let's accelerate it",
-    intro: "Your organisation has moved beyond experimentation into genuine AI adoption. You have some foundations in place, but there are clear opportunities to deepen impact and scale what's working. This report identifies the gaps that, once closed, will unlock your next level of capability.",
-  },
-  Leader: {
-    headline: "You're leading the pack — here's how to stay ahead",
-    intro: "Congratulations. Your organisation demonstrates strong AI readiness across multiple dimensions. But leadership is never static. This report highlights opportunities to extend your advantage and avoid the complacency that catches many high performers.",
-  },
-};
-
-const pillarInsights: Record<string, Record<string, { title: string; insight: string }>> = {
-  leadership: {
-    low: {
-      title: "Leadership alignment is your biggest unlock",
-      insight: "Without clear executive sponsorship and a documented AI strategy, teams struggle to prioritise and invest. The most successful AI transformations start with leadership alignment — not technology selection. Consider scheduling a leadership workshop to establish shared vision and accountability.",
-    },
-    medium: {
-      title: "Leadership is engaged, but strategy needs sharpening",
-      insight: "Your executives are interested in AI, but the strategy may lack the specificity needed to drive action. Teams need clearer priorities and success metrics. Consider documenting your AI strategy with concrete use cases and owners.",
-    },
-    high: {
-      title: "Strong leadership foundation in place",
-      insight: "Your leadership team is actively driving AI as a strategic priority. To maintain momentum, ensure regular reviews of AI initiatives against business outcomes, and keep expanding the coalition of sponsors across the organisation.",
-    },
-  },
-  data: {
-    low: {
-      title: "Data foundations need urgent attention",
-      insight: "AI is only as good as the data it's built on. Scattered, siloed, or poor-quality data will undermine any AI initiative. Before investing in AI tools, prioritise getting your core data assets organised, accessible, and governed. This is unglamorous but essential work.",
-    },
-    medium: {
-      title: "Data is accessible but not yet AI-ready",
-      insight: "You have some data infrastructure in place, but gaps in quality, integration, or governance may slow AI adoption. Focus on your highest-value datasets first — ensure they're clean, documented, and accessible to the teams who need them.",
-    },
-    high: {
-      title: "Data infrastructure is a competitive advantage",
-      insight: "Your data foundations are strong. You can confidently pursue more sophisticated AI use cases knowing the underlying data will support them. Consider how to extend this capability to more parts of the organisation.",
-    },
-  },
-  people: {
-    low: {
-      title: "Skills gap is holding you back",
-      insight: "Your team lacks the AI literacy needed to identify opportunities, evaluate tools, or work effectively with AI systems. This isn't about hiring data scientists — it's about ensuring everyone understands enough to contribute. Start with foundational AI training for key roles.",
-    },
-    medium: {
-      title: "Pockets of expertise exist, but skills are uneven",
-      insight: "Some team members are AI-capable, but knowledge isn't distributed evenly. This creates bottlenecks and single points of failure. Invest in structured training and create opportunities for knowledge sharing across teams.",
-    },
-    high: {
-      title: "Your team is AI-capable and confident",
-      insight: "Your people have the skills and confidence to work with AI tools effectively. Focus on maintaining this through continuous learning, and consider how your team can help upskill others in the organisation.",
-    },
-  },
-  process: {
-    low: {
-      title: "AI isn't yet part of how you work",
-      insight: "AI tools may be available, but they're not embedded in your daily workflows. This means missed opportunities for efficiency and insight. Start by identifying 2-3 high-frequency, high-value processes where AI could make an immediate difference.",
-    },
-    medium: {
-      title: "Some AI adoption, but not yet systematic",
-      insight: "Individual team members may be using AI tools, but there's no standard approach. This leads to inconsistent results and missed learning opportunities. Document what's working, standardise the best practices, and create shared resources.",
-    },
-    high: {
-      title: "AI is embedded in your operations",
-      insight: "You've moved beyond experimentation to systematic AI integration. Your processes benefit from automation and augmentation. Focus on measuring impact, sharing successes, and identifying the next wave of opportunities.",
-    },
-  },
-  culture: {
-    low: {
-      title: "Culture may be blocking AI adoption",
-      insight: "Even with the right strategy, data, and skills, AI initiatives fail if the culture isn't ready. Fear of failure, resistance to change, or slow decision-making will stall progress. Focus on creating psychological safety for experimentation and celebrating learning from failures.",
-    },
-    medium: {
-      title: "Culture is open but not yet optimised for AI",
-      insight: "Your organisation is willing to try new things, but the pace of experimentation could be faster. Look for ways to reduce friction in trying new AI tools, and create more opportunities to share learnings across teams.",
-    },
-    high: {
-      title: "Culture of experimentation is a strength",
-      insight: "Your organisation embraces change and learns quickly from experiments. This cultural readiness is often the hardest thing to build — protect it, celebrate it, and use it as a foundation for ambitious AI initiatives.",
-    },
-  },
-};
-
-const pillarLabels: Record<string, string> = {
-  leadership: "Leadership & Vision",
-  data: "Data & Infrastructure",
-  people: "People & Skills",
-  process: "Process & Operations",
-  culture: "Culture & Experimentation",
-};
-
-function getScoreLevel(score: number): "low" | "medium" | "high" {
+function getScoreLevel(score: number): ScoreLevel {
   if (score <= 2) return "low";
   if (score <= 3.5) return "medium";
   return "high";
@@ -160,7 +60,7 @@ export default function ReportPage() {
     );
   }
 
-  const band = bandContent[result.band] || bandContent.Starting;
+  const band = bandIntros[result.band] || bandIntros.Starting;
   
   // Sort pillars by score (lowest first) for recommendations
   const sortedPillars = Object.entries(result.pillarScores)

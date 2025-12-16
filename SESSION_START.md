@@ -33,12 +33,14 @@ If you skip steps, things rot. Don't skip steps.
 ## 2. Check Git Status
 
 Run:
+
 ```bash
 git status
 git log --oneline -5
 ```
 
 Report:
+
 - Any uncommitted changes?
 - Last 5 commits (what was done recently?)
 - Current branch (should be `main` unless feature work)
@@ -46,12 +48,14 @@ Report:
 ## 3. Check Beads Tickets
 
 Run:
+
 ```bash
 bd list --status open
 bd list --status in_progress
 ```
 
 Report:
+
 - What tickets are in progress?
 - What's the next priority ticket by phase?
 - Any blockers noted?
@@ -59,17 +63,20 @@ Report:
 ## 4. Check Dev Server
 
 If `apps/web` exists:
+
 ```bash
 cd apps/web && pnpm dev
 ```
 
 Report:
+
 - Does the app start without errors?
 - What's the current state of the UI?
 
 ## 5. Review Session History
 
 Check if there's a `SESSION_LOG.md` or recent session notes:
+
 - What was completed last session?
 - What was deferred or blocked?
 - Any decisions made that affect today's work?

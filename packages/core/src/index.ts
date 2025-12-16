@@ -6,3 +6,4 @@
 
 export * from './types';
 export * from './template-loader';
+export * from './templates';
