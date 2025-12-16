@@ -3,8 +3,16 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { questions, calculateScore } from "@/lib/questions";
-import { QuestionCard } from "@/components/QuestionCard";
+import { QuestionCard, type AnswerValue } from "@/components/QuestionCard";
 import { ProgressBar } from "@/components/ProgressBar";
+
+const pillarNames: Record<string, string> = {
+  strategy: "Strategy",
+  tools: "Tools",
+  skills: "Skills",
+  systems: "Systems",
+  data: "Data",
+};
 
 export default function QuizPage() {
   const router = useRouter();
@@ -14,7 +22,8 @@ export default function QuizPage() {
   const currentQuestion = questions[currentIndex];
   const isLastQuestion = currentIndex === questions.length - 1;
 
-  const handleSelect = (value: number) => {
+  const handleAnswer = (answer: AnswerValue) => {
+    const value = answer.value as number;
     const newAnswers = { ...answers, [currentQuestion.id]: value };
     setAnswers(newAnswers);
 
@@ -45,8 +54,9 @@ export default function QuizPage() {
 
         <QuestionCard
           question={currentQuestion}
-          selectedValue={answers[currentQuestion.id] || null}
-          onSelect={handleSelect}
+          value={answers[currentQuestion.id]}
+          onAnswer={handleAnswer}
+          pillarName={currentQuestion.pillarId ? pillarNames[currentQuestion.pillarId] : undefined}
         />
 
         {currentIndex > 0 && (
