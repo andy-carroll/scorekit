@@ -217,13 +217,14 @@ function TextInput({
   onChange: (value: string) => void;
   placeholder?: string;
 }) {
-  const [localValue, setLocalValue] = useState(value || "");
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    onChange(e.target.value);
+  };
 
   return (
     <textarea
-      value={localValue}
-      onChange={(e) => setLocalValue(e.target.value)}
-      onBlur={() => onChange(localValue)}
+      value={value || ""}
+      onChange={handleChange}
       placeholder={placeholder || "Type your answer..."}
       rows={4}
       className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 bg-white text-gray-700 focus:border-indigo-600 focus:outline-none resize-none"
