@@ -132,7 +132,10 @@ export default function QuizPage() {
       : questionsBeforeCurrentSection;
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-8 px-4">
+    <main
+      className="min-h-screen py-8 px-4"
+      style={{ backgroundColor: "var(--color-bg-light)" }}
+    >
       <div className="max-w-2xl mx-auto">
         <SectionProgress sections={progressSections} currentSectionId={currentSection.id} />
 
@@ -161,7 +164,11 @@ export default function QuizPage() {
                 <button
                   onClick={handleManualNext}
                   disabled={!currentQuestionHasAnswer}
-                  className="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="px-6 py-3 font-semibold rounded-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  style={{
+                    backgroundColor: "var(--color-primary)",
+                    color: "var(--color-bg-dark)",
+                  }}
                 >
                   Next →
                 </button>

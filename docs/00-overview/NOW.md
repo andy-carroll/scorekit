@@ -3,9 +3,11 @@
 ## NOW: Current Focus
 
 **Status**: Building  
-**Last Updated**: 16 Dec 2025 (evening)
+**Last Updated**: 16 Dec 2025 (late evening)
 
-**Report redesign complete.** Insight-driven narrative with band/pillar content.
+**Design system implemented.** Accelerator theme on landing page. Quiz/report pages next.
+
+**Ensure alignment with BEADS tickets system** [BEADS_REFERENCE.md](BEADS_REFERENCE.md)
 
 ## Completed
 
@@ -47,8 +49,16 @@
   - Band intros, pillar labels, pillar insights, recommendations
   - Template registry for multi-template support
   - Report page imports from template (clean separation)
+- ✅ **Design System & Theming** (Phase 7)
+  - Multi-theme architecture (`accelerator.css`, `default.css`)
+  - Shared tokens (`base.css`, `typography.css`, `animations.css`)
+  - Spline Sans font extracted from Accelerator website
+  - Real Accelerator logo downloaded
+  - `BrandHeader` component with logo slot
+  - Landing page redesigned with dark hero, cap-height highlights
+  - Button and typography refinements
 
-## Next: PDF + Polish
+## Next: Theme Rollout + PDF
 
 **Priority:** PDF generation for shareable reports.
 

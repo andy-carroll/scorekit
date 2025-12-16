@@ -73,30 +73,54 @@ export default function ReportPage() {
   const strongestPillar = sortedPillars[sortedPillars.length - 1];
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main
+      className="min-h-screen"
+      style={{ backgroundColor: "var(--color-bg-light)" }}
+    >
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+      <div className="hero-dark">
         <div className="max-w-4xl mx-auto px-6 py-16">
-          <div className="text-sm font-medium text-slate-400 uppercase tracking-wide mb-2">
+          <div
+            className="text-sm font-medium uppercase tracking-wide mb-2"
+            style={{ color: "var(--color-text-on-dark-muted)" }}
+          >
             AI Readiness Report
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">
+          <h1 className="text-display text-3xl md:text-4xl mb-4 leading-tight">
             {band.headline}
           </h1>
-          <p className="text-lg text-slate-300 mb-8 leading-relaxed">
+          <p
+            className="text-lg mb-8 leading-relaxed"
+            style={{ color: "var(--color-text-on-dark-muted)" }}
+          >
             {band.intro}
           </p>
           
           {/* Score Badge */}
-          <div className="inline-flex items-center gap-4 bg-white/10 backdrop-blur rounded-xl px-6 py-4">
+          <div className="inline-flex items-center gap-4 bg-white/10 backdrop-blur rounded-sm px-6 py-4">
             <div>
-              <div className="text-sm text-slate-400">Your Score</div>
+              <div
+                className="text-sm"
+                style={{ color: "var(--color-text-on-dark-muted)" }}
+              >
+                Your Score
+              </div>
               <div className="text-4xl font-bold">{result.percentage}%</div>
             </div>
             <div className="w-px h-12 bg-white/20" />
             <div>
-              <div className="text-sm text-slate-400">Maturity Band</div>
-              <div className="text-2xl font-semibold text-amber-400">{result.band}</div>
+              <div
+                className="text-sm"
+                style={{ color: "var(--color-text-on-dark-muted)" }}
+              >
+                Maturity Band
+              </div>
+              <div
+                className="text-2xl font-semibold"
+                style={{ color: "var(--color-primary)" }}
+              >
+                {result.band}
+              </div>
             </div>
           </div>
         </div>
@@ -236,14 +260,23 @@ export default function ReportPage() {
 
         {/* CTA */}
         <section className="mb-12">
-          <div className="bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-2xl p-8 text-center text-white">
-            <h2 className="text-2xl font-bold mb-3">
+          <div className="hero-dark rounded-sm p-8 text-center">
+            <h2 className="text-display text-2xl mb-3">
               Ready to accelerate your AI journey?
             </h2>
-            <p className="text-indigo-100 mb-6 max-w-xl mx-auto">
+            <p
+              className="mb-6 max-w-xl mx-auto"
+              style={{ color: "var(--color-text-on-dark-muted)" }}
+            >
               Book a free 30-minute strategy session. We&apos;ll review your results together and map out your first 90 days.
             </p>
-            <button className="px-8 py-4 bg-white text-indigo-600 font-semibold rounded-lg hover:bg-indigo-50 transition-colors shadow-lg">
+            <button
+              className="px-8 py-4 font-semibold rounded-sm transition-colors"
+              style={{
+                backgroundColor: "var(--color-primary)",
+                color: "var(--color-bg-dark)",
+              }}
+            >
               Book Your Free Strategy Session
             </button>
           </div>
