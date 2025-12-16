@@ -65,11 +65,11 @@
    * Typography
    * ======================================== */
   
-  /* Headline font - Italic serif for impact statements */
-  --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  /* Headline font - Spline Sans (actual Accelerator website font) */
+  --font-display: var(--font-spline-sans), 'Spline Sans', -apple-system, sans-serif;
   
   /* Body font - Clean, professional sans-serif */
-  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-body: var(--font-inter), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   
   /* Mono font - Code, data */
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
@@ -126,11 +126,11 @@
    * Special Elements
    * ======================================== */
   
-  /* Text highlight box (like "adapt faster to an") */
+  /* Text highlight box (like "adapt faster to an") - exact letter height, zero padding */
   --highlight-box-bg: var(--color-highlight);
   --highlight-box-text: var(--color-text-on-dark);
-  --highlight-box-padding: 0.125em 0.5em;
-  --highlight-box-radius: var(--radius-sm);
+  --highlight-box-padding: 0;
+  --highlight-box-radius: 0;
   
   /* Underline accent (like "Testimonials" yellow underline) */
   --underline-accent-color: var(--color-primary);
@@ -142,15 +142,24 @@
  * Utility Classes - Accelerator Specific
  * ======================================== */
 
-/* Text highlight box */
+/* Text highlight box - cap-height only, not full line-height */
 .text-highlight {
-  background-color: var(--highlight-box-bg);
   color: var(--highlight-box-text);
-  padding: var(--highlight-box-padding);
-  border-radius: var(--highlight-box-radius);
+  padding: 0 0.05em;
+  border-radius: 0;
   display: inline;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
+  font-style: normal;
+  line-height: inherit;
+  /* Use linear-gradient to only cover cap-height (roughly 70% of line-height, centered) */
+  background: linear-gradient(
+    to bottom,
+    transparent 8%,
+    var(--highlight-box-bg) 8%,
+    var(--highlight-box-bg) 92%,
+    transparent 92%
+  );
 }
 
 /* Underline accent (hand-drawn style) */
@@ -199,13 +208,13 @@
   color: var(--color-text-on-dark);
 }
 
-/* Display text (italic serif headlines) */
+/* Display text (Spline Sans headlines - matches Accelerator website) */
 .text-display {
   font-family: var(--font-display);
-  font-style: italic;
-  font-weight: var(--font-bold);
-  letter-spacing: var(--tracking-tight);
-  line-height: var(--leading-tight);
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 0.02em;  /* +10% wider kerning */
+  line-height: 1.15;       /* slightly more leading */
 }
 
 /* Stat box (like "Over 400 clients") */

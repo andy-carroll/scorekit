@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Inter, Spline_Sans } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
@@ -8,11 +8,11 @@ const inter = Inter({
   display: "swap",
 });
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
+const splineSans = Spline_Sans({
+  variable: "--font-spline-sans",
   subsets: ["latin"],
   display: "swap",
-  style: ["normal", "italic"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${playfair.variable} antialiased`}
+        className={`${inter.variable} ${splineSans.variable} antialiased`}
       >
         {children}
       </body>
