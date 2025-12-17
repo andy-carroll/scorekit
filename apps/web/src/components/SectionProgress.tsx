@@ -35,10 +35,10 @@ export function SectionProgress({ sections, currentSectionId }: SectionProgressP
               }
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
                 isCompleted
-                  ? "bg-green-100 text-green-700"
+                  ? "bg-[var(--color-success)]/20 text-[var(--color-success)]"
                   : isCurrent
-                  ? "bg-indigo-100 text-indigo-700 ring-2 ring-indigo-300"
-                  : "bg-gray-100 text-gray-500"
+                  ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)] ring-2 ring-[var(--color-primary)]/30"
+                  : "bg-[var(--color-border)] text-[var(--color-text-on-light-muted)]"
               }`}
             >
               {isCompleted && (

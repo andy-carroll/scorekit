@@ -59,8 +59,8 @@ function RadioInput({
           onClick={() => onSelect(option.value)}
           className={`w-full text-left px-5 py-4 rounded-lg border-2 transition-all duration-150 ${
             selectedValue === option.value
-              ? "border-indigo-600 bg-indigo-50 text-indigo-900"
-              : "border-gray-200 bg-white hover:border-indigo-300 hover:bg-gray-50 text-gray-700"
+              ? "border-[var(--color-primary)] bg-[var(--color-primary)]/10 text-[var(--color-text-on-light)]"
+              : "border-[var(--color-border)] bg-[var(--color-bg-surface)] hover:border-[var(--color-primary)]/50 text-[var(--color-text-on-light-secondary)]"
           }`}
         >
           <span className="font-medium">{option.label}</span>
@@ -87,8 +87,8 @@ function ChoiceInput({
           onClick={() => onSelect(option.id)}
           className={`text-left px-5 py-6 rounded-lg border-2 transition-all duration-150 ${
             selectedValue === option.id
-              ? "border-indigo-600 bg-indigo-50 text-indigo-900"
-              : "border-gray-200 bg-white hover:border-indigo-300 hover:bg-gray-50 text-gray-700"
+              ? "border-[var(--color-primary)] bg-[var(--color-primary)]/10 text-[var(--color-text-on-light)]"
+              : "border-[var(--color-border)] bg-[var(--color-bg-surface)] hover:border-[var(--color-primary)]/50 text-[var(--color-text-on-light-secondary)]"
           }`}
         >
           <div className="text-xs font-bold text-gray-400 mb-2">
@@ -114,7 +114,7 @@ function SelectInput({
     <select
       value={selectedValue || ""}
       onChange={(e) => onSelect(e.target.value)}
-      className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 bg-white text-gray-700 focus:border-indigo-600 focus:outline-none"
+      className="w-full px-4 py-3 rounded-lg border-2 border-[var(--color-border)] bg-[var(--color-bg-surface)] text-[var(--color-text-on-light)] focus:border-[var(--color-primary)] focus:outline-none"
     >
       <option value="">Select an option...</option>
       {options.map((option) => (
@@ -150,15 +150,15 @@ function MultiSelectInput({
           key={option.id}
           className={`flex items-center w-full px-5 py-4 rounded-lg border-2 cursor-pointer transition-all duration-150 ${
             selectedValues.includes(option.id)
-              ? "border-indigo-600 bg-indigo-50 text-indigo-900"
-              : "border-gray-200 bg-white hover:border-indigo-300 hover:bg-gray-50 text-gray-700"
+              ? "border-[var(--color-primary)] bg-[var(--color-primary)]/10 text-[var(--color-text-on-light)]"
+              : "border-[var(--color-border)] bg-[var(--color-bg-surface)] hover:border-[var(--color-primary)]/50 text-[var(--color-text-on-light-secondary)]"
           }`}
         >
           <input
             type="checkbox"
             checked={selectedValues.includes(option.id)}
             onChange={() => toggleOption(option.id)}
-            className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+            className="w-5 h-5 rounded border-[var(--color-border)] text-[var(--color-primary)] focus:ring-[var(--color-primary)]"
           />
           <span className="ml-3 font-medium">{option.label}</span>
         </label>
@@ -199,7 +199,7 @@ function NumberInput({
         max={config?.max}
         step={config?.step}
         placeholder={config?.placeholder || "Enter a number"}
-        className="flex-1 px-4 py-3 rounded-lg border-2 border-gray-200 bg-white text-gray-700 focus:border-indigo-600 focus:outline-none"
+        className="flex-1 px-4 py-3 rounded-lg border-2 border-[var(--color-border)] bg-[var(--color-bg-surface)] text-[var(--color-text-on-light)] focus:border-[var(--color-primary)] focus:outline-none"
       />
       {config?.unitPosition === "suffix" && config?.unit && (
         <span className="text-gray-500 font-medium">{config.unit}</span>
@@ -227,7 +227,7 @@ function TextInput({
       onChange={handleChange}
       placeholder={placeholder || "Type your answer..."}
       rows={4}
-      className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 bg-white text-gray-700 focus:border-indigo-600 focus:outline-none resize-none"
+      className="w-full px-4 py-3 rounded-lg border-2 border-[var(--color-border)] bg-[var(--color-bg-surface)] text-[var(--color-text-on-light)] focus:border-[var(--color-primary)] focus:outline-none resize-none"
     />
   );
 }
@@ -331,15 +331,15 @@ export function QuestionCard({
   return (
     <div className="w-full max-w-2xl mx-auto">
       {pillarName && (
-        <div className="mb-2 text-sm font-medium text-indigo-600 uppercase tracking-wide">
+        <div className="section-label mb-2">
           {pillarName}
         </div>
       )}
-      <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+      <h2 className="section-heading mb-2">
         {question.text}
       </h2>
       {question.helpText && (
-        <p className="text-gray-500 mb-6">{question.helpText}</p>
+        <p className="muted-text mb-6">{question.helpText}</p>
       )}
       {!question.helpText && <div className="mb-6" />}
       {renderInput()}

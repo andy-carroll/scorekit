@@ -13,22 +13,45 @@
  * Tailwind Theme Integration
  * ======================================== */
 @theme inline {
-  /* Colors */
+  /* Brand Colors */
   --color-primary: var(--color-primary);
   --color-primary-hover: var(--color-primary-hover);
   --color-highlight: var(--color-highlight);
+  --color-accent: var(--color-accent);
+  --color-accent-hover: var(--color-accent-hover);
+  
+  /* Backgrounds */
   --color-bg-dark: var(--color-bg-dark);
   --color-bg-light: var(--color-bg-light);
   --color-bg-surface: var(--color-bg-surface);
+  
+  /* Text on light backgrounds */
   --color-text-primary: var(--color-text-on-light);
   --color-text-secondary: var(--color-text-on-light-secondary);
   --color-text-muted: var(--color-text-on-light-muted);
+  
+  /* Text on dark backgrounds */
+  --color-text-inverse: var(--color-text-on-dark);
+  --color-text-inverse-muted: var(--color-text-on-dark-muted);
+  
+  /* Borders */
   --color-border: var(--color-border);
+  --color-border-strong: var(--color-border-strong);
+  
+  /* Semantic */
+  --color-success: var(--color-success);
+  --color-warning: var(--color-warning);
+  --color-error: var(--color-error);
   
   /* Typography */
   --font-display: var(--font-display);
   --font-body: var(--font-body);
   --font-mono: var(--font-mono);
+  
+  /* Radius */
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
 }
 
 /* ========================================

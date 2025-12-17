@@ -33,11 +33,7 @@ export default function Home() {
             </p>
             <Link
               href="/quiz"
-              className="inline-flex items-center px-6 py-3 font-semibold text-base rounded-sm transition-all duration-200"
-              style={{
-                backgroundColor: "var(--color-primary)",
-                color: "var(--color-bg-dark)",
-              }}
+              className="btn-primary"
             >
               Take the Assessment
               <svg
@@ -223,11 +219,7 @@ export default function Home() {
           </p>
           <Link
             href="/quiz"
-            className="inline-flex items-center px-6 py-3 font-semibold text-base rounded-sm transition-all duration-200"
-            style={{
-              backgroundColor: "var(--color-bg-dark)",
-              color: "var(--color-text-on-dark)",
-            }}
+            className="btn-secondary"
           >
             Start Your Assessment
           </Link>

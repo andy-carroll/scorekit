@@ -16,22 +16,22 @@ export function PillarIntro({
   onContinue,
 }: PillarIntroProps) {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
-      <div className="text-sm text-indigo-600 font-medium mb-2">
+    <div className="card text-center">
+      <div className="section-label mb-2">
         Section {pillarNumber} of {totalPillars}
       </div>
 
-      <h2 className="text-2xl font-bold text-gray-900 mb-4">{pillarName}</h2>
+      <h2 className="section-heading mb-4">{pillarName}</h2>
 
-      <p className="text-gray-600 mb-6 max-w-md mx-auto">{pillarDescription}</p>
+      <p className="body-text mb-6 max-w-md mx-auto">{pillarDescription}</p>
 
-      <div className="text-sm text-gray-500 mb-8">
+      <div className="muted-text mb-8">
         {questionCount} {questionCount === 1 ? "question" : "questions"}
       </div>
 
       <button
         onClick={onContinue}
-        className="inline-flex items-center px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition-colors"
+        className="btn-primary"
       >
         Continue
         <svg

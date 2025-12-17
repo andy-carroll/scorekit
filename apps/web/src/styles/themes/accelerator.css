@@ -226,3 +226,112 @@
   border-radius: var(--radius-md);
   font-weight: var(--font-bold);
 }
+
+/* ========================================
+ * Component Classes - Use these everywhere
+ * ======================================== */
+
+/* Primary button (amber/orange on dark text) */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-3) var(--space-6);
+  background-color: var(--color-primary);
+  color: var(--color-bg-dark);
+  font-weight: var(--font-semibold);
+  border-radius: var(--radius-sm);
+  transition: background-color var(--duration-fast) var(--ease-default);
+  cursor: pointer;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Secondary button (dark bg, light text) */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-3) var(--space-6);
+  background-color: var(--color-bg-dark);
+  color: var(--color-text-on-dark);
+  font-weight: var(--font-semibold);
+  border-radius: var(--radius-sm);
+  transition: opacity var(--duration-fast) var(--ease-default);
+  cursor: pointer;
+  border: none;
+}
+
+.btn-secondary:hover {
+  opacity: 0.9;
+}
+
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Ghost button (text only, for back links etc.) */
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-2) var(--space-4);
+  background: transparent;
+  color: var(--color-text-on-light-muted);
+  font-size: var(--text-sm);
+  transition: color var(--duration-fast) var(--ease-default);
+  cursor: pointer;
+  border: none;
+}
+
+.btn-ghost:hover {
+  color: var(--color-text-on-light);
+}
+
+/* Card container */
+.card {
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+}
+
+.card-sm {
+  padding: var(--space-4);
+}
+
+/* Section label (small caps) */
+.section-label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+}
+
+/* Section heading */
+.section-heading {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--color-text-on-light);
+}
+
+/* Body text */
+.body-text {
+  font-size: var(--text-base);
+  color: var(--color-text-on-light-secondary);
+  line-height: var(--leading-relaxed);
+}
+
+/* Muted text */
+.muted-text {
+  font-size: var(--text-sm);
+  color: var(--color-text-on-light-muted);
+}

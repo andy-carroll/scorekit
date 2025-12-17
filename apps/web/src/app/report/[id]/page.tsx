@@ -270,13 +270,7 @@ export default function ReportPage() {
             >
               Book a free 30-minute strategy session. We&apos;ll review your results together and map out your first 90 days.
             </p>
-            <button
-              className="px-8 py-4 font-semibold rounded-sm transition-colors"
-              style={{
-                backgroundColor: "var(--color-primary)",
-                color: "var(--color-bg-dark)",
-              }}
-            >
+            <button className="btn-primary">
               Book Your Free Strategy Session
             </button>
           </div>

@@ -164,11 +164,7 @@ export default function QuizPage() {
                 <button
                   onClick={handleManualNext}
                   disabled={!currentQuestionHasAnswer}
-                  className="px-6 py-3 font-semibold rounded-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  style={{
-                    backgroundColor: "var(--color-primary)",
-                    color: "var(--color-bg-dark)",
-                  }}
+                  className="btn-primary"
                 >
                   Next →
                 </button>
@@ -181,7 +177,7 @@ export default function QuizPage() {
           <div className="mt-8 text-center">
             <button
               onClick={handleBack}
-              className="text-gray-500 hover:text-gray-700 text-sm"
+              className="btn-ghost"
             >
               ← Back
             </button>
