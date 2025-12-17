@@ -12,6 +12,8 @@ type CacheEntry =
 const cache = new Map<string, CacheEntry>();
 const listeners = new Map<string, Set<() => void>>();
 
+const idleEntry: CacheEntry = { status: "idle" };
+
 function emit(token: string) {
   const set = listeners.get(token);
   if (!set) return;
@@ -32,8 +34,8 @@ function subscribe(token: string | undefined, cb: () => void) {
 }
 
 function getSnapshot(token: string | undefined): CacheEntry {
-  if (!token) return { status: "idle" };
-  return cache.get(token) ?? { status: "idle" };
+  if (!token) return idleEntry;
+  return cache.get(token) ?? idleEntry;
 }
 
 async function ensureLoaded(token: string) {
