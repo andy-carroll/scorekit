@@ -235,6 +235,7 @@
 .btn-primary {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   padding: var(--space-3) var(--space-6);
   background-color: var(--color-primary);
   color: var(--color-bg-dark);
@@ -333,5 +334,47 @@
 /* Muted text */
 .muted-text {
   font-size: var(--text-sm);
+  color: var(--color-text-on-light-muted);
+}
+
+.page-bg {
+  background-color: var(--color-bg-light);
+}
+
+.icon-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: var(--radius-full);
+  background-color: color-mix(in srgb, var(--color-primary) 20%, transparent);
+  color: var(--color-primary);
+}
+
+.form-label {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-on-light);
+  margin-bottom: var(--space-1);
+}
+
+.form-input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-border);
+  background-color: var(--color-bg-surface);
+  color: var(--color-text-on-light);
+  transition: border-color var(--duration-fast) var(--ease-default);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.form-input::placeholder {
   color: var(--color-text-on-light-muted);
 }
