@@ -3,9 +3,15 @@
 ## NOW: Current Focus
 
 **Status**: Building  
-**Last Updated**: 17 Dec 2025 (midnight)
+**Last Updated**: 17 Dec 2025 (late night)
 
 **Design system complete.** All pages (landing, quiz, email, report) now use the Accelerator theme via centralized CSS variables and component classes.
+
+**Recent work:**
+
+- Email gate UI now fully conforms to design system (no inline styles; consistent CTA + icon badge)
+- Quiz progress pills adjusted for stronger contrast (no washed-out low-opacity states)
+- CI added: GitHub Actions runs `pnpm test` + `pnpm build` on PRs and pushes to `main`
 
 **Ensure alignment with BEADS tickets system** [BEADS_REFERENCE.md](BEADS_REFERENCE.md)
 
