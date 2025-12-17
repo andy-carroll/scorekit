@@ -45,13 +45,6 @@ export default function QuizPage() {
     setAnswers((prev) => ({ ...prev, [answer.questionId]: answer.value }));
   };
 
-  // Auto-advance for single-select inputs (radio, select, choice)
-  const handleAnswerAndAdvance = (answer: AnswerValue) => {
-    const newAnswers = { ...answers, [answer.questionId]: answer.value };
-    setAnswers(newAnswers);
-    advanceToNext(newAnswers);
-  };
-
   // Manual advance (for multi-select, text via Next button)
   const handleManualNext = () => {
     advanceToNext(answers);
@@ -92,7 +85,6 @@ export default function QuizPage() {
   const currentQuestion = currentStep.type === "question" 
     ? currentSectionQuestions[currentStep.questionIndex] 
     : null;
-  const needsManualNext = currentQuestion?.inputType === "multi-select" || currentQuestion?.inputType === "text";
   
   // Check if current question has a valid answer
   const currentAnswer = currentQuestion ? answers[currentQuestion.id] : undefined;
@@ -132,58 +124,61 @@ export default function QuizPage() {
       : questionsBeforeCurrentSection;
 
   return (
-    <main
-      className="min-h-screen py-8 px-4"
-      style={{ backgroundColor: "var(--color-bg-light)" }}
-    >
-      <div className="max-w-2xl mx-auto">
-        <SectionProgress sections={progressSections} currentSectionId={currentSection.id} />
+    <div className="page-bg flow-shell">
+      <main className="flow-main">
+        <div className="flow-container">
+          <SectionProgress sections={progressSections} currentSectionId={currentSection.id} />
 
-        {currentStep.type === "intro" ? (
-          <PillarIntro
-            pillarName={currentSection.name}
-            pillarDescription={currentSection.description}
-            questionCount={currentSectionQuestions.length}
-            pillarNumber={currentStep.sectionIndex + 1}
-            totalPillars={sections.length}
-            onContinue={handleIntroComplete}
-          />
-        ) : (
-          <>
-            <div className="text-center muted-text mb-4">
-              Question {currentQuestionNumber} of {totalQuestions}
-            </div>
-            <QuestionCard
-              question={currentSectionQuestions[currentStep.questionIndex]}
-              value={answers[currentSectionQuestions[currentStep.questionIndex]?.id]}
-              onAnswer={needsManualNext ? handleAnswerUpdate : handleAnswerAndAdvance}
+          {currentStep.type === "intro" ? (
+            <PillarIntro
               pillarName={currentSection.name}
+              pillarDescription={currentSection.description}
+              questionCount={currentSectionQuestions.length}
+              pillarNumber={currentStep.sectionIndex + 1}
+              totalPillars={sections.length}
             />
-            {needsManualNext && (
-              <div className="mt-6 text-center">
-                <button
-                  onClick={handleManualNext}
-                  disabled={!currentQuestionHasAnswer}
-                  className="btn-primary"
-                >
-                  Next →
-                </button>
+          ) : (
+            <>
+              <div className="text-center muted-text mb-4">
+                Question {currentQuestionNumber} of {totalQuestions}
               </div>
-            )}
-          </>
-        )}
+              <QuestionCard
+                question={currentSectionQuestions[currentStep.questionIndex]}
+                value={answers[currentSectionQuestions[currentStep.questionIndex]?.id]}
+                onAnswer={handleAnswerUpdate}
+                pillarName={currentSection.name}
+              />
+            </>
+          )}
+        </div>
+      </main>
 
-        {canGoBack && (
-          <div className="mt-8 text-center">
-            <button
-              onClick={handleBack}
-              className="btn-ghost"
-            >
-              ← Back
-            </button>
+      <div className="flow-footer">
+        <div className="flow-footer-inner">
+          <div className="flow-actions">
+            {canGoBack && (
+              <button onClick={handleBack} className="btn-ghost">
+                ← Back
+              </button>
+            )}
           </div>
-        )}
+          <div className="flow-actions">
+            {currentStep.type === "intro" ? (
+              <button onClick={handleIntroComplete} className="btn-primary">
+                Continue →
+              </button>
+            ) : (
+              <button
+                onClick={handleManualNext}
+                disabled={!currentQuestionHasAnswer}
+                className="btn-primary"
+              >
+                Next →
+              </button>
+            )}
+          </div>
+        </div>
       </div>
-    </main>
+    </div>
   );
 }

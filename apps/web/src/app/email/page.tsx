@@ -48,95 +48,96 @@ export default function EmailGatePage() {
   }
 
   return (
-    <main className="page-bg min-h-screen py-12 px-4">
-      <div className="max-w-md mx-auto">
-        <div className="card">
-          <div className="text-center mb-8">
-            <div className="icon-badge mb-4">
-              <svg
-                className="w-8 h-8"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
+    <form onSubmit={handleSubmit} className="page-bg flow-shell">
+      <main className="flow-main">
+        <div className="flow-container-sm">
+          <div className="card">
+            <div className="text-center mb-8">
+              <div className="icon-badge mb-4">
+                <svg
+                  className="w-8 h-8"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+              <h1 className="section-heading text-2xl mb-2">Your results are ready!</h1>
+              <p className="body-text">
+                Enter your details to unlock your personalised AI Readiness Report.
+              </p>
             </div>
-            <h1 className="section-heading text-2xl mb-2">
-              Your results are ready!
-            </h1>
-            <p className="body-text">
-              Enter your details to unlock your personalised AI Readiness Report.
-            </p>
-          </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="name" className="form-label">
-              Your name
-            </label>
-            <input
-              type="text"
-              id="name"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="form-input"
-              placeholder="Jane Smith"
-            />
-          </div>
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="name" className="form-label">
+                  Your name
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="form-input"
+                  placeholder="Jane Smith"
+                />
+              </div>
 
-          <div>
-            <label htmlFor="email" className="form-label">
-              Work email
-            </label>
-            <input
-              type="email"
-              id="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="form-input"
-              placeholder="jane@company.com"
-            />
-          </div>
+              <div>
+                <label htmlFor="email" className="form-label">
+                  Work email
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="form-input"
+                  placeholder="jane@company.com"
+                />
+              </div>
 
-          <div>
-            <label htmlFor="company" className="form-label">
-              Company
-            </label>
-            <input
-              type="text"
-              id="company"
-              required
-              value={company}
-              onChange={(e) => setCompany(e.target.value)}
-              className="form-input"
-              placeholder="Acme Inc"
-            />
-          </div>
+              <div>
+                <label htmlFor="company" className="form-label">
+                  Company
+                </label>
+                <input
+                  type="text"
+                  id="company"
+                  required
+                  value={company}
+                  onChange={(e) => setCompany(e.target.value)}
+                  className="form-input"
+                  placeholder="Acme Inc"
+                />
+              </div>
 
-          <div className="pt-2 text-center">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="btn-primary"
-            >
+              <p className="muted-text text-center mt-4">
+                We&apos;ll also send a PDF copy to your inbox. No spam, ever.
+              </p>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <div className="flow-footer">
+        <div className="flow-footer-inner flow-footer-inner-sm">
+          <div className="flow-actions" />
+          <div className="flow-actions">
+            <button type="submit" disabled={isSubmitting} className="btn-primary">
               {isSubmitting ? "Generating report..." : "Get My Free Report"}
             </button>
           </div>
-
-          <p className="muted-text text-center mt-4">
-            We&apos;ll also send a PDF copy to your inbox. No spam, ever.
-          </p>
-        </form>
         </div>
       </div>
-    </main>
+    </form>
   );
 }
