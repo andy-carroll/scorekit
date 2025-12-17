@@ -150,7 +150,7 @@ export default function QuizPage() {
           />
         ) : (
           <>
-            <div className="text-center text-sm text-gray-500 mb-4">
+            <div className="text-center muted-text mb-4">
               Question {currentQuestionNumber} of {totalQuestions}
             </div>
             <QuestionCard

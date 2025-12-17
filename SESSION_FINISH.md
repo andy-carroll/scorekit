@@ -65,6 +65,7 @@ Update `docs/00-overview/NOW.md` with:
 - What's in progress
 - What's next up
 - Any blockers or decisions made
+- Anything that will make next session easier - clear context is everything
 
 ## 4. Stop Dev Server
 
@@ -161,7 +162,7 @@ Provide session summary:
 After completing all checks:
 
 1. Provide the session summary
-2. Confirm everything is committed and pushed
+2. Confirm everything is committed and pushed and beads are all updated
 3. State the recommended starting point for next session
 
 **Session complete. See you next time!**

@@ -21,7 +21,7 @@ export function SectionProgress({ sections, currentSectionId }: SectionProgressP
             {index > 0 && (
               <div
                 className={`w-4 h-0.5 mx-1 ${
-                  isCompleted ? "bg-green-400" : "bg-gray-200"
+                  isCompleted ? "bg-[var(--color-success)]" : "bg-[var(--color-border)]"
                 }`}
               />
             )}
@@ -35,10 +35,10 @@ export function SectionProgress({ sections, currentSectionId }: SectionProgressP
               }
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
                 isCompleted
-                  ? "bg-[var(--color-success)]/20 text-[var(--color-success)]"
+                  ? "bg-[var(--color-success)] text-[var(--color-text-on-dark)]"
                   : isCurrent
-                  ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)] ring-2 ring-[var(--color-primary)]/30"
-                  : "bg-[var(--color-border)] text-[var(--color-text-on-light-muted)]"
+                  ? "bg-[var(--color-primary)] text-[var(--color-bg-dark)] ring-2 ring-[var(--color-primary-hover)]/40"
+                  : "bg-[var(--color-bg-muted)] text-[var(--color-text-on-light-secondary)]"
               }`}
             >
               {isCompleted && (
