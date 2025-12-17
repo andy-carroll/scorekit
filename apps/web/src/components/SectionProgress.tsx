@@ -7,11 +7,12 @@ interface Section {
 interface SectionProgressProps {
   sections: Section[];
   currentSectionId: string;
+  className?: string;
 }
 
-export function SectionProgress({ sections, currentSectionId }: SectionProgressProps) {
+export function SectionProgress({ sections, currentSectionId, className }: SectionProgressProps) {
   return (
-    <div className="flex items-center justify-center gap-2 mb-8 flex-wrap">
+    <div className={`flex items-center justify-center gap-2 flex-wrap ${className ?? "mb-8"}`}>
       {sections.map((section, index) => {
         const isCurrent = section.id === currentSectionId;
         const isCompleted = section.completed;

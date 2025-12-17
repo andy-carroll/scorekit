@@ -125,10 +125,21 @@ export default function QuizPage() {
 
   return (
     <div className="page-bg flow-shell">
-      <main className="flow-main">
-        <div className="flow-container">
-          <SectionProgress sections={progressSections} currentSectionId={currentSection.id} />
+      <div className="flow-panel">
+        <div className="flow-panel-header">
+          <SectionProgress
+            sections={progressSections}
+            currentSectionId={currentSection.id}
+            className="mb-0"
+          />
+          {currentStep.type === "question" && (
+            <div className="text-center muted-text mt-2">
+              Question {currentQuestionNumber} of {totalQuestions}
+            </div>
+          )}
+        </div>
 
+        <div className="flow-panel-body">
           {currentStep.type === "intro" ? (
             <PillarIntro
               pillarName={currentSection.name}
@@ -136,46 +147,42 @@ export default function QuizPage() {
               questionCount={currentSectionQuestions.length}
               pillarNumber={currentStep.sectionIndex + 1}
               totalPillars={sections.length}
+              wrapInCard={false}
             />
           ) : (
-            <>
-              <div className="text-center muted-text mb-4">
-                Question {currentQuestionNumber} of {totalQuestions}
-              </div>
-              <QuestionCard
-                question={currentSectionQuestions[currentStep.questionIndex]}
-                value={answers[currentSectionQuestions[currentStep.questionIndex]?.id]}
-                onAnswer={handleAnswerUpdate}
-                pillarName={currentSection.name}
-              />
-            </>
+            <QuestionCard
+              question={currentSectionQuestions[currentStep.questionIndex]}
+              value={answers[currentSectionQuestions[currentStep.questionIndex]?.id]}
+              onAnswer={handleAnswerUpdate}
+              pillarName={currentSection.name}
+            />
           )}
         </div>
-      </main>
 
-      <div className="flow-footer">
-        <div className="flow-footer-inner">
-          <div className="flow-actions">
-            {canGoBack && (
-              <button onClick={handleBack} className="btn-ghost">
-                ← Back
-              </button>
-            )}
-          </div>
-          <div className="flow-actions">
-            {currentStep.type === "intro" ? (
-              <button onClick={handleIntroComplete} className="btn-primary">
-                Continue →
-              </button>
-            ) : (
-              <button
-                onClick={handleManualNext}
-                disabled={!currentQuestionHasAnswer}
-                className="btn-primary"
-              >
-                Next →
-              </button>
-            )}
+        <div className="flow-panel-footer">
+          <div className="flow-panel-footer-inner">
+            <div className="flow-actions">
+              {canGoBack && (
+                <button onClick={handleBack} className="btn-ghost">
+                  ← Back
+                </button>
+              )}
+            </div>
+            <div className="flow-actions">
+              {currentStep.type === "intro" ? (
+                <button onClick={handleIntroComplete} className="btn-primary">
+                  Continue →
+                </button>
+              ) : (
+                <button
+                  onClick={handleManualNext}
+                  disabled={!currentQuestionHasAnswer}
+                  className="btn-primary"
+                >
+                  Next →
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>

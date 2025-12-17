@@ -5,6 +5,7 @@ interface PillarIntroProps {
   pillarNumber: number;
   totalPillars: number;
   onContinue?: () => void;
+  wrapInCard?: boolean;
 }
 
 export function PillarIntro({
@@ -14,9 +15,10 @@ export function PillarIntro({
   pillarNumber,
   totalPillars,
   onContinue,
+  wrapInCard = true,
 }: PillarIntroProps) {
-  return (
-    <div className="card text-center">
+  const content = (
+    <div className="text-center">
       <div className="section-label mb-2">
         Section {pillarNumber} of {totalPillars}
       </div>
@@ -52,4 +54,8 @@ export function PillarIntro({
       )}
     </div>
   );
+
+  if (!wrapInCard) return content;
+
+  return <div className="card">{content}</div>;
 }
