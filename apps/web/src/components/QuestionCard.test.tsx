@@ -141,7 +141,7 @@ describe('QuestionCard', () => {
       render(<QuestionCard question={maturityQuestion} onAnswer={onAnswer} value={3} />);
       
       const selected = screen.getByText('Draft strategy in progress').closest('button');
-      expect(selected).toHaveClass('border-indigo-600');
+      expect(selected).toHaveClass('border-[var(--color-primary)]');
     });
   });
 
