@@ -9,7 +9,7 @@
 
 **Follow the workflow**: `docs/00-overview/WORKFLOW.md`
 
-```
+```text
 PICK → CLARIFY → TEST → BUILD → VERIFY → COMMIT → CLOSE
 ```
 
@@ -26,9 +26,9 @@ If you skip steps, things rot. Don't skip steps.
 
 **Read if relevant** (check freshness):
 
-3. **PRD**: `docs/01-product/PRD-ASSESSMENT-FRAMEWORK.md` — requirements
-4. **ARCHITECTURE**: `docs/03-engineering/ARCHITECTURE.md` — tech stack
-5. **PRINCIPLES**: `docs/00-overview/PRINCIPLES.md` — product & engineering principles
+1. **PRD**: `docs/01-product/PRD-ASSESSMENT-FRAMEWORK.md` — requirements
+2. **ARCHITECTURE**: `docs/03-engineering/ARCHITECTURE.md` — tech stack
+3. **PRINCIPLES**: `docs/00-overview/PRINCIPLES.md` — product & engineering principles
 
 ## 2. Check Git Status
 

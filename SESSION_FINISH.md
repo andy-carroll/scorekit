@@ -9,7 +9,7 @@
 
 **Complete the loop** per `docs/00-overview/WORKFLOW.md`:
 
-```
+```text
 ... → VERIFY → COMMIT → CLOSE
 ```
 

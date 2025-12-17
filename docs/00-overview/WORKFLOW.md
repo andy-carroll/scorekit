@@ -8,7 +8,7 @@
 
 Every piece of work follows this loop:
 
-```
+```text
 1. PICK    → Select ticket from backlog, mark in_progress
 2. CLARIFY → Ensure spec is clear, ask questions if not
 3. TEST    → Write failing test(s) for acceptance criteria
@@ -97,7 +97,7 @@ Write code to make tests pass. Follow existing patterns:
 
 **Commit frequently** with conventional commit messages:
 
-```
+```text
 feat: add pillar score calculation
 fix: handle edge case when no questions answered
 test: add tests for band assignment
@@ -234,7 +234,7 @@ bd update [next-ticket] --status in_progress
 
 ### Test File Locations
 
-```
+```text
 packages/core/src/__tests__/       # Core logic tests
 apps/web/src/__tests__/            # App-specific tests
 apps/web/e2e/                      # End-to-end tests

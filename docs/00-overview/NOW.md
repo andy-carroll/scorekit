@@ -3,7 +3,7 @@
 ## NOW: Current Focus
 
 **Status**: Building  
-**Last Updated**: 17 Dec 2025 (late night)
+**Last Updated**: 17 Dec 2025
 
 **Design system complete.** All pages (landing, quiz, email, report) now use the Accelerator theme via centralized CSS variables and component classes.
 
@@ -12,6 +12,8 @@
 - Email gate UI now fully conforms to design system (no inline styles; consistent CTA + icon badge)
 - Quiz progress pills adjusted for stronger contrast (no washed-out low-opacity states)
 - CI added: GitHub Actions runs `pnpm test` + `pnpm build` on PRs and pushes to `main`
+- Quiz + email gate now use a consistent "device-frame" panel layout (sticky header + footer inside the panel; scrollable content)
+- Quiz navigation now uses a stable bottom action bar (no jumping between questions)
 
 **Ensure alignment with BEADS tickets system** [BEADS_REFERENCE.md](BEADS_REFERENCE.md)
 
