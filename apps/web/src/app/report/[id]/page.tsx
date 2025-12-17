@@ -1,27 +1,13 @@
 "use client";
 
 import { useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { aiReadinessContent, type ScoreLevel } from "@scorekit/core";
-
-interface ScoreResult {
-  total: number;
-  max: number;
-  percentage: number;
-  pillarScores: Record<string, number>;
-  band: string;
-}
-
-interface Lead {
-  email: string;
-  name: string;
-  company: string;
-  reportId: string;
-}
+import { useReport } from "@/lib/report-store/useReport";
+import type { ScoreResult } from "@/lib/report-store/types";
 
 // Use content from template
-const { bandIntros, pillarLabels, pillarInsights, nextSteps, cta } =
-  aiReadinessContent;
+const { bandIntros, pillarLabels, pillarInsights } = aiReadinessContent;
 
 function getScoreLevel(score: number): ScoreLevel {
   if (score <= 2) return "low";
@@ -31,34 +17,42 @@ function getScoreLevel(score: number): ScoreLevel {
 
 export default function ReportPage() {
   const router = useRouter();
+  const params = useParams();
 
-  const { result, lead } = useMemo(() => {
-    if (typeof window === "undefined") {
-      return { result: null, lead: null };
-    }
-    const storedResult = sessionStorage.getItem("scorekit_result");
-    const storedLead = sessionStorage.getItem("scorekit_lead");
+  const token = useMemo(() => {
+    const raw = (params as Record<string, string | string[] | undefined>)?.id;
+    if (Array.isArray(raw)) return raw[0];
+    return raw;
+  }, [params]);
 
-    if (!storedResult || !storedLead) {
-      return { result: null, lead: null };
-    }
+  const { report, isLoading } = useReport(token);
 
-    return {
-      result: JSON.parse(storedResult) as ScoreResult,
-      lead: JSON.parse(storedLead) as Lead,
-    };
-  }, []);
-
-  if (!result || !lead) {
-    if (typeof window !== "undefined") {
-      router.push("/quiz");
-    }
+  if (isLoading) {
     return (
-      <main className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-pulse text-gray-500">Loading your report...</div>
+      <main className="page-bg min-h-screen flex items-center justify-center">
+        <div className="animate-pulse muted-text">Loading your report...</div>
       </main>
     );
   }
+
+  if (!report) {
+    return (
+      <main className="page-bg min-h-screen flex items-center justify-center px-4">
+        <div className="card max-w-md w-full text-center">
+          <h1 className="section-heading mb-2">This report link isn&apos;t valid</h1>
+          <p className="body-text mb-6">
+            It may have expired, or it may have been created in a different browser.
+          </p>
+          <button onClick={() => router.push("/quiz")} className="btn-primary">
+            Start the assessment again
+          </button>
+        </div>
+      </main>
+    );
+  }
+
+  const result: ScoreResult = report.result;
+  const lead = report.lead;
 
   const band = bandIntros[result.band] || bandIntros.Starting;
   
@@ -285,7 +279,7 @@ export default function ReportPage() {
             A PDF copy of this report has been sent to {lead.email}
           </p>
           <p className="text-xs text-gray-400">
-            Report ID: {lead.reportId}
+            Report ID: {report.token}
           </p>
         </footer>
       </div>

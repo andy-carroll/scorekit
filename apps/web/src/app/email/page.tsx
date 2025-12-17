@@ -2,6 +2,8 @@
 
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { getReportStore } from "@/lib/report-store";
+import type { ScoreResult } from "@/lib/report-store/types";
 
 export default function EmailGatePage() {
   const router = useRouter();
@@ -24,19 +26,30 @@ export default function EmailGatePage() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Generate a simple report ID (in production, this would be from the backend)
-    const reportId = `rpt_${Date.now().toString(36)}`;
+    const storedAnswers = sessionStorage.getItem("scorekit_answers");
+    const storedResult = sessionStorage.getItem("scorekit_result");
 
-    // Store email data in sessionStorage (in production, send to backend + GHL)
-    sessionStorage.setItem(
-      "scorekit_lead",
-      JSON.stringify({ email, name, company, reportId })
-    );
+    if (!storedResult) {
+      setIsSubmitting(false);
+      router.push("/quiz");
+      return;
+    }
+
+    const answers = storedAnswers ? (JSON.parse(storedAnswers) as Record<string, unknown>) : {};
+    const result = JSON.parse(storedResult) as ScoreResult;
+
+    const store = getReportStore();
+    const { token } = await store.createReport({
+      templateId: "ai-readiness",
+      answers,
+      result,
+      lead: { email, name, company },
+    });
 
     // Simulate API call delay
     await new Promise((resolve) => setTimeout(resolve, 500));
 
-    router.push(`/report/${reportId}`);
+    router.push(`/report/${token}`);
   };
 
   if (!hasResult) {
