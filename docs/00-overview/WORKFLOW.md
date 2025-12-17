@@ -32,6 +32,7 @@ bd update [ticket-id] --status in_progress
 ```
 
 **Check**:
+
 - [ ] Ticket has clear acceptance criteria
 - [ ] Links to relevant PRD/spec if needed
 - [ ] No blockers
@@ -43,6 +44,7 @@ If acceptance criteria are vague, clarify with product lead before coding.
 ## 2. CLARIFY — Understand the Spec
 
 Read the linked documentation:
+
 - `docs/01-product/PRD-*.md` for product requirements
 - `docs/03-engineering/*.md` for technical specs
 - Existing code for patterns to follow
@@ -71,11 +73,13 @@ describe('calculateScores', () => {
 ```
 
 **Pragmatic TDD**:
+
 - Core logic (scoring, calculations, validation): **Always test first**
 - UI components: Test after if complex, skip if trivial
 - Integrations: Test the contract, mock external services
 
 Run tests:
+
 ```bash
 pnpm test           # Run all tests
 pnpm test:watch     # Watch mode during development
@@ -92,6 +96,7 @@ Write code to make tests pass. Follow existing patterns:
 - UI in `apps/web/src/`
 
 **Commit frequently** with conventional commit messages:
+
 ```
 feat: add pillar score calculation
 fix: handle edge case when no questions answered
@@ -108,22 +113,26 @@ chore: update dependencies
 
 Before pushing, manually verify the work:
 
-### For UI changes:
+### For UI changes
+
 ```bash
 cd apps/web && pnpm dev
 ```
+
 - [ ] Navigate to the feature
 - [ ] Test happy path
 - [ ] Test edge cases (empty state, error state)
 - [ ] Check responsive design (if applicable)
 - [ ] Verify no console errors
 
-### For core logic:
+### For core logic
+
 - [ ] Tests pass: `pnpm test`
 - [ ] Types compile: `pnpm typecheck`
 - [ ] Try it with real data (not just mocks)
 
-### UAT Checklist Template:
+### UAT Checklist Template
+
 ```markdown
 ## UAT: [Ticket ID] — [Title]
 
@@ -166,6 +175,7 @@ git push origin main
 ```
 
 **Commit message includes**:
+
 - Type (feat/fix/test/docs/chore)
 - Clear description
 - Ticket reference
@@ -174,17 +184,20 @@ git push origin main
 
 ## 7. CLOSE — Complete the Loop
 
-### Close the ticket:
+### Close the ticket
+
 ```bash
 bd close [ticket-id] --reason "[summary of what was done]"
 ```
 
-### Update documentation:
+### Update documentation
+
 - `docs/00-overview/NOW.md` — Update current status
 - Any spec docs that changed during implementation
 - ADR if architectural decision was made
 
-### Export and commit Beads:
+### Export and commit Beads
+
 ```bash
 bd export -o .beads/issues.jsonl
 git add .beads/issues.jsonl
@@ -192,7 +205,8 @@ git commit -m "chore: update beads"
 git push origin main
 ```
 
-### Pull next ticket:
+### Pull next ticket
+
 ```bash
 bd list --status open -l [current-phase]
 bd update [next-ticket] --status in_progress
@@ -271,15 +285,32 @@ Accepted / Proposed / Deprecated
 
 ---
 
-## Automation (Future)
+## Continuous Integration
 
-### GitHub Actions (when ready)
-- Run tests on PR
-- Type check on PR
-- Lint on PR
-- Deploy preview on PR
+### GitHub Actions (Active)
 
-### Pre-commit Hook (consider adding)
+CI runs automatically on every push to `main` and on pull requests.
+
+**Workflow file:** `.github/workflows/ci.yml`
+
+**What it does:**
+
+1. Checkout code
+2. Setup Node.js 20 + pnpm
+3. Install dependencies
+4. Run tests (`pnpm test`)
+5. Build (`pnpm build`)
+
+**If CI fails:**
+
+- Check the Actions tab in GitHub for error details
+- Fix locally, push again
+- PRs cannot be merged with failing CI (recommended branch protection)
+
+### Pre-commit Hook (optional)
+
+For faster feedback, add a pre-commit hook:
+
 ```bash
 # .husky/pre-commit
 pnpm test --run
