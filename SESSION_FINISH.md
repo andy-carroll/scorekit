@@ -123,6 +123,10 @@ Provide session summary:
 - **In progress**: [ticket IDs]
 - **Created**: [any new tickets]
 
+### Test Results & Coverage
+- [Test results]
+- [Test coverage]
+
 ### Decisions Made
 - [Any product/architecture decisions]
 
