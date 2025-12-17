@@ -4,6 +4,7 @@
 
 - Web questionnaire engine
 - Deterministic scoring + report rendering
+- Report access token model (staged storage: local → API → Supabase) — see `docs/01-product/PRD-REPORT-ACCESS-TOKEN-MODEL.md`
 - Share card + mobile share
 - PDF + email delivery
 - GHL integration

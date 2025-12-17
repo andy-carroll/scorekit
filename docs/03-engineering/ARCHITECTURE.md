@@ -12,7 +12,7 @@ ScoreKit is a template-driven audit engine with a web app front-end and pluggabl
 | Styling | Tailwind CSS |
 | Language | TypeScript |
 | Package manager | pnpm |
-| State | React hooks + sessionStorage (V1) |
+| State | React hooks + staged report access token model (see `docs/01-product/PRD-REPORT-ACCESS-TOKEN-MODEL.md`) |
 | Backend | Planned: Supabase or API routes |
 | CRM | GoHighLevel (webhook integration) |
 

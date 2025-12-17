@@ -14,6 +14,7 @@
 - CI added: GitHub Actions runs `pnpm test` + `pnpm build` on PRs and pushes to `main`
 - Quiz + email gate now use a consistent "device-frame" panel layout (sticky header + footer inside the panel; scrollable content)
 - Quiz navigation now uses a stable bottom action bar (no jumping between questions)
+- Decision documented: staged report access token model (contract-first; storage upgrades local → API → Supabase): `docs/01-product/PRD-REPORT-ACCESS-TOKEN-MODEL.md`
 
 **Ensure alignment with BEADS tickets system** [BEADS_REFERENCE.md](BEADS_REFERENCE.md)
 
