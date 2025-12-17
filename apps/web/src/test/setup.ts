@@ -23,10 +23,18 @@ function createInMemoryStorage(): StorageLike {
   };
 }
 
-if (
-  typeof globalThis.localStorage === 'undefined' ||
-  typeof (globalThis.localStorage as unknown as { clear?: unknown }).clear !== 'function'
-) {
+const localStorageDescriptor = Object.getOwnPropertyDescriptor(
+  globalThis,
+  'localStorage',
+);
+
+const shouldInstallInMemoryStorage =
+  !localStorageDescriptor ||
+  'get' in localStorageDescriptor ||
+  typeof (localStorageDescriptor.value as { clear?: unknown } | undefined)?.clear !==
+    'function';
+
+if (shouldInstallInMemoryStorage) {
   Object.defineProperty(globalThis, 'localStorage', {
     value: createInMemoryStorage(),
     configurable: true,
