@@ -41,19 +41,20 @@ export default function EmailGatePage() {
 
   if (!hasResult) {
     return (
-      <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center">
-        <div className="animate-pulse text-gray-500">Loading...</div>
+      <main className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "var(--color-bg-light)" }}>
+        <div className="animate-pulse muted-text">Loading...</div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12 px-4">
+    <main className="min-h-screen py-12 px-4" style={{ backgroundColor: "var(--color-bg-light)" }}>
       <div className="max-w-md mx-auto">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-indigo-100 mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4" style={{ backgroundColor: "var(--color-primary)", opacity: 0.2 }}>
             <svg
-              className="w-8 h-8 text-indigo-600"
+              className="w-8 h-8"
+              style={{ color: "var(--color-primary)" }}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -66,10 +67,10 @@ export default function EmailGatePage() {
               />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          <h1 className="section-heading text-2xl mb-2">
             Your results are ready!
           </h1>
-          <p className="text-gray-600">
+          <p className="body-text">
             Enter your details to unlock your personalised AI Readiness Report.
           </p>
         </div>
@@ -78,7 +79,7 @@ export default function EmailGatePage() {
           <div>
             <label
               htmlFor="name"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium mb-1" style={{ color: "var(--color-text-on-light)" }}
             >
               Your name
             </label>
@@ -88,7 +89,7 @@ export default function EmailGatePage() {
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors text-gray-900 placeholder:text-gray-400"
+              className="w-full px-4 py-3 rounded-lg border-2 transition-colors placeholder:text-[var(--color-text-on-light-muted)]" style={{ borderColor: "var(--color-border)", backgroundColor: "var(--color-bg-surface)", color: "var(--color-text-on-light)" }}
               placeholder="Jane Smith"
             />
           </div>
@@ -96,7 +97,7 @@ export default function EmailGatePage() {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium mb-1" style={{ color: "var(--color-text-on-light)" }}
             >
               Work email
             </label>
@@ -106,7 +107,7 @@ export default function EmailGatePage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors text-gray-900 placeholder:text-gray-400"
+              className="w-full px-4 py-3 rounded-lg border-2 transition-colors placeholder:text-[var(--color-text-on-light-muted)]" style={{ borderColor: "var(--color-border)", backgroundColor: "var(--color-bg-surface)", color: "var(--color-text-on-light)" }}
               placeholder="jane@company.com"
             />
           </div>
@@ -114,7 +115,7 @@ export default function EmailGatePage() {
           <div>
             <label
               htmlFor="company"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium mb-1" style={{ color: "var(--color-text-on-light)" }}
             >
               Company
             </label>
@@ -124,7 +125,7 @@ export default function EmailGatePage() {
               required
               value={company}
               onChange={(e) => setCompany(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors text-gray-900 placeholder:text-gray-400"
+              className="w-full px-4 py-3 rounded-lg border-2 transition-colors placeholder:text-[var(--color-text-on-light-muted)]" style={{ borderColor: "var(--color-border)", backgroundColor: "var(--color-bg-surface)", color: "var(--color-text-on-light)" }}
               placeholder="Acme Inc"
             />
           </div>
@@ -132,12 +133,12 @@ export default function EmailGatePage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-4 px-6 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn-primary w-full py-4"
           >
             {isSubmitting ? "Generating report..." : "Get My Free Report"}
           </button>
 
-          <p className="text-xs text-gray-500 text-center">
+          <p className="muted-text text-center">
             We&apos;ll also send a PDF copy to your inbox. No spam, ever.
           </p>
         </form>

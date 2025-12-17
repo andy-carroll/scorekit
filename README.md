@@ -49,8 +49,27 @@ docs/                   # Product + engineering docs
 .beads/                 # Issue tracker (git-synced)
 ```
 
+## Design System
+
+ScoreKit includes a **multi-theme design system** that allows you to white-label the entire product by changing a single import. All components use CSS custom properties and utility classes defined in theme files.
+
+**To switch themes**, change the import in `apps/web/src/app/globals.css`:
+
+```css
+@import "../styles/themes/accelerator.css";  /* Current theme */
+/* @import "../styles/themes/default.css"; */
+```
+
+See [docs/02-design/DESIGN-SYSTEM.md](docs/02-design/DESIGN-SYSTEM.md) for the full specification including:
+
+- Token categories (colors, typography, spacing, shapes, motion)
+- Component classes (buttons, cards, typography)
+- How to add new themes
+- Brand slot system (logos, headers)
+
 ## Where to look
 
 - `docs/00-overview/README.md` – overall context
+- `docs/02-design/DESIGN-SYSTEM.md` – theming architecture + brand support
 - `docs/03-engineering/ARCHITECTURE.md` – system boundaries
 - `apps/web/src/lib/questions.ts` – question definitions + scoring
