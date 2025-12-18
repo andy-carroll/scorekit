@@ -19,6 +19,7 @@ export default function ReportPage() {
   const router = useRouter();
   const params = useParams();
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
+  const [pdfError, setPdfError] = useState<string | null>(null);
 
   const token = useMemo(() => {
     const raw = (params as Record<string, string | string[] | undefined>)?.id;
@@ -58,6 +59,7 @@ export default function ReportPage() {
   const handleDownloadPdf = async () => {
     if (isDownloadingPdf) return;
     setIsDownloadingPdf(true);
+    setPdfError(null);
 
     try {
       const res = await fetch("/api/report/pdf", {
@@ -67,7 +69,17 @@ export default function ReportPage() {
       });
 
       if (!res.ok) {
-        setIsDownloadingPdf(false);
+        const contentType = res.headers.get("content-type") || "";
+        if (contentType.includes("application/json")) {
+          try {
+            const data = (await res.json()) as { error?: string; message?: string };
+            setPdfError(data.message || data.error || "Failed to generate PDF");
+          } catch {
+            setPdfError("Failed to generate PDF");
+          }
+        } else {
+          setPdfError("Failed to generate PDF");
+        }
         return;
       }
 
@@ -315,6 +327,9 @@ export default function ReportPage() {
               {isDownloadingPdf ? "Preparing PDF..." : "Download PDF"}
             </button>
           </div>
+          {pdfError && (
+            <p className="mb-4 text-sm text-red-600">PDF download failed: {pdfError}</p>
+          )}
           <p className="mb-2">
             Prepared for <strong>{lead.name}</strong> at <strong>{lead.company}</strong>
           </p>

@@ -82,15 +82,31 @@ export async function POST(req: Request): Promise<Response> {
     return Response.json({ error: "Token mismatch" }, { status: 400 });
   }
 
-  const pdfBuffer = await renderPdf(body.report);
-  const pdfBytes = new Uint8Array(pdfBuffer);
+  try {
+    const pdfBuffer = await renderPdf(body.report);
+    const pdfBytes = new Uint8Array(pdfBuffer);
 
-  return new Response(pdfBytes, {
-    status: 200,
-    headers: {
-      "content-type": "application/pdf",
-      "content-disposition": `attachment; filename=scorekit-report-${body.token}.pdf`,
-      "cache-control": "no-store",
-    },
-  });
+    return new Response(pdfBytes, {
+      status: 200,
+      headers: {
+        "content-type": "application/pdf",
+        "content-disposition": `attachment; filename=scorekit-report-${body.token}.pdf`,
+        "cache-control": "no-store",
+      },
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    const stack = err instanceof Error ? err.stack : undefined;
+
+    console.error("Failed to generate PDF", err);
+
+    return Response.json(
+      {
+        error: "Failed to generate PDF",
+        message,
+        ...(process.env.NODE_ENV === "development" ? { stack } : {}),
+      },
+      { status: 500 },
+    );
+  }
 }
