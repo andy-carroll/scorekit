@@ -232,7 +232,7 @@ export default function ReportPage() {
           <section className="mb-12">
             <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-6">
               <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
+                <div className="shrink-0 w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
                   <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
@@ -258,14 +258,14 @@ export default function ReportPage() {
           <div className="bg-white rounded-xl border border-gray-200 p-6">
             <ol className="space-y-4">
               <li className="flex gap-4">
-                <span className="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 font-semibold flex items-center justify-center">1</span>
+                <span className="shrink-0 w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 font-semibold flex items-center justify-center">1</span>
                 <div>
                   <div className="font-medium text-gray-900">Share this report with your leadership team</div>
                   <div className="text-gray-600 text-sm">Alignment starts with shared understanding. Use this as a conversation starter.</div>
                 </div>
               </li>
               <li className="flex gap-4">
-                <span className="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 font-semibold flex items-center justify-center">2</span>
+                <span className="shrink-0 w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 font-semibold flex items-center justify-center">2</span>
                 <div>
                   <div className="font-medium text-gray-900">Focus on your lowest-scoring pillar first</div>
                   <div className="text-gray-600 text-sm">
@@ -275,7 +275,7 @@ export default function ReportPage() {
                 </div>
               </li>
               <li className="flex gap-4">
-                <span className="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 font-semibold flex items-center justify-center">3</span>
+                <span className="shrink-0 w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 font-semibold flex items-center justify-center">3</span>
                 <div>
                   <div className="font-medium text-gray-900">Book a strategy session to build your roadmap</div>
                   <div className="text-gray-600 text-sm">Get personalised guidance on turning these insights into action.</div>
