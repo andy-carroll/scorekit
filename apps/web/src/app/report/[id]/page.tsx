@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { aiReadinessContent, type ScoreLevel } from "@scorekit/core";
 import { useReport } from "@/lib/report-store/useReport";
@@ -18,6 +18,7 @@ function getScoreLevel(score: number): ScoreLevel {
 export default function ReportPage() {
   const router = useRouter();
   const params = useParams();
+  const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
 
   const token = useMemo(() => {
     const raw = (params as Record<string, string | string[] | undefined>)?.id;
@@ -53,6 +54,38 @@ export default function ReportPage() {
 
   const result: ScoreResult = report.result;
   const lead = report.lead;
+
+  const handleDownloadPdf = async () => {
+    if (isDownloadingPdf) return;
+    setIsDownloadingPdf(true);
+
+    try {
+      const res = await fetch("/api/report/pdf", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ token: report.token, report }),
+      });
+
+      if (!res.ok) {
+        setIsDownloadingPdf(false);
+        return;
+      }
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `scorekit-report-${report.token}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      URL.revokeObjectURL(url);
+    } finally {
+      setIsDownloadingPdf(false);
+    }
+  };
 
   const band = bandIntros[result.band] || bandIntros.Starting;
   
@@ -272,11 +305,21 @@ export default function ReportPage() {
 
         {/* Footer */}
         <footer className="text-center text-sm text-gray-500 border-t border-gray-200 pt-8">
+          <div className="mb-6 flex justify-center">
+            <button
+              type="button"
+              onClick={handleDownloadPdf}
+              disabled={isDownloadingPdf}
+              className="btn-primary"
+            >
+              {isDownloadingPdf ? "Preparing PDF..." : "Download PDF"}
+            </button>
+          </div>
           <p className="mb-2">
             Prepared for <strong>{lead.name}</strong> at <strong>{lead.company}</strong>
           </p>
           <p className="mb-4">
-            A PDF copy of this report has been sent to {lead.email}
+            You can download a PDF copy of this report. (Email delivery is coming next.)
           </p>
           <p className="text-xs text-gray-400">
             Report ID: {report.token}
