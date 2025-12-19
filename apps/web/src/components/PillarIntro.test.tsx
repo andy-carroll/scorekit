@@ -24,7 +24,7 @@ describe("PillarIntro", () => {
   it("shows pillar progress (X of Y)", () => {
     render(<PillarIntro {...defaultProps} />);
 
-    expect(screen.getByText(/Section 1 of 5/)).toBeInTheDocument();
+    expect(screen.getByText(/SECTION 1 OF 5/)).toBeInTheDocument();
   });
 
   it("shows question count", () => {
