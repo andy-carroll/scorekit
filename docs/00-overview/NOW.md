@@ -3,7 +3,7 @@
 ## NOW: Current Focus
 
 **Status**: Building  
-**Last Updated**: 17 Dec 2025
+**Last Updated**: 19 Dec 2025
 
 **Design system complete.** All pages (landing, quiz, email, report) now use the Accelerator theme via centralized CSS variables and component classes.
 
@@ -17,6 +17,9 @@
 - Decision documented: staged report access token model (contract-first; storage upgrades local → API → Supabase): `docs/01-product/PRD-REPORT-ACCESS-TOKEN-MODEL.md`
 - Tokenised report access implemented (Stage 0 localStorage): `/email` creates report token, `/report/[id]` loads by token; refresh-safe
 - Vitest setup updated to avoid Node v25 `localStorage` warning (future cleanup ticket added to pin Node LTS)
+- PDF download now works end-to-end (fixed `pdfkit` font bundling issue)
+- Quiz section intro screens updated to feel like clear slide-deck section breaks
+- Vercel deployment set up so others can test the full flow via a link
 
 **Ensure alignment with BEADS tickets system** [BEADS_REFERENCE.md](BEADS_REFERENCE.md)
 
