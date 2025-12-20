@@ -6,6 +6,7 @@ import { sections, getQuestionsForSection, calculateScore } from "@/lib/question
 import { QuestionCard, type AnswerValue } from "@/components/QuestionCard";
 import { PillarIntro } from "@/components/PillarIntro";
 import { SectionProgress } from "@/components/SectionProgress";
+import { buildTestAnswersForCurrentTemplate } from "@/lib/test-data/quizTestAnswers";
 
 type FlowStep =
   | { type: "intro"; sectionIndex: number }
@@ -113,6 +114,17 @@ export default function QuizPage() {
     (currentStep.type === "question") ||
     (currentStep.type === "intro" && currentStep.sectionIndex > 0);
 
+  const handleFillTestDataAndSubmit = () => {
+    const testAnswers = buildTestAnswersForCurrentTemplate();
+    setAnswers(testAnswers);
+
+    // Reuse existing completion path: calculate score, stash to sessionStorage, go to email step
+    const result = calculateScore(testAnswers as Record<string, number>);
+    sessionStorage.setItem("scorekit_answers", JSON.stringify(testAnswers));
+    sessionStorage.setItem("scorekit_result", JSON.stringify(result));
+    router.push("/email");
+  };
+
   // Calculate total progress
   const totalQuestions = sectionQuestions.reduce((sum, sq) => sum + sq.questions.length, 0);
   const questionsBeforeCurrentSection = sectionQuestions
@@ -169,6 +181,15 @@ export default function QuizPage() {
               )}
             </div>
             <div className="flow-actions">
+              {process.env.NODE_ENV === "development" && (
+                <button
+                  type="button"
+                  onClick={handleFillTestDataAndSubmit}
+                  className="btn-ghost mr-2"
+                >
+                  Fill test data &amp; submit
+                </button>
+              )}
               {currentStep.type === "intro" ? (
                 <button onClick={handleIntroComplete} className="btn-primary">
                   Continue →
