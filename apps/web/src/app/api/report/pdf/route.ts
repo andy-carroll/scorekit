@@ -1,5 +1,7 @@
 import PDFDocument from "pdfkit";
 
+import { aiReadinessContent, mapAnswersToPillars, type Template } from "@scorekit/core";
+import { sections, getQuestionsForSection } from "@/lib/questions";
 import type { ReportRecord } from "@/lib/report-store/types";
 
 type PdfRequestBody = {
@@ -17,6 +19,10 @@ function renderPdf(report: ReportRecord): Promise<Buffer> {
     doc.on("data", (chunk) => chunks.push(Buffer.from(chunk)));
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", (err) => reject(err));
+
+    // -----------------------------------------------------------------------
+    // Page 1 – Summary
+    // -----------------------------------------------------------------------
 
     doc.fontSize(22).text("AI Readiness Report", { align: "left" });
     doc.moveDown(0.5);
@@ -41,11 +47,14 @@ function renderPdf(report: ReportRecord): Promise<Buffer> {
     doc.fontSize(16).text("Pillar scores");
     doc.moveDown(0.25);
 
+    // Use human-friendly pillar labels from template content where available
+    const { pillarLabels } = aiReadinessContent;
+
     for (const [pillarId, score] of Object.entries(report.result.pillarScores)) {
       doc
         .fontSize(12)
         .fillColor("#111111")
-        .text(`${pillarId}: ${score.toFixed(1)} / 5`);
+        .text(`${pillarLabels[pillarId] || pillarId}: ${score.toFixed(1)} / 5`);
     }
 
     doc.moveDown(1);
@@ -53,6 +62,103 @@ function renderPdf(report: ReportRecord): Promise<Buffer> {
       .fontSize(10)
       .fillColor("#666666")
       .text(`Report token: ${report.token}`);
+
+    // -----------------------------------------------------------------------
+    // Page 2 – Answer Appendix (grouped by pillar)
+    // -----------------------------------------------------------------------
+
+    // Build a minimal Template-shaped object from quiz sections/questions so we
+    // can reuse the shared mapAnswersToPillars helper from @scorekit/core.
+    const pseudoTemplate: Template = {
+      id: aiReadinessContent.meta.templateId,
+      version: aiReadinessContent.meta.version,
+      name: aiReadinessContent.meta.templateName,
+      description: "AI Readiness assessment (PDF)",
+      estimatedMinutes: 15,
+      pillars: sections.map((section, index) => ({
+        id: section.id,
+        name: section.name,
+        description: section.description,
+        order: index + 1,
+      })) as Template["pillars"],
+      questions: sections
+        .flatMap((section) =>
+          getQuestionsForSection(section.id).map((q, index) => ({
+            ...q,
+            category: "diagnostic",
+            questionType: "maturity",
+            pillarId: section.id,
+            order: index + 1,
+          })),
+        ) as Template["questions"],
+      recommendations: [],
+      copy: {
+        landing: {
+          headline: aiReadinessContent.landing.headline,
+          subheadline: aiReadinessContent.landing.subheadline,
+          valueProps: [],
+          timeEstimate: "15 minutes",
+          ctaText: aiReadinessContent.landing.ctaText,
+        },
+        report: {
+          title: "AI Readiness Report",
+          openingInsightTemplates: {},
+          pillarDescriptions: {},
+          roadmapIntro: "",
+          businessCaseIntro: "",
+          ctaHeadline: aiReadinessContent.cta.headline,
+          ctaText: aiReadinessContent.cta.body,
+        },
+      },
+    };
+
+    const answers = report.answers as Record<string, number | string | string[]>;
+    const mappedAnswersByPillar = mapAnswersToPillars({ template: pseudoTemplate, answers });
+
+    if (Object.keys(mappedAnswersByPillar).length > 0) {
+      doc.addPage();
+
+      doc
+        .fontSize(18)
+        .fillColor("#111111")
+        .text("Your answers by pillar", { align: "left" });
+      doc.moveDown(0.5);
+
+      doc
+        .fontSize(10)
+        .fillColor("#555555")
+        .text(
+          "This appendix shows the answers you provided for each question, grouped by pillar. These responses are the raw input used to calculate your readiness scores.",
+          { align: "left" },
+        );
+
+      doc.moveDown(1);
+
+      const pillarEntries = Object.values(mappedAnswersByPillar);
+
+      for (const pillar of pillarEntries) {
+        doc
+          .fontSize(14)
+          .fillColor("#111111")
+          .text(pillarLabels[pillar.pillarId] || pillar.pillarName, { underline: false });
+        doc.moveDown(0.25);
+
+        for (const answer of pillar.answers) {
+          doc
+            .fontSize(11)
+            .fillColor("#111111")
+            .text(`• ${answer.questionText}`);
+          doc
+            .moveDown(0.1)
+            .fontSize(10)
+            .fillColor("#444444")
+            .text(`  Answer: ${answer.displayAnswer}`);
+          doc.moveDown(0.4);
+        }
+
+        doc.moveDown(0.8);
+      }
+    }
 
     doc.end();
   });

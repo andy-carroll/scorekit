@@ -7,3 +7,4 @@
 export * from './types';
 export * from './template-loader';
 export * from './templates';
+export * from './report-answer-mapping';

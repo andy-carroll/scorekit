@@ -3,7 +3,7 @@
 ## NOW: Current Focus
 
 **Status**: Building  
-**Last Updated**: 19 Dec 2025
+**Last Updated**: 20 Dec 2025
 
 **Design system complete.** All pages (landing, quiz, email, report) now use the Accelerator theme via centralized CSS variables and component classes.
 
@@ -20,6 +20,9 @@
 - PDF download now works end-to-end (fixed `pdfkit` font bundling issue)
 - Quiz section intro screens updated to feel like clear slide-deck section breaks
 - Vercel deployment set up so others can test the full flow via a link
+- Core `mapAnswersToPillars` helper implemented in `@scorekit/core` for grouping answers by pillar
+- Web report now includes a "How we calculated your scores" / "Your answers by pillar" section using the shared mapping helper
+- PDF report now adds an answer appendix page with the same grouped answers by pillar
 
 **Ensure alignment with BEADS tickets system** [BEADS_REFERENCE.md](BEADS_REFERENCE.md)
 

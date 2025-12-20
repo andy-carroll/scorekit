@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { aiReadinessContent, type ScoreLevel } from "@scorekit/core";
+import { aiReadinessContent, type ScoreLevel, mapAnswersToPillars, type Template } from "@scorekit/core";
+import { sections, getQuestionsForSection } from "@/lib/questions";
 import { useReport } from "@/lib/report-store/useReport";
 import type { ScoreResult } from "@/lib/report-store/types";
 
@@ -28,6 +29,61 @@ export default function ReportPage() {
   }, [params]);
 
   const { report, isLoading } = useReport(token);
+
+  // Map raw answers + question metadata into pillar-grouped structure for transparency
+  const mappedAnswersByPillar = useMemo(() => {
+    if (!report) return null;
+
+    // Build a minimal template-like structure from quiz sections & questions
+    const pseudoTemplate: Template = {
+      id: aiReadinessContent.meta.templateId,
+      version: aiReadinessContent.meta.version,
+      name: aiReadinessContent.meta.templateName,
+      description: "AI Readiness assessment (web)",
+      estimatedMinutes: 15,
+      pillars: sections.map((section, index) => ({
+        id: section.id,
+        name: section.name,
+        description: section.description,
+        order: index + 1,
+      })) as Template["pillars"],
+      questions: sections
+        .flatMap((section) =>
+          getQuestionsForSection(section.id).map((q, index) => ({
+            ...q,
+            // The helper only cares about inputType / options / text / pillarId.
+            // We mark everything as diagnostic with a generic type to satisfy Template.
+            category: "diagnostic",
+            questionType: "maturity",
+            pillarId: section.id,
+            order: index + 1,
+          })),
+        ) as Template["questions"],
+      // The helper does not rely on recommendations or copy, so we can stub them.
+      recommendations: [],
+      copy: {
+        landing: {
+          headline: aiReadinessContent.landing.headline,
+          subheadline: aiReadinessContent.landing.subheadline,
+          valueProps: [],
+          timeEstimate: "15 minutes",
+          ctaText: aiReadinessContent.landing.ctaText,
+        },
+        report: {
+          title: "AI Readiness Report",
+          openingInsightTemplates: {},
+          pillarDescriptions: {},
+          roadmapIntro: "",
+          businessCaseIntro: "",
+          ctaHeadline: aiReadinessContent.cta.headline,
+          ctaText: aiReadinessContent.cta.body,
+        },
+      },
+    };
+
+    const answers = report.answers as Record<string, number | string | string[]>;
+    return mapAnswersToPillars({ template: pseudoTemplate, answers });
+  }, [report]);
 
   if (isLoading) {
     return (
@@ -258,6 +314,40 @@ export default function ReportPage() {
                   </p>
                 </div>
               </div>
+            </div>
+          </section>
+        )}
+
+        {/* How we calculated your scores / Your answers */}
+        {mappedAnswersByPillar && (
+          <section className="mb-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              How we calculated your scores
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Below is a summary of the answers you gave, grouped by pillar. This is the
+              raw input we used to calculate your readiness scores.
+            </p>
+            <div className="space-y-8">
+              {Object.values(mappedAnswersByPillar).map((pillar) => (
+                <div key={pillar.pillarId} className="bg-white rounded-lg border border-gray-200 p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    {pillarLabels[pillar.pillarId] || pillar.pillarName}
+                  </h3>
+                  <dl className="space-y-3">
+                    {pillar.answers.map((answer) => (
+                      <div key={answer.questionId} className="border-b border-gray-100 pb-3 last:border-b-0 last:pb-0">
+                        <dt className="text-sm font-medium text-gray-700 mb-1">
+                          {answer.questionText}
+                        </dt>
+                        <dd className="text-sm text-gray-900">
+                          {answer.displayAnswer}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              ))}
             </div>
           </section>
         )}
