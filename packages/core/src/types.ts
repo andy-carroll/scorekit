@@ -309,6 +309,29 @@ export interface ReportCopy {
 // =============================================================================
 
 /**
+ * Brand configuration for a template (used by web + PDF theming)
+ */
+export type TemplateBrand = {
+  logo?: {
+    light?: string;                  // For use on dark backgrounds
+    dark?: string;                   // For use on light backgrounds
+  };
+  colors: {
+    primary: string;
+    secondary?: string;
+    accent?: string;
+    text: string;
+    mutedText: string;
+    background: string;
+    surface: string;
+  };
+  typography?: {
+    displayFont?: string;
+    bodyFont?: string;
+  };
+};
+
+/**
  * Complete assessment template definition
  */
 export interface Template {
@@ -335,6 +358,9 @@ export interface Template {
     landing: LandingCopy;
     report: ReportCopy;
   };
+
+  // Brand (used for theming web + PDF experiences)
+  brand?: TemplateBrand;
 
   // Metadata
   createdAt?: string;

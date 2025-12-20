@@ -29,6 +29,25 @@ export interface TemplateContent {
     templateName: string;
     version: string;
   };
+  brand?: {
+    logo?: {
+      light?: string;
+      dark?: string;
+    };
+    colors: {
+      primary: string;
+      secondary?: string;
+      accent?: string;
+      text: string;
+      mutedText: string;
+      background: string;
+      surface: string;
+    };
+    typography?: {
+      displayFont?: string;
+      bodyFont?: string;
+    };
+  };
   landing: {
     headline: string;
     subheadline: string;
@@ -52,6 +71,26 @@ export const content: TemplateContent = {
     templateId: "ai-readiness",
     templateName: "AI Readiness Assessment",
     version: "1.0.0",
+  },
+
+  brand: {
+    logo: {
+      light: "/brands/accelerator/logo-light.png",
+      dark: "/brands/accelerator/logo-dark.png",
+    },
+    colors: {
+      primary: "#4f46e5",
+      secondary: "#0f172a",
+      accent: "#22c55e",
+      text: "#111827",
+      mutedText: "#6b7280",
+      background: "#ffffff",
+      surface: "#f9fafb",
+    },
+    typography: {
+      displayFont: "Spline Sans",
+      bodyFont: "Inter",
+    },
   },
 
   landing: {

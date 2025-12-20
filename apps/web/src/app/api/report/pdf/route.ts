@@ -1,3 +1,4 @@
+import { buildPdfTheme } from "./theme";
 import PDFDocument from "pdfkit";
 
 import { aiReadinessContent, mapAnswersToPillars, type Template } from "@scorekit/core";
@@ -20,47 +21,109 @@ function renderPdf(report: ReportRecord): Promise<Buffer> {
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", (err) => reject(err));
 
+    const theme = buildPdfTheme();
+    const { colors } = theme;
+
     // -----------------------------------------------------------------------
-    // Page 1 – Summary
+    // Page 1 – Executive snapshot (branded layout)
     // -----------------------------------------------------------------------
 
-    doc.fontSize(22).text("AI Readiness Report", { align: "left" });
+    // Header band
+    const pageWidth = doc.page.width - doc.page.margins.left - doc.page.margins.right;
+    const headerHeight = 70;
+
+    doc
+      .save()
+      .rect(doc.page.margins.left, doc.page.margins.top, pageWidth, headerHeight)
+      .fill(colors.headerBg)
+      .restore();
+
+    doc
+      .fillColor(colors.headerText)
+      .fontSize(18)
+      .text("AI Readiness Report", doc.page.margins.left + 16, doc.page.margins.top + 16, {
+        align: "left",
+      });
+
+    doc
+      .fontSize(10)
+      .fillColor(colors.headerText)
+      .text(
+        `${report.lead.name} · ${report.lead.company}`,
+        doc.page.margins.left + 16,
+        doc.page.margins.top + 40,
+      );
+
+    // Move cursor below header
+    doc.moveTo(doc.page.margins.left, doc.page.margins.top + headerHeight + 24);
+
+    // Score badge + meta
+    const badgeWidth = 150;
+    const badgeX = doc.page.margins.left;
+    const badgeY = doc.y;
+
+    doc
+      .save()
+      .rect(badgeX, badgeY, badgeWidth, 70)
+      .fill(colors.badgeBg)
+      .restore();
+
+    doc
+      .fillColor(colors.badgeText)
+      .fontSize(10)
+      .text("Overall readiness", badgeX + 12, badgeY + 10);
+
+    doc
+      .fontSize(24)
+      .fillColor(colors.badgeText)
+      .text(`${report.result.percentage}%`, badgeX + 12, badgeY + 24);
+
+    doc
+      .fontSize(10)
+      .fillColor(colors.headerText)
+      .text(report.result.band, badgeX + 12, badgeY + 52);
+
+    // Right-hand summary copy
+    const summaryX = badgeX + badgeWidth + 24;
+    const summaryWidth = pageWidth - badgeWidth - 24;
+
+    doc
+      .fillColor(colors.text)
+      .fontSize(14)
+      .text("What this means", summaryX, badgeY + 4, { width: summaryWidth });
+
     doc.moveDown(0.5);
+    doc
+      .fontSize(10)
+      .fillColor(colors.mutedText)
+      .text(
+        "This snapshot summarises your AI readiness across the five pillars of leadership, data, people, process, and culture.",
+        { width: summaryWidth },
+      );
 
+    doc.moveDown(1.2);
+
+    // Pillar scores section
     doc
       .fontSize(12)
-      .fillColor("#444444")
-      .text(`Prepared for: ${report.lead.name} (${report.lead.email})`);
-    doc.text(`Company: ${report.lead.company}`);
-    doc.text(`Created: ${new Date(report.createdAt).toLocaleString()}`);
-    doc.moveDown(1);
-
-    doc.fillColor("#111111").fontSize(16).text("Summary");
-    doc.moveDown(0.25);
-    doc
-      .fontSize(12)
-      .fillColor("#111111")
-      .text(`Overall score: ${report.result.percentage}%`);
-    doc.text(`Maturity band: ${report.result.band}`);
-    doc.moveDown(1);
-
-    doc.fontSize(16).text("Pillar scores");
-    doc.moveDown(0.25);
+      .fillColor(colors.text)
+      .text("Readiness by pillar", doc.page.margins.left, doc.y);
+    doc.moveDown(0.3);
 
     // Use human-friendly pillar labels from template content where available
     const { pillarLabels } = aiReadinessContent;
 
     for (const [pillarId, score] of Object.entries(report.result.pillarScores)) {
       doc
-        .fontSize(12)
-        .fillColor("#111111")
+        .fontSize(10)
+        .fillColor(colors.text)
         .text(`${pillarLabels[pillarId] || pillarId}: ${score.toFixed(1)} / 5`);
     }
 
     doc.moveDown(1);
     doc
       .fontSize(10)
-      .fillColor("#666666")
+      .fillColor(colors.mutedText)
       .text(`Report token: ${report.token}`);
 
     // -----------------------------------------------------------------------
@@ -120,13 +183,13 @@ function renderPdf(report: ReportRecord): Promise<Buffer> {
 
       doc
         .fontSize(18)
-        .fillColor("#111111")
+        .fillColor(colors.text)
         .text("Your answers by pillar", { align: "left" });
       doc.moveDown(0.5);
 
       doc
         .fontSize(10)
-        .fillColor("#555555")
+        .fillColor(colors.mutedText)
         .text(
           "This appendix shows the answers you provided for each question, grouped by pillar. These responses are the raw input used to calculate your readiness scores.",
           { align: "left" },
@@ -139,19 +202,19 @@ function renderPdf(report: ReportRecord): Promise<Buffer> {
       for (const pillar of pillarEntries) {
         doc
           .fontSize(14)
-          .fillColor("#111111")
+          .fillColor(colors.text)
           .text(pillarLabels[pillar.pillarId] || pillar.pillarName, { underline: false });
         doc.moveDown(0.25);
 
         for (const answer of pillar.answers) {
           doc
             .fontSize(11)
-            .fillColor("#111111")
+            .fillColor(colors.text)
             .text(`• ${answer.questionText}`);
           doc
             .moveDown(0.1)
             .fontSize(10)
-            .fillColor("#444444")
+            .fillColor(colors.mutedText)
             .text(`  Answer: ${answer.displayAnswer}`);
           doc.moveDown(0.4);
         }
