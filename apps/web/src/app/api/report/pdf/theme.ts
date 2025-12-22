@@ -6,6 +6,8 @@ export type PdfTheme = {
     headerBg: string;
     headerText: string;
     primary: string;
+    secondary: string;
+    accent: string;
     text: string;
     mutedText: string;
     border: string;
@@ -37,6 +39,8 @@ const defaultColors = {
 export function buildPdfTheme(): PdfTheme {
   const brand = aiReadinessContent.brand;
   const colors = brand?.colors ?? defaultColors;
+  const rawLogoSrc = brand?.logo?.light ?? brand?.logo?.dark;
+  const logoSrc = rawLogoSrc?.replace(/\.svg$/i, ".png");
 
   return {
     colors: {
@@ -44,6 +48,8 @@ export function buildPdfTheme(): PdfTheme {
       headerBg: colors.secondary ?? colors.primary,
       headerText: "#e5e7eb",
       primary: colors.primary,
+      secondary: colors.secondary ?? colors.primary,
+      accent: colors.accent ?? colors.primary,
       text: colors.text,
       mutedText: colors.mutedText,
       border: "#e5e7eb",
@@ -52,7 +58,7 @@ export function buildPdfTheme(): PdfTheme {
       surface: colors.surface,
     },
     logo: {
-      src: brand?.logo?.light ?? brand?.logo?.dark,
+      src: logoSrc,
     },
     typography: brand?.typography,
   };

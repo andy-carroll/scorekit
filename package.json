@@ -8,9 +8,11 @@
     "build": "pnpm --filter web build",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
-    "test:watch": "pnpm --filter @scorekit/core test:watch"
+    "test:watch": "pnpm --filter @scorekit/core test:watch",
+    "convert-logos": "node scripts/convert-logos.mjs"
   },
   "devDependencies": {
+    "sharp": "^0.33.5",
     "typescript": "^5.0.0"
   },
   "packageManager": "pnpm@10.18.3"

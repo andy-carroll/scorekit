@@ -75,8 +75,8 @@ export const content: TemplateContent = {
 
   brand: {
     logo: {
-      light: "/brands/accelerator/logo-light.png",
-      dark: "/brands/accelerator/logo-dark.png",
+      light: "/logos/accelerator.svg",
+      dark: "/logos/accelerator.svg",
     },
     colors: {
       primary: "#4f46e5",

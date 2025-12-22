@@ -72,7 +72,7 @@ Result: we miss the opportunity for the report to become:
 
 **Location:** `/report/[token]`, below existing narrative content.
 
-**Section: "How we calculated your scores"**
+#### Section: "How we calculated your scores"
 
 - For each pillar:
   - Pillar label + score badge (e.g. `Leadership 2.4 / 5`).
@@ -198,8 +198,8 @@ Example for the AI Readiness / Accelerator template:
 ```ts
 brand: {
   logo: {
-    light: "/brands/accelerator/logo-light.png",
-    dark: "/brands/accelerator/logo-dark.png",
+    light: "/logos/accelerator.svg",
+    dark: "/logos/accelerator.svg",
   },
   colors: {
     primary: "#4f46e5",

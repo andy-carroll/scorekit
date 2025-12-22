@@ -3,7 +3,7 @@
 ## NOW: Current Focus
 
 **Status**: Building  
-**Last Updated**: 20 Dec 2025
+**Last Updated**: 22 Dec 2025
 
 **Design system complete.** All pages (landing, quiz, email, report) now use the Accelerator theme via centralized CSS variables and component classes.
 
@@ -23,6 +23,9 @@
 - Core `mapAnswersToPillars` helper implemented in `@scorekit/core` for grouping answers by pillar
 - Web report now includes a "How we calculated your scores" / "Your answers by pillar" section using the shared mapping helper
 - PDF report now adds an answer appendix page with the same grouped answers by pillar
+- PDF report redesigned into a premium multi-page layout (theme-driven Page 1 + Page 2 + appendix)
+- Dev-only quiz helper added: "Fill test data & submit" (template-agnostic)
+- Automated logo pipeline: `pnpm convert-logos` (SVG → PNG) and PDF now renders the Accelerator logo
 
 **Ensure alignment with BEADS tickets system** [BEADS_REFERENCE.md](BEADS_REFERENCE.md)
 

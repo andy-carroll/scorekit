@@ -23,22 +23,6 @@ const maturityQuestion: DiagnosticQuestion = {
   ],
 };
 
-const frequencyQuestion: DiagnosticQuestion = {
-  id: 'q2',
-  text: 'How often do you review AI initiatives?',
-  category: 'diagnostic',
-  questionType: 'frequency',
-  inputType: 'radio',
-  pillarId: 'leadership',
-  options: [
-    { value: 1, label: 'Never' },
-    { value: 2, label: 'Rarely' },
-    { value: 3, label: 'Sometimes' },
-    { value: 4, label: 'Often' },
-    { value: 5, label: 'Always' },
-  ],
-};
-
 const priorityQuestion: DiagnosticQuestion = {
   id: 'q3',
   text: 'Which is the bigger blocker?',
