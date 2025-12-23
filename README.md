@@ -21,20 +21,42 @@ pnpm dev
 
 - Generic engine for multi-step audits (5–35 questions per template)
 - Email gate → instant on-page report unlock
-- Shareable score + report
+- Shareable score + report (web)
+- Downloadable PDF report (via API)
 - PDF delivery via email (planned)
 - Integrations (e.g., GoHighLevel) without using GHL front-end
 
 ## What V1 includes
 
 - Deterministic scoring (answers drive scoring)
-- Report rendering (web) + PDF export + email delivery
-- Share card + mobile share (Web Share API)
+- Report rendering (web)
+- PDF export (download)
 - Template-based audits (multiple ICPs)
 
 ## What V1 explicitly excludes
 
 - Deep research enrichment (planned post-V1 as a separate appendix module)
+
+## Branding & logo pipeline (SVG → PNG → PDF)
+
+ScoreKit supports brand-forward PDF reports by deriving a `PdfTheme` from the active template’s brand pack.
+
+Key constraint: `pdfkit` does not render SVGs reliably, so PDF logos must be raster (PNG).
+
+- **Brand pack lives in**: `packages/core/src/templates/<template>/content.ts` (`content.brand`)
+- **Web logo asset**: SVG in `apps/web/public/logos/<brand>.svg`
+- **PDF logo asset**: PNG in `apps/web/public/logos/<brand>.png` (generated)
+
+Conversion helper:
+
+```bash
+pnpm convert-logos
+```
+
+PDF behaviour:
+
+- `apps/web/src/app/api/report/pdf/theme.ts` prefers a `.png` logo when an `.svg` is configured.
+- `apps/web/src/app/api/report/pdf/route.ts` attempts multiple filesystem locations and logs a warning if the logo cannot be rendered.
 
 ## Repo structure
 

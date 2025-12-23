@@ -11,8 +11,9 @@ In ~10 minutes, get clarity and a concrete focus roadmap that many providers cha
 ## Primary outputs
 
 - On-page report (unlocked instantly after email capture)
-- Shareable score and share card
-- PDF delivered by email
+- Shareable score (share card planned)
+- Downloadable PDF report
+- PDF delivered by email (planned)
 
 ## Key principles
 
@@ -24,5 +25,5 @@ In ~10 minutes, get clarity and a concrete focus roadmap that many providers cha
 
 ## Current scope
 
-- V1: scorecard + report + PDF + sharing + GHL integration
+- V1: scorecard + report + PDF export + sharing + GHL integration
 - Post-V1: optional research appendix module with confirm/rerun/reject

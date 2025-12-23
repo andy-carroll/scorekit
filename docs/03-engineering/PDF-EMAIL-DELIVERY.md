@@ -5,6 +5,11 @@
 - User can download a PDF immediately
 - User receives the PDF by email
 
+## Current status
+
+- PDF download is implemented via `/api/report/pdf`.
+- Email delivery is not implemented yet.
+
 ## Delivery options
 
 - Option A: Generate PDF in app and hand off to GHL workflow to send

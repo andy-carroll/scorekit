@@ -55,11 +55,12 @@ packages/core/
 ## V1 runtime flow
 
 1. User lands on `/` → clicks "Start Assessment"
-2. User completes quiz at `/quiz` (30 questions, pillar-grouped)
+2. User completes quiz at `/quiz` (30 questions, 7 sections, pillar-grouped)
 3. Email gate at `/email` captures lead info
 4. Report rendered at `/report/[id]` with insight-driven narrative
-5. (Planned) PDF generated and emailed
-6. (Planned) Lead upserted into GHL with tags
+5. PDF generated for download via API
+6. (Planned) PDF delivered by email
+7. (Planned) Lead upserted into GHL with tags
 
 ## Current state (Dec 2025)
 
@@ -68,9 +69,10 @@ packages/core/
 - ✅ Email gate
 - ✅ Report page (insight-driven, band + pillar content)
 - ✅ Template content system (file-based, type-safe)
+- ✅ PDF generation (download)
+- ⏳ Email delivery (planned)
+- ⏳ Share card + Web Share API (planned)
 - ⏳ GHL integration (planned)
-- ⏳ PDF generation (planned)
-- ⏳ Share card (planned)
 
 ## Post-V1
 

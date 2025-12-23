@@ -243,10 +243,17 @@ export function BrandHeader() {
 }
 ```
 
-**Logo requirements**:
+#### Logo requirements
+
 - SVG preferred (scalable, themeable)
 - Horizontal lockup, max height 40px
 - Provide light and dark variants
+
+#### PDF constraint
+
+- `pdfkit` does not reliably render SVG logos.
+- For PDF generation, provide (or generate) a PNG logo alongside the SVG.
+- Use `pnpm convert-logos` to convert SVG files in `apps/web/public/logos` to PNG for PDF use.
 
 ### Footer Attribution
 
@@ -269,6 +276,7 @@ export function BrandFooter() {
 ### Using Tokens in Components
 
 **✅ Correct** — Use CSS variables:
+
 ```tsx
 <button className="bg-[var(--color-primary)] text-[var(--color-text-inverse)]">
   Submit
@@ -276,6 +284,7 @@ export function BrandFooter() {
 ```
 
 **✅ Better** — Use Tailwind with extended theme:
+
 ```tsx
 <button className="bg-primary text-inverse">
   Submit
@@ -283,6 +292,7 @@ export function BrandFooter() {
 ```
 
 **❌ Wrong** — Hardcoded values:
+
 ```tsx
 <button className="bg-indigo-600 text-white">
   Submit
@@ -315,6 +325,7 @@ Now you can use `bg-primary`, `text-secondary`, etc.
 ### Texture & Depth
 
 **Background noise** — Adds tactile quality:
+
 ```css
 .textured-bg {
   background-color: var(--color-background);
@@ -325,6 +336,7 @@ Now you can use `bg-primary`, `text-secondary`, etc.
 ```
 
 **Subtle gradients** — Warm to neutral:
+
 ```css
 .hero-gradient {
   background: var(--gradient-hero);
@@ -332,6 +344,7 @@ Now you can use `bg-primary`, `text-secondary`, etc.
 ```
 
 **Border instead of shadow** — More refined:
+
 ```css
 .card {
   background: var(--color-surface);
@@ -359,6 +372,7 @@ Now you can use `bg-primary`, `text-secondary`, etc.
 ### Build-time (current approach)
 
 Change import in `globals.css`:
+
 ```css
 /* Use default theme */
 @import './themes/default.css';
@@ -370,6 +384,7 @@ Change import in `globals.css`:
 ### Runtime (future enhancement)
 
 Use data attribute on `<html>`:
+
 ```tsx
 // layout.tsx
 <html data-theme={theme}>
