@@ -15,6 +15,7 @@
 
 - `GHL_BASE_URL`
 - `GHL_API_KEY`
+- `GHL_PDF_EMAIL_WORKFLOW_ID` (optional - workflow ID for PDF email delivery)
 
 ## Notes
 

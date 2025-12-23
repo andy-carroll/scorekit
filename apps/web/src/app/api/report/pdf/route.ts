@@ -748,7 +748,7 @@ function renderPage3AnswerAppendix(
   }
 }
 
-function renderPdf(report: ReportRecord): Promise<Buffer> {
+export async function renderPdf(report: ReportRecord): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({ size: "A4", margin: 48 });
     const chunks: Buffer[] = [];
