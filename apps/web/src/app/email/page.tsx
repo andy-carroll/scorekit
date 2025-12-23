@@ -46,6 +46,21 @@ export default function EmailGatePage() {
       lead: { email, name, company },
     });
 
+    // Get the full report record for email delivery
+    const reportRecord = await store.getReport(token);
+    
+    // Trigger email delivery asynchronously (don't wait for it)
+    if (reportRecord) {
+      fetch("/api/report/email", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ token, report: reportRecord }),
+      }).catch((error) => {
+        console.error("Failed to trigger email delivery:", error);
+        // Don't block the user journey if email fails
+      });
+    }
+
     // Simulate API call delay
     await new Promise((resolve) => setTimeout(resolve, 500));
 

@@ -8,7 +8,11 @@
 ## Current status
 
 - PDF download is implemented via `/api/report/pdf`.
-- Email delivery is implemented via GHL integration (Phase 1 complete).
+- Email delivery code is implemented but requires GHL configuration to function:
+  - GHL API client with contact upsert and file upload
+  - Email endpoint that generates PDF and triggers GHL workflow
+  - Report page UI with email button
+  - **Next**: Configure GHL credentials and workflow for actual delivery
 
 ## Delivery options
 

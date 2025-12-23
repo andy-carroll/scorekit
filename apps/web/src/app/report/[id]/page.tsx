@@ -21,9 +21,6 @@ export default function ReportPage() {
   const params = useParams();
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
   const [pdfError, setPdfError] = useState<string | null>(null);
-  const [isEmailingPdf, setIsEmailingPdf] = useState(false);
-  const [emailError, setEmailError] = useState<string | null>(null);
-  const [emailSent, setEmailSent] = useState(false);
 
   const token = useMemo(() => {
     const raw = (params as Record<string, string | string[] | undefined>)?.id;
@@ -155,46 +152,6 @@ export default function ReportPage() {
       URL.revokeObjectURL(url);
     } finally {
       setIsDownloadingPdf(false);
-    }
-  };
-
-  const handleEmailPdf = async () => {
-    if (isEmailingPdf || emailSent) return;
-    setIsEmailingPdf(true);
-    setEmailError(null);
-
-    try {
-      const res = await fetch("/api/report/email", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ token: report.token, report }),
-      });
-
-      if (!res.ok) {
-        const contentType = res.headers.get("content-type") || "";
-        if (contentType.includes("application/json")) {
-          try {
-            const data = (await res.json()) as { error?: string; message?: string };
-            setEmailError(data.message || data.error || "Failed to send PDF via email");
-          } catch {
-            setEmailError("Failed to send PDF via email");
-          }
-        } else {
-          setEmailError("Failed to send PDF via email");
-        }
-        return;
-      }
-
-      const data = await res.json();
-      if (data.success) {
-        setEmailSent(true);
-      } else {
-        setEmailError("Email delivery failed - please try downloading instead");
-      }
-    } catch (error) {
-      setEmailError("Failed to send PDF via email");
-    } finally {
-      setIsEmailingPdf(false);
     }
   };
 
@@ -450,7 +407,7 @@ export default function ReportPage() {
 
         {/* Footer */}
         <footer className="text-center text-sm text-gray-500 border-t border-gray-200 pt-8">
-          <div className="mb-6 flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="mb-6 flex justify-center">
             <button
               type="button"
               onClick={handleDownloadPdf}
@@ -459,36 +416,17 @@ export default function ReportPage() {
             >
               {isDownloadingPdf ? "Preparing PDF..." : "Download PDF"}
             </button>
-            
-            <button
-              type="button"
-              onClick={handleEmailPdf}
-              disabled={isEmailingPdf || emailSent}
-              className="btn-secondary"
-            >
-              {isEmailingPdf ? "Sending..." : emailSent ? "Email Sent ✓" : "Email PDF"}
-            </button>
           </div>
           
           {pdfError && (
             <p className="mb-2 text-sm text-red-600">PDF download failed: {pdfError}</p>
           )}
           
-          {emailError && (
-            <p className="mb-2 text-sm text-red-600">Email failed: {emailError}</p>
-          )}
-          
-          {emailSent && (
-            <p className="mb-2 text-sm text-green-600">
-              PDF sent to {lead.email}. Check your inbox.
-            </p>
-          )}
-          
           <p className="mb-2">
             Prepared for <strong>{lead.name}</strong> at <strong>{lead.company}</strong>
           </p>
           <p className="mb-4">
-            Download or email your PDF report for future reference.
+            Download your PDF report for future reference. A copy has been sent to your email.
           </p>
           <p className="text-xs text-gray-400">
             Report ID: {report.token}
