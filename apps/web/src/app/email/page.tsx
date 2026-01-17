@@ -10,7 +10,16 @@ export default function EmailGatePage() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
+  const [role, setRole] = useState("");
+  const [website, setWebsite] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const normalizeWebsite = (value: string) => {
+    const trimmed = value.trim();
+    if (!trimmed) return "";
+    if (/^https?:\/\//i.test(trimmed)) return trimmed;
+    return `https://${trimmed}`;
+  };
 
   const hasResult = useMemo(() => {
     if (typeof window === "undefined") return false;
@@ -43,7 +52,7 @@ export default function EmailGatePage() {
       templateId: "ai-readiness",
       answers,
       result,
-      lead: { email, name, company },
+      lead: { email, name, company, role, website: normalizeWebsite(website) },
     });
 
     // Get the full report record for email delivery
@@ -106,7 +115,7 @@ export default function EmailGatePage() {
           <div className="space-y-4">
             <div>
               <label htmlFor="name" className="form-label">
-                Your name
+                Your name <span className="text-error">*</span>
               </label>
               <input
                 type="text"
@@ -121,7 +130,7 @@ export default function EmailGatePage() {
 
             <div>
               <label htmlFor="email" className="form-label">
-                Work email
+                Work email <span className="text-error">*</span>
               </label>
               <input
                 type="email"
@@ -136,7 +145,7 @@ export default function EmailGatePage() {
 
             <div>
               <label htmlFor="company" className="form-label">
-                Company
+                Company <span className="text-error">*</span>
               </label>
               <input
                 type="text"
@@ -146,6 +155,37 @@ export default function EmailGatePage() {
                 onChange={(e) => setCompany(e.target.value)}
                 className="form-input"
                 placeholder="Acme Inc"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="role" className="form-label">
+                Role / title <span className="text-error">*</span>
+              </label>
+              <input
+                type="text"
+                id="role"
+                required
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                className="form-input"
+                placeholder="Founder / COO / VP Ops"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="website" className="form-label">
+                Company website <span className="text-error">*</span>
+              </label>
+              <input
+                type="text"
+                id="website"
+                required
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                className="form-input"
+                placeholder="https://company.com"
+                inputMode="url"
               />
             </div>
 

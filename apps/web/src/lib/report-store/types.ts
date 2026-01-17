@@ -12,6 +12,8 @@ export interface Lead {
   email: string;
   name: string;
   company: string;
+  role: string;
+  website: string;
 }
 
 export interface ReportRecord {
