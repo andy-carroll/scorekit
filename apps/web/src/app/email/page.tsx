@@ -21,6 +21,18 @@ export default function EmailGatePage() {
     return `https://${trimmed}`;
   };
 
+  const sendWebhook = (payload: Record<string, unknown>) => {
+    const webhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL;
+    if (!webhookUrl) return;
+    fetch(webhookUrl, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(payload),
+    }).catch((error) => {
+      console.error("Webhook submission failed:", error);
+    });
+  };
+
   const hasResult = useMemo(() => {
     if (typeof window === "undefined") return false;
     return !!sessionStorage.getItem("scorekit_result");
@@ -57,7 +69,28 @@ export default function EmailGatePage() {
 
     // Get the full report record for email delivery
     const reportRecord = await store.getReport(token);
-    
+
+    // Fire-and-forget webhook for Airtable/n8n ingestion
+    if (typeof window !== "undefined") {
+      const reportUrl = `${window.location.origin}/report/${token}`;
+      sendWebhook({
+        source: "scorekit",
+        template_id: "ai-readiness",
+        token,
+        report_url: reportUrl,
+        email,
+        name,
+        company,
+        role,
+        website: normalizeWebsite(website),
+        overall_score: result.percentage,
+        overall_band: result.band,
+        primary_constraint: undefined,
+        pillar_scores: result.pillarScores,
+        answers,
+      });
+    }
+
     // Trigger email delivery asynchronously (don't wait for it)
     if (reportRecord) {
       fetch("/api/report/email", {

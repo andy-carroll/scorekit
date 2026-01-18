@@ -3,7 +3,7 @@
 ## NOW: Current Focus
 
 **Status**: Building  
-**Last Updated**: 22 Dec 2025
+**Last Updated**: 18 Jan 2026
 
 **Design system complete.** All pages (landing, quiz, email, report) now use the Accelerator theme via centralized CSS variables and component classes.
 
@@ -26,6 +26,9 @@
 - PDF report redesigned into a premium multi-page layout (theme-driven Page 1 + Page 2 + appendix)
 - Dev-only quiz helper added: "Fill test data & submit" (template-agnostic)
 - Automated logo pipeline: `pnpm convert-logos` (SVG → PNG) and PDF now renders the Accelerator logo
+- ScoreKit email gate now fires a non-blocking n8n webhook with normalized payload (role + website included)
+- Production webhook URL confirmed and test webhook validated via curl
+- n8n workflow outline agreed: Prospect upsert → Submission create → optional GHL sync
 
 **Ensure alignment with BEADS tickets system** [BEADS_REFERENCE.md](BEADS_REFERENCE.md)
 
