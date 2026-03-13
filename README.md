@@ -2,7 +2,7 @@
 
 **Multi-tenant quiz and assessment platform.** Build ScoreApp-style assessments with email capture, instant on-page reports, PDF delivery, and CRM integration — then deploy a separate branded instance for each client in ~15 minutes.
 
-**Live demo:** [quiz.accelerator-x.ai](https://quiz.accelerator-x.ai) — Accelerator-X AI Readiness Assessment
+**Live demo:** [accelerator-x.ai/quiz/aireadiness](https://accelerator-x.ai/quiz/aireadiness) — Accelerator-X AI Readiness Assessment
 
 ---
 

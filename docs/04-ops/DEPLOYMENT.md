@@ -28,15 +28,21 @@ Deploy ScoreKit to Vercel in ~15 minutes.
 In Vercel Dashboard → Project → Settings → Environment Variables, add:
 
 ```
-NEXT_PUBLIC_APP_URL        https://quiz.accelerator-x.ai
-SCOREKIT_TEMPLATE_ID       ai-readiness
+# Subpath deployment (e.g. accelerator-x.ai/quiz/aireadiness):
+NEXT_PUBLIC_APP_URL          https://accelerator-x.ai/quiz/aireadiness
+NEXT_PUBLIC_BASE_PATH        /quiz/aireadiness
+
+# Subdomain deployment (e.g. quiz.yourdomain.com) — omit NEXT_PUBLIC_BASE_PATH:
+# NEXT_PUBLIC_APP_URL        https://quiz.yourdomain.com
+
+SCOREKIT_TEMPLATE_ID         ai-readiness
 NEXT_PUBLIC_N8N_WEBHOOK_URL  https://your-n8n.example.com/webhook/scorekit/quiz-submit
-UPSTASH_REDIS_REST_URL     https://your-db-id.upstash.io
-UPSTASH_REDIS_REST_TOKEN   your-upstash-token
-EMAIL_PROVIDER             brevo
-BREVO_API_KEY              xkeysib-...
-EMAIL_FROM                 reports@yourdomain.com
-EMAIL_FROM_NAME            Your Brand Name
+UPSTASH_REDIS_REST_URL       https://your-db-id.upstash.io
+UPSTASH_REDIS_REST_TOKEN     your-upstash-token
+EMAIL_PROVIDER               brevo
+BREVO_API_KEY                xkeysib-...
+EMAIL_FROM                   reports@yourdomain.com
+EMAIL_FROM_NAME              Your Brand Name
 ```
 
 See `docs/04-ops/ENV-VARS.md` for full descriptions.
@@ -67,14 +73,59 @@ See `docs/04-ops/ENV-VARS.md` for full descriptions.
 
 ---
 
-## Step 5: Configure Custom Domain
+## Step 5: Configure Domain Access
 
-1. Vercel Dashboard → Project → Settings → Domains → Add `quiz.accelerator-x.ai`
-2. In your DNS provider (e.g. Netlify DNS), add a CNAME record:
+ScoreKit supports two hosting patterns. Choose the one that fits your setup.
+
+---
+
+### Option A — Subpath on an existing domain (recommended for multi-quiz setups)
+
+Serve the quiz at `yourdomain.com/quiz/<slug>` by proxying through your main site host.
+
+**When to use:** Your main site is already on a CDN/host (Netlify, Cloudflare Pages, etc.) and you want multiple quizzes at clean subpaths over time.
+
+**How it works:** Your main site host rewrites `/quiz/<slug>/*` requests to the Vercel deployment. The browser URL never changes — it stays at `yourdomain.com/quiz/<slug>`.
+
+**For Netlify** — add to your main site's `netlify.toml`:
+
+```toml
+[[redirects]]
+  from = "/quiz/aireadiness"
+  to = "https://your-vercel-deployment.vercel.app/quiz/aireadiness"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/quiz/aireadiness/*"
+  to = "https://your-vercel-deployment.vercel.app/quiz/aireadiness/:splat"
+  status = 200
+  force = true
+```
+
+Replace `your-vercel-deployment.vercel.app` with your actual Vercel project URL (found in Vercel Dashboard → Project → Domains).
+
+**For Cloudflare Pages** — add a `_redirects` file with:
+```
+/quiz/aireadiness https://your-vercel-deployment.vercel.app/quiz/aireadiness 200
+/quiz/aireadiness/* https://your-vercel-deployment.vercel.app/quiz/aireadiness/:splat 200
+```
+
+**No Vercel custom domain needed** — Vercel serves from its `.vercel.app` URL; your main host proxies to it.
+
+---
+
+### Option B — Dedicated subdomain
+
+Serve the quiz at `quiz.yourdomain.com` directly from Vercel.
+
+1. Vercel Dashboard → Project → Settings → Domains → Add `quiz.yourdomain.com`
+2. In your DNS provider, add a CNAME record:
    - Name: `quiz`
    - Value: `cname.vercel-dns.com`
-3. Wait for DNS propagation (usually 1–5 minutes with Netlify)
+3. Wait for DNS propagation (1–5 minutes with Netlify DNS)
 4. Vercel will auto-provision an SSL certificate
+5. Set `NEXT_PUBLIC_APP_URL=https://quiz.yourdomain.com` — leave `NEXT_PUBLIC_BASE_PATH` unset
 
 ---
 
@@ -90,7 +141,7 @@ Trigger a new deployment after setting env vars:
 
 Run through the full user journey in production:
 
-1. Visit `https://quiz.accelerator-x.ai` → branded landing page loads ✓
+1. Visit `https://accelerator-x.ai/quiz/aireadiness` → branded landing page loads ✓
 2. Click **Take the Assessment** → quiz loads ✓
 3. Complete all questions → submit → email gate appears ✓
 4. Enter details → **Get My Free Report** → redirected to `/report/[token]` ✓

@@ -9,7 +9,8 @@ Copy `apps/web/.env.example` to `apps/web/.env.local` for local development.
 
 | Variable | Required | Description |
 |---|---|---|
-| `NEXT_PUBLIC_APP_URL` | Yes | Full URL of this deployment, e.g. `https://quiz.accelerator-x.ai`. Used in email links and PDF report URLs. |
+| `NEXT_PUBLIC_APP_URL` | Yes | Full public URL of this deployment, **including any subpath**. e.g. `https://accelerator-x.ai/quiz/aireadiness` (subpath) or `https://quiz.yourdomain.com` (subdomain). Used to build report links in emails and PDFs. |
+| `NEXT_PUBLIC_BASE_PATH` | No | URL prefix for subpath deployments. Must start with `/`, e.g. `/quiz/aireadiness`. Must match the subpath in `NEXT_PUBLIC_APP_URL`. Leave unset for standalone subdomain deployments. |
 | `SCOREKIT_TEMPLATE_ID` | No | Template to activate. Default: `ai-readiness`. Add new templates to `lib/active-template.ts`. |
 
 ---

@@ -9,9 +9,10 @@ out/
 /dist/
 build/
 
-# env
+# env — ignore actual secrets, but track the example file
 .env
 .env.*
+!.env.example
 
 # logs
 *.log
