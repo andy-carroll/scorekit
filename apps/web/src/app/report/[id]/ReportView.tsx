@@ -289,6 +289,42 @@ export function ReportView({ token, initialReport, content }: ReportViewProps) {
           </section>
         )}
 
+        {/* Your Profile — non-scored (context) sections */}
+        {mappedAnswersByPillar && Object.values(mappedAnswersByPillar).some((p) => !(p.pillarId in result.pillarScores)) && (
+          <section className="mb-10">
+            <h2 className="text-2xl font-bold text-gray-900 mb-1">
+              {sectionHeadings.profile ?? "Your Profile"}
+            </h2>
+            <p className="text-sm text-gray-500 mb-4">
+              The context you provided at the start of the assessment.
+            </p>
+            <div className="space-y-3">
+              {Object.values(mappedAnswersByPillar)
+                .filter((pillar) => !(pillar.pillarId in result.pillarScores))
+                .map((pillar) => (
+                  <div key={pillar.pillarId} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                    <div className="px-4 py-2.5 border-b border-gray-100 bg-gray-50">
+                      <span className="text-xs font-semibold uppercase tracking-wider text-gray-600">
+                        {pillarLabels[pillar.pillarId] || pillar.pillarName}
+                      </span>
+                    </div>
+                    <dl>
+                      {pillar.answers.map((answer) => (
+                        <div
+                          key={answer.questionId}
+                          className="flex flex-col gap-0.5 sm:grid sm:grid-cols-[1fr_auto] sm:items-baseline sm:gap-x-6 px-4 py-2.5 border-b border-gray-50 last:border-b-0"
+                        >
+                          <dt className="text-xs text-gray-400 leading-snug">{answer.questionText}</dt>
+                          <dd className="text-sm font-semibold text-gray-800 sm:text-right">{answer.displayAnswer}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </div>
+                ))}
+            </div>
+          </section>
+        )}
+
         {/* Next Steps */}
         <section className="mb-10">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">

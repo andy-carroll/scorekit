@@ -101,6 +101,7 @@ export interface TemplateContent {
       keyInsights?: string;
       nextSteps?: string;
       howWeScore?: string;
+      profile?: string;
     };
   };
   bandIntros: Record<string, BandContent>;
