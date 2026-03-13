@@ -127,10 +127,13 @@ export const aiReadinessContent: TemplateContent = {
     //   3. Register in apps/web/src/lib/active-template.ts
     //   4. Deploy with SCOREKIT_TEMPLATE_ID=ai-readiness-solutions
     name: "Accelerator-X",
-    logoPath: "/logos/accelerator.svg",
+    // Web logo: PNG (works in both <img> and pdfkit — no conversion needed)
+    // Source: accelerator-x-website/assets/icons/AX-wordmark-and-logo.png
+    // To replace with SVG later: add .svg file, update logoPath, run pnpm convert-logos
+    logoPath: "/logos/accelerator-x.png",
     logo: {
-      light: "/logos/accelerator.svg",
-      dark: "/logos/accelerator.svg",
+      light: "/logos/accelerator-x.png",
+      dark: "/logos/accelerator-x.png",
     },
     colors: {
       primary: "#0aadce",       // teal — website primary
