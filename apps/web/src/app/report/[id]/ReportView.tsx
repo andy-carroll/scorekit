@@ -255,13 +255,20 @@ export function ReportView({ token, initialReport, content }: ReportViewProps) {
               Your answers, grouped by pillar.
             </p>
             <div className="space-y-3">
-              {Object.values(mappedAnswersByPillar).map((pillar) => (
-                <div key={pillar.pillarId} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+              {Object.values(mappedAnswersByPillar)
+                .filter((pillar) => pillar.pillarId in result.pillarScores)
+                .map((pillar) => {
+                  const pillarScore = result.pillarScores[pillar.pillarId];
+                  const pillarLevel = getScoreLevel(pillarScore);
+                  const borderClass = pillarLevel === "low" ? "border-l-red-500" : pillarLevel === "high" ? "border-l-emerald-500" : "border-l-amber-500";
+                  return (
+                <div key={pillar.pillarId} className={`bg-white rounded-lg border border-gray-200 border-l-4 ${borderClass} overflow-hidden`}>
                   {/* Pillar label row */}
-                  <div className="px-4 py-2.5 border-b border-gray-100 bg-gray-50">
+                  <div className="px-4 py-2.5 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
                     <span className="text-xs font-semibold uppercase tracking-wider text-gray-600">
                       {pillarLabels[pillar.pillarId] || pillar.pillarName}
                     </span>
+                    <span className="text-xs font-medium text-gray-500">{pillarScore.toFixed(1)} / 5</span>
                   </div>
                   {/* Q&A rows */}
                   <dl>
@@ -276,7 +283,8 @@ export function ReportView({ token, initialReport, content }: ReportViewProps) {
                     ))}
                   </dl>
                 </div>
-              ))}
+                  );
+                })}
             </div>
           </section>
         )}
