@@ -25,9 +25,9 @@ export default function Home() {
 
   return (
     <main className="min-h-screen">
-      {/* Hero Section */}
-      <section className="hero-dark min-h-[80vh] flex flex-col">
-        <header className="flex items-center justify-between px-6 py-4 md:px-12">
+      {/* White sticky header — matches main website style */}
+      <header className="sticky top-0 z-50 border-b border-surface bg-background/95 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl items-center px-4 py-4 md:px-6">
           <Image
             src={logoPath}
             alt={brandName}
@@ -35,8 +35,11 @@ export default function Home() {
             height={32}
             priority
           />
-        </header>
+        </div>
+      </header>
 
+      {/* Hero Section */}
+      <section className="hero-dark min-h-[80vh] flex flex-col">
         <div className="flex-1 flex items-center justify-center px-6 py-12">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-display text-7xl mb-6">
