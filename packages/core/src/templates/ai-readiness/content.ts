@@ -188,7 +188,7 @@ export const aiReadinessContent: TemplateContent = {
       {
         title: "Personalised Insights",
         body: "Understand your specific strengths and the gaps holding you back from AI success.",
-        accent: "primary",
+        accent: "purple",
       },
       {
         title: "Clear Next Steps",

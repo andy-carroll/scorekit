@@ -8,6 +8,7 @@ const ACCENT_VAR: Record<string, string> = {
   primary: "var(--color-primary)",
   pink: "var(--color-accent-pink)",
   green: "var(--color-accent-green)",
+  purple: "var(--color-purple)",
 };
 
 function accentColor(accent?: string): string {

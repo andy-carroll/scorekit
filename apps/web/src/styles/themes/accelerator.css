@@ -302,14 +302,14 @@
  * Component Classes — Use these everywhere
  * ======================================== */
 
-/* Primary button — lift on hover, press on click */
+/* Primary button — uses accent (pink) to match main website CTA style */
 .btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: var(--space-3) var(--space-6);
-  background-color: var(--color-primary);
-  color: var(--color-bg-dark);
+  background-color: var(--color-accent);
+  color: #ffffff;
   font-weight: var(--font-semibold);
   border-radius: var(--radius-sm);
   transition:
@@ -321,9 +321,9 @@
 }
 
 .btn-primary:hover {
-  background-color: var(--color-primary-hover);
+  background-color: color-mix(in srgb, var(--color-accent) 85%, #000000);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-primary) 40%, transparent);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-accent) 40%, transparent);
 }
 
 .btn-primary:active {
