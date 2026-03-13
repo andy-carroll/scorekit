@@ -159,26 +159,37 @@ export function ReportView({ token, initialReport, content }: ReportViewProps) {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-6 py-12">
+      <div className="max-w-4xl mx-auto px-6 py-10">
         {/* Pillar Overview */}
-        <section className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+        <section className="mb-10">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
             {sectionHeadings.pillarScores ?? "Your Readiness by Pillar"}
           </h2>
-          <div className="grid gap-4">
+          <div className="grid gap-2">
             {Object.entries(result.pillarScores).map(([pillarId, score]) => {
               const percentage = (score / 5) * 100;
               const level = getScoreLevel(score);
-              const colors = { low: "bg-red-500", medium: "bg-amber-500", high: "bg-emerald-500" };
+              // low/high use semantic colours; medium uses the brand primary so it
+              // inherits correctly from any template rather than hardcoding amber.
+              const barColor = level === "low"
+                ? "bg-red-500"
+                : level === "high"
+                ? "bg-emerald-500"
+                : undefined;
               return (
-                <div key={pillarId} className="bg-white rounded-lg border border-gray-200 p-4">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-medium text-gray-900">{pillarLabels[pillarId] || pillarId}</span>
-                    <span className="text-sm font-medium text-gray-600">{score.toFixed(1)} / 5</span>
+                <div key={pillarId} className="bg-white rounded-lg border border-gray-200 px-4 py-3">
+                  <div className="flex justify-between items-center mb-1.5">
+                    <span className="text-sm font-medium text-gray-900">{pillarLabels[pillarId] || pillarId}</span>
+                    <span className="text-xs font-medium text-gray-500">{score.toFixed(1)} / 5</span>
                   </div>
-                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                    <div className={`h-full ${colors[level]} rounded-full transition-all duration-500`}
-                      style={{ width: `${percentage}%` }} />
+                  <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500${barColor ? ` ${barColor}` : ""}`}
+                      style={{
+                        width: `${percentage}%`,
+                        ...(barColor ? {} : { backgroundColor: "var(--color-primary)" }),
+                      }}
+                    />
                   </div>
                 </div>
               );
@@ -187,11 +198,11 @@ export function ReportView({ token, initialReport, content }: ReportViewProps) {
         </section>
 
         {/* Key Insights */}
-        <section className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+        <section className="mb-10">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
             {sectionHeadings.keyInsights ?? "Key Insights"}
           </h2>
-          <div className="space-y-6">
+          <div className="space-y-3">
             {priorityPillars.map(([pillarId, score]) => {
               const level = getScoreLevel(score);
               const insight = pillarInsights[pillarId]?.[level];
@@ -199,12 +210,12 @@ export function ReportView({ token, initialReport, content }: ReportViewProps) {
               const borderColors = { low: "border-l-red-500", medium: "border-l-amber-500", high: "border-l-emerald-500" };
               return (
                 <div key={pillarId}
-                  className={`bg-white rounded-lg border border-gray-200 border-l-4 ${borderColors[level]} p-6`}>
-                  <div className="text-sm font-medium text-gray-500 mb-1">
+                  className={`bg-white rounded-lg border border-gray-200 border-l-4 ${borderColors[level]} px-5 py-4`}>
+                  <div className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">
                     {pillarLabels[pillarId] || pillarId}
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{insight.title}</h3>
-                  <p className="text-gray-600 leading-relaxed">{insight.insight}</p>
+                  <h3 className="text-base font-semibold text-gray-900 mb-1">{insight.title}</h3>
+                  <p className="text-sm text-gray-600 leading-relaxed">{insight.insight}</p>
                 </div>
               );
             })}
@@ -213,8 +224,8 @@ export function ReportView({ token, initialReport, content }: ReportViewProps) {
 
         {/* Strength Callout */}
         {strongestPillar && getScoreLevel(strongestPillar[1]) !== "low" && (
-          <section className="mb-12">
-            <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-6">
+          <section className="mb-10">
+            <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-5">
               <div className="flex items-start gap-4">
                 <div className="shrink-0 w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
                   <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -236,24 +247,31 @@ export function ReportView({ token, initialReport, content }: ReportViewProps) {
 
         {/* How we calculated your scores */}
         {mappedAnswersByPillar && (
-          <section className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <section className="mb-10">
+            <h2 className="text-2xl font-bold text-gray-900 mb-1">
               {sectionHeadings.howWeScore ?? "How we calculated your scores"}
             </h2>
-            <p className="text-gray-600 mb-6">
-              Below is a summary of the answers you gave, grouped by pillar.
+            <p className="text-sm text-gray-500 mb-4">
+              Your answers, grouped by pillar.
             </p>
-            <div className="space-y-8">
+            <div className="space-y-3">
               {Object.values(mappedAnswersByPillar).map((pillar) => (
-                <div key={pillar.pillarId} className="bg-white rounded-lg border border-gray-200 p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                    {pillarLabels[pillar.pillarId] || pillar.pillarName}
-                  </h3>
-                  <dl className="space-y-3">
+                <div key={pillar.pillarId} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                  {/* Pillar label row */}
+                  <div className="px-4 py-2.5 border-b border-gray-100 bg-gray-50">
+                    <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                      {pillarLabels[pillar.pillarId] || pillar.pillarName}
+                    </span>
+                  </div>
+                  {/* Q&A rows */}
+                  <dl>
                     {pillar.answers.map((answer) => (
-                      <div key={answer.questionId} className="border-b border-gray-100 pb-3 last:border-b-0 last:pb-0">
-                        <dt className="text-sm font-medium text-gray-700 mb-1">{answer.questionText}</dt>
-                        <dd className="text-sm text-gray-900">{answer.displayAnswer}</dd>
+                      <div
+                        key={answer.questionId}
+                        className="grid grid-cols-[1fr_auto] items-baseline gap-x-6 gap-y-0.5 px-4 py-2.5 border-b border-gray-50 last:border-b-0"
+                      >
+                        <dt className="text-xs text-gray-400 leading-snug">{answer.questionText}</dt>
+                        <dd className="text-sm font-semibold text-gray-800 text-right whitespace-nowrap">{answer.displayAnswer}</dd>
                       </div>
                     ))}
                   </dl>
@@ -264,20 +282,23 @@ export function ReportView({ token, initialReport, content }: ReportViewProps) {
         )}
 
         {/* Next Steps */}
-        <section className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+        <section className="mb-10">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
             {sectionHeadings.nextSteps ?? "Your Next Steps"}
           </h2>
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <ol className="space-y-4">
+          <div className="bg-white rounded-xl border border-gray-200 px-5 py-4">
+            <ol className="space-y-3">
               {nextSteps.map((step, i) => (
-                <li key={step.title} className="flex gap-4">
-                  <span className="shrink-0 w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 font-semibold flex items-center justify-center">
+                <li key={step.title} className="flex gap-3">
+                  <span
+                    className="shrink-0 w-7 h-7 rounded-full font-semibold text-sm flex items-center justify-center text-white"
+                    style={{ backgroundColor: "var(--color-primary)" }}
+                  >
                     {i + 1}
                   </span>
                   <div>
-                    <div className="font-medium text-gray-900">{step.title}</div>
-                    <div className="text-gray-600 text-sm">
+                    <div className="text-sm font-semibold text-gray-900">{step.title}</div>
+                    <div className="text-sm text-gray-500 leading-snug mt-0.5">
                       {i === 1 ? (
                         <>
                           For you, that&apos;s{" "}
