@@ -259,7 +259,7 @@ export function ReportView({ token, initialReport, content }: ReportViewProps) {
                 <div key={pillar.pillarId} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
                   {/* Pillar label row */}
                   <div className="px-4 py-2.5 border-b border-gray-100 bg-gray-50">
-                    <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                    <span className="text-xs font-semibold uppercase tracking-wider text-gray-600">
                       {pillarLabels[pillar.pillarId] || pillar.pillarName}
                     </span>
                   </div>
