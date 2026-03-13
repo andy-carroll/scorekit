@@ -28,13 +28,14 @@
 
 **Vitest** — Fast, ESM-native test runner compatible with Jest API.
 
-### Why Vitest
+Two separate Vitest environments, one per package:
 
-- Native ESM support (no transpilation headaches)
-- Fast execution with smart caching
-- Jest-compatible API (familiar syntax)
-- Built-in coverage reporting
-- First-class TypeScript support
+| Package | Environment | Config |
+|---------|-------------|--------|
+| `packages/core` | `node` | `packages/core/vitest.config.ts` |
+| `apps/web` | `jsdom` (browser-like) | `apps/web/vitest.config.ts` |
+
+`apps/web` also uses `@testing-library/react` for component tests, with setup in `src/test/setup.ts`.
 
 ---
 
@@ -43,43 +44,56 @@
 ```text
 packages/core/
 ├── src/
-│   ├── __tests__/           # Unit tests for core logic
-│   │   ├── scoring.test.ts
-│   │   ├── template.test.ts
-│   │   └── validation.test.ts
-│   └── *.ts                 # Source files
-├── vitest.config.ts         # Test configuration
+│   ├── __tests__/
+│   │   └── report-answer-mapping.test.ts   # answer → report data mapping
+│   ├── template-loader.test.ts             # template loading / registry
+│   └── *.ts                               # source files
+└── vitest.config.ts
 
 apps/web/
 ├── src/
-│   ├── __tests__/           # App-specific tests
-│   │   └── components/      # Component tests
-│   └── components/
-├── e2e/                     # End-to-end tests (Playwright)
-│   └── quiz-flow.spec.ts
+│   ├── app/
+│   │   └── api/report/pdf/
+│   │       └── route.test.ts              # PDF generation API route
+│   ├── components/
+│   │   ├── QuestionCard.test.tsx          # quiz question rendering
+│   │   ├── PillarIntro.test.tsx           # pillar intro screen
+│   │   └── SectionProgress.test.tsx      # progress indicator
+│   ├── lib/report-store/
+│   │   └── report-store.test.ts          # localStorage report store adapter
+│   └── test/
+│       └── setup.ts                      # jsdom setup (localStorage mock, jest-dom matchers)
 └── vitest.config.ts
 ```
+
+> **Convention**: `apps/web` tests live next to the source file they test, not in a separate `__tests__/` directory. `packages/core` uses `__tests__/` for grouped unit tests.
 
 ---
 
 ## Running Tests
 
 ```bash
-# Run all tests
+# Run all tests across the monorepo
 pnpm test
 
-# Watch mode (re-run on file changes)
+# Watch mode (core package only — fastest feedback loop)
 pnpm test:watch
 
-# Coverage report
+# Coverage report (all packages)
 pnpm test:coverage
 
-# Run specific test file
-pnpm test packages/core/src/__tests__/scoring.test.ts
+# Run tests in a specific package only
+pnpm --filter @scorekit/core test
+pnpm --filter web test
 
-# Run tests matching pattern
-pnpm test -t "calculates pillar scores"
+# Run a specific test file
+pnpm --filter web vitest run src/components/QuestionCard.test.tsx
+
+# Run tests matching a name pattern
+pnpm --filter @scorekit/core vitest run -t "calculates pillar scores"
 ```
+
+Coverage reports are generated in `coverage/` inside each package. Open `apps/web/coverage/index.html` or `packages/core/coverage/index.html` in a browser for a visual breakdown.
 
 ---
 
@@ -93,24 +107,21 @@ import { calculateScores } from '../scoring';
 
 describe('calculateScores', () => {
   let mockAnswers: Record<string, number>;
-  let mockTemplate: Template;
 
   beforeEach(() => {
     mockAnswers = { q1: 3, q2: 4, q3: 2 };
-    mockTemplate = createMockTemplate();
   });
 
   it('returns pillar scores for each pillar', () => {
-    const result = calculateScores(mockAnswers, mockTemplate);
-    
+    const result = calculateScores(mockAnswers, template);
+
     expect(result.pillars).toBeDefined();
-    expect(result.pillars.leadership).toBeDefined();
     expect(result.pillars.leadership.score).toBeGreaterThanOrEqual(0);
   });
 
   it('handles empty answers gracefully', () => {
-    const result = calculateScores({}, mockTemplate);
-    
+    const result = calculateScores({}, template);
+
     expect(result.total).toBe(0);
   });
 });
@@ -124,7 +135,7 @@ Use descriptive names that explain the behaviour:
 // ✅ Good
 it('returns zero score when no questions answered')
 it('assigns "Starting" band for scores below 40%')
-it('throws validation error for missing required fields')
+it('throws on unknown template ID')
 
 // ❌ Bad
 it('works correctly')
@@ -152,6 +163,35 @@ it('identifies lowest scoring pillar as primary constraint', () => {
 });
 ```
 
+### Component Tests (apps/web)
+
+Use `@testing-library/react` with the standard render/screen pattern:
+
+```typescript
+import { render, screen } from '@testing-library/react';
+import { QuestionCard } from './QuestionCard';
+
+it('renders the question text', () => {
+  render(<QuestionCard question={mockQuestion} onAnswer={vi.fn()} />);
+
+  expect(screen.getByText(mockQuestion.text)).toBeInTheDocument();
+});
+```
+
+The `toBeInTheDocument()` matcher (and other DOM matchers) come from `@testing-library/jest-dom`, loaded automatically via `apps/web/src/test/setup.ts`.
+
+---
+
+## Test Setup — apps/web
+
+`apps/web/src/test/setup.ts` runs before every test in the `apps/web` package. It does two things:
+
+1. **Imports `@testing-library/jest-dom`** — adds DOM matchers like `toBeInTheDocument()`, `toHaveClass()`, `toHaveTextContent()` to Vitest's `expect`.
+
+2. **Installs an in-memory `localStorage` mock** — jsdom's `localStorage` is unreliable in some environments. The setup detects this and replaces it with a simple `Map`-backed implementation so tests that read/write `localStorage` work consistently.
+
+You don't need to configure either of these per-test — they're global for the whole `apps/web` package.
+
 ---
 
 ## Coverage Targets
@@ -162,15 +202,8 @@ it('identifies lowest scoring pillar as primary constraint', () => {
 | Template loader & validation | >90% | Data integrity |
 | API routes | >80% | Contract verification |
 | UI components | Key flows | Complex interactions only |
-| E2E | Happy path | Critical user journeys |
 
-### Viewing Coverage
-
-```bash
-pnpm test:coverage
-```
-
-Coverage report generated in `coverage/` directory. Open `coverage/index.html` in browser.
+There are no end-to-end tests currently. If you're adding Playwright or Cypress, add a new section here.
 
 ---
 
@@ -182,16 +215,14 @@ Coverage report generated in `coverage/` directory. Open `coverage/index.html` i
 import { vi } from 'vitest';
 
 // Mock entire module
-vi.mock('../api/ghl', () => ({
-  syncContact: vi.fn().mockResolvedValue({ success: true }),
+vi.mock('../lib/email-provider', () => ({
+  getEmailProvider: vi.fn().mockReturnValue({
+    sendEmail: vi.fn().mockResolvedValue(undefined),
+  }),
 }));
-
-// Mock specific function
-import { syncContact } from '../api/ghl';
-vi.mocked(syncContact).mockResolvedValue({ success: true });
 ```
 
-### Mocking External APIs
+### Mocking External APIs (fetch)
 
 ```typescript
 import { vi, beforeEach, afterEach } from 'vitest';
@@ -206,11 +237,18 @@ afterEach(() => {
 
 it('handles API error gracefully', async () => {
   vi.mocked(fetch).mockRejectedValue(new Error('Network error'));
-  
-  const result = await submitLead(leadData);
-  
-  expect(result.success).toBe(false);
-  expect(result.error).toContain('Network error');
+
+  await expect(submitLead(leadData)).rejects.toThrow('Network error');
+});
+```
+
+### Mocking localStorage
+
+`localStorage` is already mocked globally by `src/test/setup.ts` (see above). If you need a clean state between tests:
+
+```typescript
+beforeEach(() => {
+  localStorage.clear();
 });
 ```
 
@@ -226,96 +264,23 @@ Tests run automatically via GitHub Actions on:
 
 If CI fails:
 1. Check the Actions tab in GitHub for error details
-2. Fix locally
-3. Push again
-
----
-
-## Test Data
-
-### Mock Factories
-
-Create reusable mock data factories:
-
-```typescript
-// packages/core/src/__tests__/factories.ts
-
-export function createMockTemplate(overrides = {}): Template {
-  return {
-    id: 'test-template',
-    name: 'Test Template',
-    pillars: [
-      { id: 'leadership', name: 'Leadership', weight: 1 },
-      { id: 'data', name: 'Data', weight: 1 },
-    ],
-    questions: [],
-    ...overrides,
-  };
-}
-
-export function createMockAnswers(overrides = {}): Record<string, number> {
-  return {
-    q1: 3,
-    q2: 4,
-    q3: 2,
-    ...overrides,
-  };
-}
-```
-
----
-
-## Common Patterns
-
-### Testing Async Code
-
-```typescript
-it('fetches template data', async () => {
-  const result = await loadTemplate('ai-readiness');
-  
-  expect(result).toBeDefined();
-  expect(result.id).toBe('ai-readiness');
-});
-```
-
-### Testing Errors
-
-```typescript
-it('throws on invalid template', () => {
-  expect(() => validateTemplate(invalidData))
-    .toThrow('Missing required field: pillars');
-});
-
-it('throws on invalid template (async)', async () => {
-  await expect(loadTemplate('nonexistent'))
-    .rejects.toThrow('Template not found');
-});
-```
-
-### Snapshot Testing (use sparingly)
-
-```typescript
-it('generates expected report structure', () => {
-  const report = generateReport(scores, template);
-  
-  expect(report).toMatchSnapshot();
-});
-```
+2. Reproduce locally: `pnpm test`
+3. Fix, then push again
 
 ---
 
 ## Debugging Tests
 
-### Run Single Test
+### Run a single test by name
 
 ```bash
-pnpm test -t "specific test name"
+pnpm --filter web vitest run -t "specific test name"
 ```
 
-### Verbose Output
+### Verbose output
 
 ```bash
-pnpm test --reporter=verbose
+pnpm --filter web vitest run --reporter=verbose
 ```
 
 ### Debug in VS Code
@@ -326,10 +291,10 @@ Add to `.vscode/launch.json`:
 {
   "type": "node",
   "request": "launch",
-  "name": "Debug Vitest",
+  "name": "Debug Vitest (web)",
   "program": "${workspaceFolder}/node_modules/vitest/vitest.mjs",
   "args": ["--run", "--reporter=verbose"],
-  "cwd": "${workspaceFolder}",
+  "cwd": "${workspaceFolder}/apps/web",
   "console": "integratedTerminal"
 }
 ```
@@ -338,5 +303,6 @@ Add to `.vscode/launch.json`:
 
 ## Related Documents
 
+- [CONTRIBUTING.md](../05-open-source/CONTRIBUTING.md) — Contribution guidelines including test expectations
 - [WORKFLOW.md](../00-overview/WORKFLOW.md) — Development workflow including test step
 - [ARCHITECTURE.md](./ARCHITECTURE.md) — System architecture

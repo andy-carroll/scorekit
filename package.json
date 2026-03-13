@@ -8,6 +8,7 @@
     "build": "pnpm --filter web build",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
+    "test:coverage": "pnpm -r test:coverage",
     "test:watch": "pnpm --filter @scorekit/core test:watch",
     "convert-logos": "node scripts/convert-logos.mjs"
   },
