@@ -26,7 +26,7 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       {/* White sticky header — matches main website style */}
-      <header className="sticky top-0 z-50 border-b border-surface bg-background/95 backdrop-blur">
+      <header className="sticky top-0 z-50 border-b border-surface bg-white">
         <div className="mx-auto flex max-w-6xl items-center px-4 py-4 md:px-6">
           <Image
             src={logoPath}
