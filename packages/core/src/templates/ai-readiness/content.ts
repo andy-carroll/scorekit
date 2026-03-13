@@ -70,6 +70,18 @@ export interface TemplateContent {
       displayFont?: string;
       bodyFont?: string;
     };
+    /**
+     * Path to the favicon file (relative to /public).
+     * Used in generateMetadata() to set the <link rel="icon"> tag.
+     * e.g. "/favicons/accelerator-x.png"
+     */
+    faviconPath?: string;
+    /**
+     * Absolute URL (or /public-relative path) for the OpenGraph image.
+     * Shown when report/landing URLs are shared on social or in messaging apps.
+     * e.g. "https://accelerator-x.ai/og-image.png"
+     */
+    ogImageUrl?: string;
   };
   landing: {
     headline: string;
@@ -135,6 +147,13 @@ export const aiReadinessContent: TemplateContent = {
       light: "/logos/accelerator-x.png",
       dark: "/logos/accelerator-x.png",
     },
+    // Favicon: square icon used in browser tabs, bookmarks, and PWA home-screen.
+    // Source: accelerator-x-website/assets/icons/AX-icon.png
+    faviconPath: "/favicons/accelerator-x.png",
+    // OG image: shown when quiz/report URLs are shared on LinkedIn, Slack, etc.
+    // Reuses the existing OG image from the main site — no new asset needed.
+    // PNG preferred over WebP for broadest social crawler compatibility.
+    ogImageUrl: "https://accelerator-x.ai/assets/images/og-image-1200.png",
     colors: {
       primary: "#0aadce",       // teal — website primary
       primaryHover: "#089bb8",

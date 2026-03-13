@@ -50,9 +50,25 @@ const aptos = localFont({
 
 export async function generateMetadata(): Promise<Metadata> {
   const content = getActiveTemplateContent();
+  const brand = content.brand;
+
   return {
     title: content.meta.pageTitle ?? content.meta.templateName,
     description: content.meta.description,
+    ...(brand?.faviconPath && {
+      icons: { icon: brand.faviconPath },
+    }),
+    ...(brand?.ogImageUrl && {
+      openGraph: {
+        images: [{ url: brand.ogImageUrl }],
+        title: content.meta.pageTitle ?? content.meta.templateName,
+        description: content.meta.description,
+      },
+      twitter: {
+        card: "summary_large_image",
+        images: [brand.ogImageUrl],
+      },
+    }),
   };
 }
 
