@@ -36,7 +36,28 @@
  * 2. Update content.ts with your brand.colors, copy, questions
  * 3. Register in apps/web/src/lib/active-template.ts
  * 4. Deploy a new Vercel project with SCOREKIT_TEMPLATE_ID=your-template
- * No CSS changes required.
+ * No CSS changes required — all colours come from content.ts at runtime.
+ *
+ * ── ADDING A NEW COLOUR TOKEN ────────────────────────────────────
+ * Use this when you need a colour that doesn't exist yet (e.g. indigo).
+ * Three touch points, in order:
+ *
+ * 1. ADD THE DEFAULT here in :root (so it has a fallback value):
+ *      --color-indigo: #4f46e5;
+ *
+ * 2. If the colour should be OVERRIDABLE per template (i.e. each client
+ *    can set their own value), add it to:
+ *    a. TemplateContent['brand']['colors'] in content.ts  (TypeScript field)
+ *    b. The brandStyle injection block in layout.tsx       (runtime override)
+ *    c. Your template's brand.colors object in content.ts  (actual value)
+ *
+ * 3. If the colour is used as a VALUE-PROP CARD ACCENT, also add it to
+ *    the ACCENT_VAR map in apps/web/src/app/page.tsx:
+ *      indigo: "var(--color-indigo)",
+ *    Then use accent: "indigo" in content.ts valueProps.
+ *
+ * Most new client templates only need step 2c — editing content.ts.
+ * Steps 1–3 are only needed when introducing a brand-new colour concept.
  * ============================================================
  */
 

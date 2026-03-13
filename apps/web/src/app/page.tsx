@@ -2,7 +2,24 @@ import Link from "next/link";
 import Image from "next/image";
 import { getActiveTemplateContent } from "@/lib/active-template";
 
-// Accent colour → CSS variable mapping for value-prop cards
+/**
+ * Accent colour → CSS variable mapping for value-prop cards.
+ *
+ * Each entry maps the string name used in content.ts valueProps[n].accent
+ * to the CSS custom property that supplies the colour at runtime.
+ *
+ * To add a new accent colour (e.g. "indigo"):
+ *   1. Add the CSS var default to accelerator.css :root
+ *        --color-indigo: #4f46e5;
+ *   2. Add it here:
+ *        indigo: "var(--color-indigo)",
+ *   3. Use it in content.ts:
+ *        { title: "...", body: "...", accent: "indigo" }
+ *
+ * That's it — no other files need changing for a new card accent.
+ * (If you also want it overridable per-template, add it to brand.colors
+ * in content.ts AND add the injection line in layout.tsx.)
+ */
 const ACCENT_VAR: Record<string, string> = {
   teal: "var(--color-accent-teal)",
   primary: "var(--color-primary)",
