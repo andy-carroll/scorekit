@@ -268,10 +268,10 @@ export function ReportView({ token, initialReport, content }: ReportViewProps) {
                     {pillar.answers.map((answer) => (
                       <div
                         key={answer.questionId}
-                        className="grid grid-cols-[1fr_auto] items-baseline gap-x-6 gap-y-0.5 px-4 py-2.5 border-b border-gray-50 last:border-b-0"
+                        className="flex flex-col gap-0.5 sm:grid sm:grid-cols-[1fr_auto] sm:items-baseline sm:gap-x-6 px-4 py-2.5 border-b border-gray-50 last:border-b-0"
                       >
                         <dt className="text-xs text-gray-400 leading-snug">{answer.questionText}</dt>
-                        <dd className="text-sm font-semibold text-gray-800 text-right whitespace-nowrap">{answer.displayAnswer}</dd>
+                        <dd className="text-sm font-semibold text-gray-800 sm:text-right">{answer.displayAnswer}</dd>
                       </div>
                     ))}
                   </dl>
