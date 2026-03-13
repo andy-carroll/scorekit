@@ -23,21 +23,44 @@ export interface RecommendationContent {
   detail: string;
 }
 
+export interface ValueProp {
+  title: string;
+  body: string;
+  /** Maps to a CSS accent variable: "teal" | "primary" | "pink" | "green" */
+  accent?: string;
+}
+
 export interface TemplateContent {
   meta: {
     templateId: string;
     templateName: string;
     version: string;
+    /** Page <title> used in layout metadata */
+    pageTitle?: string;
+    /** Meta description for SEO */
+    description?: string;
+    /** Heading shown at the top of the PDF/web report */
+    reportTitle?: string;
   };
   brand?: {
+    /** Short display name for the brand (used in footer, email, etc.) */
+    name?: string;
+    /** Path to logo for use on dark backgrounds */
+    logoPath?: string;
+    /** Legacy: separate light/dark logo paths */
     logo?: {
       light?: string;
       dark?: string;
     };
     colors: {
       primary: string;
+      primaryHover?: string;
       secondary?: string;
       accent?: string;
+      highlight?: string;
+      accentTeal?: string;
+      accentPink?: string;
+      bgDark?: string;
       text: string;
       mutedText: string;
       background: string;
@@ -52,6 +75,21 @@ export interface TemplateContent {
     headline: string;
     subheadline: string;
     ctaText: string;
+    /** e.g. "10 minutes" — shown below the CTA button */
+    timeEstimate?: string;
+    /** Feature cards shown in the "What you'll discover" section */
+    valueProps?: ValueProp[];
+    /** Social proof line above the bottom CTA */
+    trustLine?: string;
+  };
+  /** Section headings for the report page */
+  report?: {
+    sectionHeadings?: {
+      pillarScores?: string;
+      keyInsights?: string;
+      nextSteps?: string;
+      howWeScore?: string;
+    };
   };
   bandIntros: Record<string, BandContent>;
   pillarLabels: Record<string, string>;
@@ -66,38 +104,87 @@ export interface TemplateContent {
   };
 }
 
-export const content: TemplateContent = {
+export const aiReadinessContent: TemplateContent = {
   meta: {
     templateId: "ai-readiness",
     templateName: "AI Readiness Assessment",
     version: "1.0.0",
+    pageTitle: "AI Readiness Assessment | Accelerator-X",
+    description:
+      "Discover how AI-ready your organisation is with our comprehensive assessment. Get personalised insights and actionable recommendations.",
+    reportTitle: "AI Readiness Report",
   },
 
   brand: {
+    // ── Accelerator-X brand ────────────────────────────────────────────────
+    // Teal/pink palette matching accelerator-x.netlify.app
+    // layout.tsx reads these values and injects them as CSS custom property
+    // overrides at runtime, so accelerator.css defaults are replaced.
+    //
+    // To create the Accelerator Solutions version (amber/blue):
+    //   1. Copy this template to packages/core/src/templates/ai-readiness-solutions/
+    //   2. Update name, colors, and typography below
+    //   3. Register in apps/web/src/lib/active-template.ts
+    //   4. Deploy with SCOREKIT_TEMPLATE_ID=ai-readiness-solutions
+    name: "Accelerator-X",
+    logoPath: "/logos/accelerator.svg",
     logo: {
       light: "/logos/accelerator.svg",
       dark: "/logos/accelerator.svg",
     },
     colors: {
-      primary: "#4f46e5",
-      secondary: "#0f172a",
-      accent: "#22c55e",
-      text: "#111827",
-      mutedText: "#6b7280",
+      primary: "#0aadce",       // teal — website primary
+      primaryHover: "#089bb8",
+      secondary: "#1b2a4a",     // navy
+      highlight: "#fea700",     // amber — highlight/badge colour
+      accentTeal: "#0aadce",    // alias: same as primary
+      accentPink: "#e93f8e",    // hot pink — website accent
+      bgDark: "#1b2a4a",        // navy — hero / dark sections
+      text: "#1b2a4a",
+      mutedText: "#64748b",
       background: "#ffffff",
-      surface: "#f9fafb",
+      surface: "#f8fafc",
     },
     typography: {
-      displayFont: "Spline Sans",
-      bodyFont: "Inter",
+      displayFont: "Aptos",
+      bodyFont: "Aptos",
     },
   },
 
   landing: {
-    headline: "How AI-Ready Is Your Organisation?",
+    headline: "Is your organisation ready for AI?",
     subheadline:
-      "A 15-minute diagnostic to identify your biggest opportunities and blockers",
-    ctaText: "Start Assessment",
+      "Discover where you stand, uncover hidden gaps, and get a clear roadmap for AI transformation—tailored to your business.",
+    ctaText: "Take the Assessment",
+    timeEstimate: "10 minutes",
+    valueProps: [
+      {
+        title: "Your AI Readiness Score",
+        body: "See how your organisation compares across leadership, data, people, process, and culture.",
+        accent: "teal",
+      },
+      {
+        title: "Personalised Insights",
+        body: "Understand your specific strengths and the gaps holding you back from AI success.",
+        accent: "primary",
+      },
+      {
+        title: "Clear Next Steps",
+        body: "Get actionable recommendations prioritised for your current stage and resources.",
+        accent: "pink",
+      },
+    ],
+    trustLine:
+      "Join hundreds of organisations who have used this assessment to accelerate their AI journey.",
+  },
+
+  report: {
+    sectionHeadings: {
+      pillarScores: "Your Readiness by Pillar",
+      keyInsights: "Key Insights",
+      nextSteps: "Your Next Steps",
+      howWeScore: "How we calculated your scores",
+    },
   },
 
   bandIntros: {
@@ -276,3 +363,6 @@ export const content: TemplateContent = {
     buttonText: "Book Your Free Strategy Session",
   },
 };
+
+/** @deprecated Use aiReadinessContent instead */
+export const content = aiReadinessContent;

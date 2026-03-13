@@ -17,6 +17,12 @@ function generateToken(): ReportToken {
 export function createLocalReportStore(): ReportStore {
   return {
     async createReport(input: CreateReportInput) {
+      if (typeof localStorage === "undefined") {
+        throw new Error(
+          "localStorage is not available (running server-side). " +
+            "Set UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN for server-side report storage."
+        );
+      }
       const token = generateToken();
       const record: ReportRecord = {
         token,
@@ -31,6 +37,9 @@ export function createLocalReportStore(): ReportStore {
       return { token };
     },
     async getReport(token: ReportToken): Promise<ReportRecord | null> {
+      // localStorage is browser-only; return null when called server-side
+      if (typeof localStorage === "undefined") return null;
+
       const raw = localStorage.getItem(getStorageKey(token));
       if (!raw) return null;
 

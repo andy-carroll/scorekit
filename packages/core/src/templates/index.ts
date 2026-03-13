@@ -6,7 +6,7 @@
 
 export * from "./ai-readiness";
 
-import { content as aiReadinessContent } from "./ai-readiness";
+import { aiReadinessContent } from "./ai-readiness";
 
 export const templates = {
   "ai-readiness": aiReadinessContent,

@@ -5,4 +5,3 @@
  */
 
 export * from "./content";
-export { content as aiReadinessContent } from "./content";

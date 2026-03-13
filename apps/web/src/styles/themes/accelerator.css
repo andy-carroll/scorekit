@@ -1,11 +1,43 @@
-/**
- * Accelerator Solutions Theme
- * 
- * Brand colors, typography, and visual identity for
- * AI Product Accelerator assessments.
- * 
- * Based on: acceleratorsolutions.com
- * Style guide: Accelerator_Solutions_-_The_Human_Advantage_2025.pptx
+/*
+ * ScoreKit — Accelerator Theme Base
+ * ============================================================
+ * This file is the STRUCTURAL FOUNDATION for all Accelerator-brand
+ * ScoreKit deployments (Accelerator-X, Accelerator Solutions, etc.).
+ *
+ * ── HOW THEMING WORKS ──────────────────────────────────────────
+ * 1. This file defines CSS custom properties (variables) with DEFAULTS.
+ *    The defaults here match the Accelerator Solutions amber/navy palette.
+ *
+ * 2. apps/web/src/app/layout.tsx injects a <style> tag at runtime that
+ *    OVERRIDES these variables with values from the active template's
+ *    brand.colors config in:
+ *      packages/core/src/templates/[id]/content.ts
+ *
+ * 3. To change the brand colours/fonts for an existing deployment:
+ *    → edit content.ts brand.colors — NO CSS changes needed.
+ *
+ * 4. To create a full new visual style (different component shapes/layouts):
+ *    copy this file, register it in globals.css, add a SCOREKIT_CSS_THEME
+ *    env var to select it.
+ *
+ * ── TWO BRANDS, ONE PLATFORM ────────────────────────────────────
+ * • Accelerator-X (quiz.accelerator-x.ai)
+ *     Primary: #0aadce (teal)   Accent: #e93f8e (pink)   Dark: #1b2a4a (navy)
+ *     Template: SCOREKIT_TEMPLATE_ID=ai-readiness
+ *
+ * • Accelerator Solutions (future)
+ *     Primary: #E8A33C (amber)  Accent: #EC4899 (pink)   Dark: #0F172A (near-black)
+ *     Template: SCOREKIT_TEMPLATE_ID=ai-readiness-solutions
+ *
+ * Both brands use this same CSS file. Colors are swapped at runtime.
+ *
+ * ── ADDING A NEW CLIENT TEMPLATE ───────────────────────────────
+ * 1. Copy packages/core/src/templates/ai-readiness/ → your-template/
+ * 2. Update content.ts with your brand.colors, copy, questions
+ * 3. Register in apps/web/src/lib/active-template.ts
+ * 4. Deploy a new Vercel project with SCOREKIT_TEMPLATE_ID=your-template
+ * No CSS changes required.
+ * ============================================================
  */
 
 @import '../tokens/base.css';
@@ -20,42 +52,79 @@
   --brand-logo-height: 32px;
 
   /* ========================================
-   * Color Palette
+   * Color Palette — Core Brand
+   * (overridden at runtime by layout.tsx from content.ts brand.colors)
    * ======================================== */
-  
-  /* Primary brand color - Orange/Amber (logo, key accents) */
+
+  /* Primary brand color - defaults to amber (Accelerator Solutions) */
   --color-primary: #E8A33C;
   --color-primary-hover: #D4922F;
   --color-primary-light: #FEF3E2;
-  
-  /* Highlight blue (text highlight boxes) */
+
+  /* Accent — hot pink */
+  --color-accent: #EC4899;
+  --color-accent-light: #fce3f1;
+
+  /* Highlight — defaults to blue (Solutions) */
   --color-highlight: #3B82F6;
   --color-highlight-hover: #2563EB;
-  
+
   /* Secondary accents */
   --color-accent-teal: #14B8A6;
   --color-accent-green: #10B981;
   --color-accent-pink: #EC4899;
-  
-  /* Backgrounds */
-  --color-bg-dark: #0F172A;           /* Deep navy - hero sections */
-  --color-bg-dark-secondary: #1E293B; /* Slightly lighter navy */
-  --color-bg-light: #FAFAFA;          /* Off-white - content sections */
+
+  /* ========================================
+   * Extended Palette (Accelerator-X additions)
+   * Named colour tokens available to all templates.
+   * Actual brand values come from content.ts overrides.
+   * ======================================== */
+
+  /* Named swatches — use these for non-brand UI elements */
+  --color-amber: #fea700;
+  --color-blue: #3477f5;
+  --color-green: #1fbd53;
+  --color-purple: #882de7;
+  --color-purple-light: #f1e5ff;
+
+  /* Semantic aliases — map to primary/accent for cross-template compatibility */
+  --color-accent-teal: var(--color-primary);   /* teal IS primary for AX */
+  --color-accent-pink: var(--color-accent);    /* pink alias */
+  --color-bg-dark: #0F172A;                    /* overridden per-brand */
+
+  /* ========================================
+   * Backgrounds & Surfaces
+   * ======================================== */
+  --color-bg-dark: #0F172A;           /* Deep navy/near-black — hero sections */
+  --color-bg-dark-secondary: #1E293B; /* Slightly lighter — gradient end */
+  --color-bg-light: #FAFAFA;          /* Off-white — content sections */
   --color-bg-surface: #FFFFFF;        /* Cards, elevated surfaces */
   --color-bg-muted: #F1F5F9;          /* Subtle backgrounds */
-  
-  /* Text colors */
+  --color-surface-2: #f1f5f9;         /* Second-level surface (alias) */
+
+  /* ========================================
+   * Text Colors
+   * ======================================== */
+  --color-navy: #1b2a4a;              /* Accelerator-X primary dark text */
+  --color-muted: #64748b;             /* Muted UI text */
+  --color-body: #475569;              /* Default body text */
+  --color-muted-on-dark: #cbd5e1;     /* Muted text on dark backgrounds */
+
   --color-text-on-dark: #FFFFFF;
   --color-text-on-dark-muted: #94A3B8;
   --color-text-on-light: #1A1A1A;
   --color-text-on-light-secondary: #64748B;
   --color-text-on-light-muted: #94A3B8;
-  
-  /* Borders */
+
+  /* ========================================
+   * Borders
+   * ======================================== */
   --color-border: #E2E8F0;
   --color-border-strong: #CBD5E1;
-  
-  /* Semantic colors */
+
+  /* ========================================
+   * Semantic Colors
+   * ======================================== */
   --color-success: #10B981;
   --color-warning: #F59E0B;
   --color-error: #EF4444;
@@ -63,15 +132,18 @@
 
   /* ========================================
    * Typography
+   * Defaults to Aptos (self-hosted, loaded by layout.tsx via next/font/local).
+   * layout.tsx also injects --font-display and --font-body overrides from
+   * content.ts brand.typography, so these fallbacks are rarely used.
    * ======================================== */
-  
-  /* Headline font - Spline Sans (actual Accelerator website font) */
-  --font-display: var(--font-spline-sans), 'Spline Sans', -apple-system, sans-serif;
-  
-  /* Body font - Clean, professional sans-serif */
-  --font-body: var(--font-inter), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  
-  /* Mono font - Code, data */
+
+  /* Display font — Aptos (Accelerator-X). Fallback: system sans. */
+  --font-display: var(--font-aptos), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* Body font — matches display for single-font brands */
+  --font-body: var(--font-aptos), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* Mono font — code, data, scores */
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
   /* ========================================
@@ -79,7 +151,7 @@
    * ======================================== */
   --gradient-hero: linear-gradient(135deg, var(--color-bg-dark) 0%, var(--color-bg-dark-secondary) 100%);
   --gradient-subtle: linear-gradient(180deg, var(--color-bg-light) 0%, var(--color-bg-muted) 100%);
-  --gradient-primary: linear-gradient(135deg, var(--color-primary) 0%, #D4922F 100%);
+  --gradient-primary: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
 
   /* ========================================
    * Card Styles (colored left border)
@@ -89,7 +161,7 @@
   --card-border-color: var(--color-border);
   --card-radius: var(--radius-lg);
   --card-shadow: var(--shadow-md);
-  
+
   /* Card accent variants */
   --card-accent-teal: var(--color-accent-teal);
   --card-accent-orange: var(--color-primary);
@@ -102,12 +174,12 @@
   --button-primary-bg: var(--color-bg-dark);
   --button-primary-text: var(--color-text-on-dark);
   --button-primary-hover: var(--color-bg-dark-secondary);
-  
+
   --button-secondary-bg: transparent;
   --button-secondary-text: var(--color-text-on-light);
   --button-secondary-border: var(--color-border-strong);
   --button-secondary-hover: var(--color-bg-muted);
-  
+
   --button-accent-bg: var(--color-primary);
   --button-accent-text: var(--color-bg-dark);
   --button-accent-hover: var(--color-primary-hover);
@@ -125,24 +197,24 @@
   /* ========================================
    * Special Elements
    * ======================================== */
-  
-  /* Text highlight box (like "adapt faster to an") - exact letter height, zero padding */
+
+  /* Text highlight box (exact letter height, zero padding) */
   --highlight-box-bg: var(--color-highlight);
   --highlight-box-text: var(--color-text-on-dark);
   --highlight-box-padding: 0;
   --highlight-box-radius: 0;
-  
-  /* Underline accent (like "Testimonials" yellow underline) */
+
+  /* Underline accent (e.g. "Testimonials" yellow underline) */
   --underline-accent-color: var(--color-primary);
   --underline-accent-height: 8px;
   --underline-accent-offset: -4px;
 }
 
 /* ========================================
- * Utility Classes - Accelerator Specific
+ * Utility Classes — Accelerator Specific
  * ======================================== */
 
-/* Text highlight box - cap-height only, not full line-height */
+/* Text highlight box — cap-height only, not full line-height */
 .text-highlight {
   color: var(--highlight-box-text);
   padding: 0 0.05em;
@@ -152,7 +224,6 @@
   -webkit-box-decoration-break: clone;
   font-style: normal;
   line-height: inherit;
-  /* Use linear-gradient to only cover cap-height (roughly 70% of line-height, centered) */
   background: linear-gradient(
     to bottom,
     transparent 8%,
@@ -208,13 +279,13 @@
   color: var(--color-text-on-dark);
 }
 
-/* Display text (Spline Sans headlines - matches Accelerator website) */
+/* Display text (matches Accelerator website headlines) */
 .text-display {
   font-family: var(--font-display);
   font-style: normal;
   font-weight: 600;
   letter-spacing: 0.02em;  /* +10% wider kerning */
-  line-height: 1.15;       /* slightly more leading */
+  line-height: 1.15;        /* slightly more leading */
 }
 
 /* Stat box (like "Over 400 clients") */
@@ -228,10 +299,10 @@
 }
 
 /* ========================================
- * Component Classes - Use these everywhere
+ * Component Classes — Use these everywhere
  * ======================================== */
 
-/* Primary button (amber/orange on dark text) */
+/* Primary button — lift on hover, press on click */
 .btn-primary {
   display: inline-flex;
   align-items: center;
@@ -241,18 +312,30 @@
   color: var(--color-bg-dark);
   font-weight: var(--font-semibold);
   border-radius: var(--radius-sm);
-  transition: background-color var(--duration-fast) var(--ease-default);
+  transition:
+    background-color var(--duration-fast) var(--ease-default),
+    transform var(--duration-fast) var(--ease-default),
+    box-shadow var(--duration-fast) var(--ease-default);
   cursor: pointer;
   border: none;
 }
 
 .btn-primary:hover {
   background-color: var(--color-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-primary) 40%, transparent);
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+  box-shadow: none;
 }
 
 .btn-primary:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 /* Secondary button (dark bg, light text) */
@@ -264,18 +347,26 @@
   color: var(--color-text-on-dark);
   font-weight: var(--font-semibold);
   border-radius: var(--radius-sm);
-  transition: opacity var(--duration-fast) var(--ease-default);
+  transition:
+    opacity var(--duration-fast) var(--ease-default),
+    transform var(--duration-fast) var(--ease-default);
   cursor: pointer;
   border: none;
 }
 
 .btn-secondary:hover {
   opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn-secondary:active {
+  transform: scale(0.98);
 }
 
 .btn-secondary:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
 /* Ghost button (text only, for back links etc.) */
@@ -301,10 +392,23 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--space-6);
+  transition:
+    transform var(--duration-normal) var(--ease-default),
+    box-shadow var(--duration-normal) var(--ease-default);
 }
 
 .card-sm {
   padding: var(--space-4);
+}
+
+/* Hoverable card — lifts on hover (Accelerator-X style) */
+.card-hoverable {
+  cursor: pointer;
+}
+
+.card-hoverable:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--color-navy, #1b2a4a) 12%, transparent);
 }
 
 /* Section label (small caps) */

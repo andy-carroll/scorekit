@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@scorekit/core": "workspace:*",
+    "@upstash/redis": "^1.37.0",
     "next": "16.0.10",
     "pdfkit": "^0.17.2",
     "react": "19.2.1",
