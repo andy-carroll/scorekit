@@ -1,6 +1,6 @@
 import Link from "next/link";
-import Image from "next/image";
 import { getActiveTemplateContent } from "@/lib/active-template";
+import { SiteHeader } from "@/components/SiteHeader";
 
 /**
  * Accent colour → CSS variable mapping for value-prop cards.
@@ -43,18 +43,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen">
-      {/* White sticky header — matches main website style */}
-      <header className="sticky top-0 z-50 border-b border-surface bg-white">
-        <div className="mx-auto flex max-w-6xl items-center px-4 py-4 md:px-6">
-          <Image
-            src={logoPath}
-            alt={brandName}
-            width={140}
-            height={32}
-            priority
-          />
-        </div>
-      </header>
+      <SiteHeader logoPath={logoPath} brandName={brandName} />
 
       {/* Hero Section */}
       <section className="hero-dark min-h-[80vh] flex flex-col">

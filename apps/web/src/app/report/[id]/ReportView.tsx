@@ -1,12 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { type ScoreLevel, mapAnswersToPillars, type Template } from "@scorekit/core";
 import { sections, getQuestionsForSection } from "@/lib/questions";
 import { useReport } from "@/lib/report-store/useReport";
 import type { ReportRecord, ScoreResult } from "@/lib/report-store/types";
 import type { TemplateContent } from "@/lib/active-template";
+import { SiteHeader } from "@/components/SiteHeader";
+import { DownloadPdfButton } from "@/components/DownloadPdfButton";
 
 interface ReportViewProps {
   token: string;
@@ -23,8 +25,6 @@ function getScoreLevel(score: number): ScoreLevel {
 
 export function ReportView({ token, initialReport, content }: ReportViewProps) {
   const router = useRouter();
-  const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
-  const [pdfError, setPdfError] = useState<string | null>(null);
 
   // useReport fetches from localStorage when Upstash is not configured (dev only).
   // When initialReport is provided (Upstash/production path), this hook is effectively idle.
@@ -112,55 +112,24 @@ export function ReportView({ token, initialReport, content }: ReportViewProps) {
   const result: ScoreResult = report.result;
   const lead = report.lead;
 
-  const handleDownloadPdf = async () => {
-    if (isDownloadingPdf) return;
-    setIsDownloadingPdf(true);
-    setPdfError(null);
-
-    try {
-      const res = await fetch("/api/report/pdf", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ token: report.token, report }),
-      });
-
-      if (!res.ok) {
-        const contentType = res.headers.get("content-type") || "";
-        if (contentType.includes("application/json")) {
-          try {
-            const data = (await res.json()) as { error?: string; message?: string };
-            setPdfError(data.message || data.error || "Failed to generate PDF");
-          } catch {
-            setPdfError("Failed to generate PDF");
-          }
-        } else {
-          setPdfError("Failed to generate PDF");
-        }
-        return;
-      }
-
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `scorekit-report-${report.token}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    } finally {
-      setIsDownloadingPdf(false);
-    }
-  };
-
   const band = bandIntros[result.band] || bandIntros.Starting;
 
   const sortedPillars = Object.entries(result.pillarScores).sort(([, a], [, b]) => a - b);
   const priorityPillars = sortedPillars.slice(0, 3);
   const strongestPillar = sortedPillars[sortedPillars.length - 1];
 
+  const logoPath = content.brand?.logoPath ?? content.brand?.logo?.light ?? "/logos/accelerator.svg";
+  const brandName = content.brand?.name ?? "ScoreKit";
+
   return (
-    <main className="min-h-screen" style={{ backgroundColor: "var(--color-bg-light)" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--color-bg-light)" }}>
+      <SiteHeader
+        logoPath={logoPath}
+        brandName={brandName}
+        action={<DownloadPdfButton token={token} report={report} />}
+      />
+
+      <main>
       {/* Hero Section */}
       <div className="hero-dark">
         <div className="max-w-4xl mx-auto px-6 py-16">
@@ -343,21 +312,16 @@ export function ReportView({ token, initialReport, content }: ReportViewProps) {
 
         {/* Footer */}
         <footer className="text-center text-sm text-gray-500 border-t border-gray-200 pt-8">
-          <div className="mb-6 flex justify-center">
-            <button type="button" onClick={handleDownloadPdf} disabled={isDownloadingPdf} className="btn-primary">
-              {isDownloadingPdf ? "Preparing PDF..." : "Download PDF"}
-            </button>
-          </div>
-          {pdfError && <p className="mb-2 text-sm text-red-600">PDF download failed: {pdfError}</p>}
           <p className="mb-2">
             Prepared for <strong>{lead.name}</strong> at <strong>{lead.company}</strong>
           </p>
           <p className="mb-4">
-            Download your PDF report for future reference. A copy has been sent to your email.
+            Your PDF report is available via the Download button above. A copy has been sent to your email.
           </p>
           <p className="text-xs text-gray-400">Report ID: {report.token}</p>
         </footer>
       </div>
-    </main>
+      </main>
+    </div>
   );
 }
