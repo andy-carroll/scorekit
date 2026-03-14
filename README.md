@@ -64,13 +64,17 @@ All env vars documented in [docs/04-ops/ENV-VARS.md](docs/04-ops/ENV-VARS.md).
 
 ## Add a new template (new client or brand)
 
-1. Copy `packages/core/src/templates/ai-readiness/` → `your-template-id/`
-2. Edit `content.ts` — update `brand.colors`, landing copy, questions, scoring bands, and recommendations
-3. Export from `packages/core/src/index.ts`
-4. Register in `apps/web/src/lib/active-template.ts`
-5. Deploy a new Vercel project with `SCOREKIT_TEMPLATE_ID=your-template-id`
+**The full guide is in [`docs/06-template-authoring/`](docs/06-template-authoring/README.md).** It's a five-step process designed to be completed with AI assistance in under an hour, even if you don't know what questions to ask:
 
-No CSS changes required. Brand colors are injected at runtime as CSS custom properties from `content.ts`. Every comment you need is inline in those two files.
+```
+1. DESIGN    → Fill in 5 lines of context, paste into Claude → get pillars + questions proposed
+2. REVIEW    → Refine until it's right
+3. GENERATE  → Paste your worksheet into Claude → get a ready-to-use content.ts
+4. INSTALL   → Drop the file in, register it, set your env var
+5. DEPLOY    → Push to Vercel — your quiz is live
+```
+
+No CSS changes required. Brand colors are injected at runtime as CSS custom properties.
 
 ---
 
@@ -110,6 +114,11 @@ packages/
           content.ts            # All copy, brand config, questions, scoring
 
 docs/
+  06-template-authoring/        # ← Start here to build a new quiz
+    README.md                   # 5-step guide
+    01-quiz-design-prompt.md    # AI prompt: design your quiz from scratch
+    02-worksheet.md             # Structured fill-in for all content
+    03-template-generation-prompt.md  # AI prompt: generate content.ts
   04-ops/DEPLOYMENT.md          # Vercel + DNS setup guide
   04-ops/ENV-VARS.md            # All environment variables
   03-engineering/ARCHITECTURE.md
@@ -155,7 +164,7 @@ pnpm convert-logos
 
 See [docs/05-open-source/CONTRIBUTING.md](docs/05-open-source/CONTRIBUTING.md).
 
-The fastest way to contribute is to **add a template** — copy `ai-readiness/`, update `content.ts`, and open a PR. Templates are self-contained.
+The fastest way to contribute is to **add a template** — follow the guide in `docs/06-template-authoring/`, then open a PR. Templates are self-contained.
 
 ---
 
