@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { sections, getQuestionsForSection, calculateScore } from "@/lib/questions";
 import { QuestionCard, type AnswerValue } from "@/components/QuestionCard";
@@ -17,6 +17,11 @@ export default function QuizPage() {
   const [currentStep, setCurrentStep] = useState<FlowStep>({ type: "intro", sectionIndex: 0 });
   const [answers, setAnswers] = useState<Record<string, number | string | string[]>>({});
   const [completedSections, setCompletedSections] = useState<Set<string>>(new Set());
+  const bodyRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    bodyRef.current?.scrollTo({ top: 0 });
+  }, [currentStep]);
 
   // Build flat list of all questions with section context
   const sectionQuestions = useMemo(() => {
@@ -151,7 +156,7 @@ export default function QuizPage() {
           )}
         </div>
 
-        <div className="flow-panel-body">
+        <div className="flow-panel-body" ref={bodyRef}>
           {currentStep.type === "intro" ? (
             <PillarIntro
               pillarName={currentSection.name}
