@@ -15,11 +15,11 @@ Copy `apps/web/.env.example` to `apps/web/.env.local` for local development.
 
 ---
 
-## n8n Webhook (CRM / Airtable)
+## Webhook (lead/CRM integration)
 
 | Variable | Required | Description |
 |---|---|---|
-| `NEXT_PUBLIC_N8N_WEBHOOK_URL` | No | n8n webhook URL that receives the full quiz payload (answers, scores, lead). Fire-and-forget — quiz still completes if this is missing. |
+| `NEXT_PUBLIC_WEBHOOK_URL` | No | Webhook URL that receives the full quiz payload (answers, scores, lead) on submission. Fire-and-forget — quiz still completes if missing or if the request fails. Point this at n8n, Zapier, Make.com, or any endpoint that accepts a POST with JSON. |
 
 ---
 
@@ -44,8 +44,8 @@ Reports are stored with a 1-year TTL.
 |---|---|---|
 | `EMAIL_PROVIDER` | No | Email provider to use. Default + only supported value: `brevo`. |
 | `BREVO_API_KEY` | Yes (for email) | Brevo SMTP API key (`xkeysib-...`). Found at app.brevo.com → SMTP & API → API Keys. |
-| `EMAIL_FROM` | No | Sender email address. Default: `reports@acceleratorsolutions.com`. Must be a verified sender in Brevo. |
-| `EMAIL_FROM_NAME` | No | Sender display name. Default: `Accelerator Solutions`. |
+| `EMAIL_FROM` | Yes (for email) | Sender email address. Must be a verified sender in your email provider. e.g. `reports@yourdomain.com` |
+| `EMAIL_FROM_NAME` | No | Sender display name. e.g. `Your Brand Name` |
 
 ---
 

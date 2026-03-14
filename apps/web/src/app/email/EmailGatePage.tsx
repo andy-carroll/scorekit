@@ -29,7 +29,7 @@ export function EmailGatePage({ heading, subheading, ctaText, templateId }: Emai
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const sendWebhook = (payload: Record<string, unknown>) => {
-    const webhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL;
+    const webhookUrl = process.env.NEXT_PUBLIC_WEBHOOK_URL;
     if (!webhookUrl) return;
     fetch(webhookUrl, {
       method: "POST",

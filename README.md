@@ -14,8 +14,8 @@ A user completes a multi-step quiz → hits an email gate → gets an instant pe
 Landing → /quiz → /email gate → /report/[token]
                       │
                       ├─→ Upstash KV (report stored, shareable link, 1yr TTL)
-                      ├─→ n8n webhook → Airtable (lead + scores → CRM)
-                      └─→ Brevo (PDF report emailed to user)
+                      ├─→ Webhook → any automation tool → your CRM  [optional]
+                      └─→ Email provider (PDF report emailed to user)  [optional]
 ```
 
 ---
@@ -25,8 +25,8 @@ Landing → /quiz → /email gate → /report/[token]
 - **Template-driven** — all copy, brand, questions, and scoring live in one `content.ts` file per template. No code changes to launch a new brand.
 - **Multi-tenant** — one codebase, one Vercel project per client. `SCOREKIT_TEMPLATE_ID` env var selects the active template.
 - **Shareable reports** — stored server-side in Upstash KV. Links work across devices and browsers.
-- **PDF delivery** — server-side PDF generation via `pdfkit`, emailed as an attachment via Brevo.
-- **CRM integration** — fire-and-forget n8n webhook delivers the full quiz payload (lead + answers + scores) to Airtable or any downstream system.
+- **PDF delivery** — server-side PDF generation via `pdfkit`, emailed as an attachment via your email provider of choice (Brevo, Resend, or any SMTP).
+- **CRM integration** — fire-and-forget webhook delivers the full quiz payload (lead + answers + scores) to any automation tool (n8n, Zapier, Make) or custom endpoint.
 - **Self-hostable** — Apache 2.0. All integrations are pluggable. localStorage fallback for local dev (no cloud accounts needed to run).
 
 ---
@@ -55,8 +55,8 @@ Accounts you'll need:
 |---|---|---|
 | [Vercel](https://vercel.com) | Hosting | Free |
 | [Upstash](https://upstash.com) | Serverless Redis (report storage) | Free tier |
-| [Brevo](https://brevo.com) | Transactional email + PDF attachment | Free tier (300/day) |
-| [n8n](https://n8n.io) | Webhook → Airtable CRM bridge | Optional |
+| Email provider | PDF report emailed to respondent | Brevo / Resend (both free tier) |
+| Webhook consumer | Lead + scores → your CRM | Optional (n8n, Zapier, Make, custom) |
 
 All env vars documented in [docs/04-ops/ENV-VARS.md](docs/04-ops/ENV-VARS.md).
 
@@ -136,9 +136,9 @@ docs/
 | Styles | Tailwind CSS + CSS custom properties |
 | Font | Aptos (self-hosted, `next/font/local`) |
 | Report storage | Upstash Redis (serverless KV) |
-| Email | Brevo (transactional, PDF attachment) |
+| Email | Brevo or Resend (pluggable adapter) |
 | PDF generation | pdfkit (server-side Node.js) |
-| CRM bridge | n8n webhook (fire-and-forget) |
+| CRM bridge | Webhook (fire-and-forget, any consumer) |
 | Package manager | pnpm (monorepo) |
 | Deployment | Vercel |
 | Licence | Apache 2.0 |

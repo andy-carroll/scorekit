@@ -36,7 +36,7 @@ NEXT_PUBLIC_BASE_PATH        /quiz/aireadiness
 # NEXT_PUBLIC_APP_URL        https://quiz.yourdomain.com
 
 SCOREKIT_TEMPLATE_ID         ai-readiness
-NEXT_PUBLIC_N8N_WEBHOOK_URL  https://your-n8n.example.com/webhook/scorekit/quiz-submit
+NEXT_PUBLIC_WEBHOOK_URL  https://your-n8n.example.com/webhook/scorekit/quiz-submit
 UPSTASH_REDIS_REST_URL       https://your-db-id.upstash.io
 UPSTASH_REDIS_REST_TOKEN     your-upstash-token
 EMAIL_PROVIDER               brevo

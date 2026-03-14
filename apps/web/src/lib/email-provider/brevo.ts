@@ -2,8 +2,8 @@ import type { EmailProvider, SendEmailInput } from "./types";
 
 export function createBrevoEmailProvider(): EmailProvider {
   const apiKey = process.env.BREVO_API_KEY!;
-  const defaultFromEmail = process.env.EMAIL_FROM ?? "reports@acceleratorsolutions.com";
-  const defaultFromName = process.env.EMAIL_FROM_NAME ?? "Accelerator Solutions";
+  const defaultFromEmail = process.env.EMAIL_FROM;
+  const defaultFromName = process.env.EMAIL_FROM_NAME ?? "ScoreKit";
 
   return {
     async sendEmail(input: SendEmailInput) {
