@@ -57,7 +57,7 @@ function RadioInput({
         <button
           key={option.value}
           onClick={() => onSelect(option.value)}
-          className={`w-full text-left px-5 py-4 rounded-lg border-2 transition-all duration-150 ${
+          className={`w-full text-left px-4 py-3 sm:px-5 sm:py-4 rounded-lg border-2 transition-all duration-150 ${
             selectedValue === option.value
               ? "border-[var(--color-primary)] bg-[var(--color-primary)]/10 text-[var(--color-text-on-light)]"
               : "border-[var(--color-border)] bg-[var(--color-bg-surface)] hover:border-[var(--color-primary)]/50 text-[var(--color-text-on-light-secondary)]"
@@ -148,7 +148,7 @@ function MultiSelectInput({
       {options.map((option) => (
         <label
           key={option.id}
-          className={`flex items-center w-full px-5 py-4 rounded-lg border-2 cursor-pointer transition-all duration-150 ${
+          className={`flex items-center w-full px-4 py-3 sm:px-5 sm:py-4 rounded-lg border-2 cursor-pointer transition-all duration-150 ${
             selectedValues.includes(option.id)
               ? "border-[var(--color-primary)] bg-[var(--color-primary)]/10 text-[var(--color-text-on-light)]"
               : "border-[var(--color-border)] bg-[var(--color-bg-surface)] hover:border-[var(--color-primary)]/50 text-[var(--color-text-on-light-secondary)]"

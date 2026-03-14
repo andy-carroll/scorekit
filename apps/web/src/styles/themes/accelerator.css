@@ -487,9 +487,15 @@
 /* Section heading */
 .section-heading {
   font-family: var(--font-display);
-  font-size: var(--text-2xl);
+  font-size: var(--text-xl);
   font-weight: var(--font-bold);
   color: var(--color-text-on-light);
+}
+
+@media (min-width: 640px) {
+  .section-heading {
+    font-size: var(--text-2xl);
+  }
 }
 
 /* Body text */
