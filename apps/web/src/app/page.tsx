@@ -49,7 +49,7 @@ export default function Home() {
       <section className="hero-dark min-h-[80vh] flex flex-col">
         <div className="flex-1 flex items-center justify-center px-6 py-12">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-display text-7xl mb-6">
+            <h1 className="text-display text-5xl sm:text-7xl mb-6">
               {landing.headline.includes("ready for AI") ? (
                 <>
                   Is your organisation{" "}

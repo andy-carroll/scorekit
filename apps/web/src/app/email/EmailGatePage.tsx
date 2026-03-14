@@ -193,8 +193,8 @@ export function EmailGatePage({ heading, subheading, ctaText, templateId }: Emai
               <input
                 type="text" id="website" required value={website}
                 onChange={(e) => setWebsite(e.target.value)}
-                className="form-input" placeholder="https://company.com"
-                inputMode="url"
+                className="form-input" placeholder="e.g. acme.com"
+                inputMode="url" autoCapitalize="none" autoCorrect="off" autoComplete="url"
               />
             </div>
 
