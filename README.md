@@ -27,6 +27,7 @@ Landing → /quiz → /email gate → /report/[token]
 - **Shareable reports** — stored server-side in Upstash KV. Links work across devices and browsers.
 - **PDF delivery** — server-side PDF generation via `pdfkit`, emailed as an attachment via your email provider of choice (Brevo, Resend, or any SMTP).
 - **CRM integration** — fire-and-forget webhook delivers the full quiz payload (lead + answers + scores) to any automation tool (n8n, Zapier, Make) or custom endpoint.
+- **Privacy & consent built in** — a required consent checkbox with a link to your privacy policy is built into the email gate and cannot be accidentally removed. Consent timestamp and policy URL are recorded in every webhook payload. Your privacy policy URL is configured per template in `content.ts` — each deployer supplies their own.
 - **Self-hostable** — Apache 2.0. All integrations are pluggable. localStorage fallback for local dev (no cloud accounts needed to run).
 
 ---

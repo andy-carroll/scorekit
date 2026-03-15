@@ -81,6 +81,28 @@ SCOREKIT_TEMPLATE_ID=[your-id]
 NEXT_PUBLIC_SCOREKIT_TEMPLATE_ID=[your-id]
 ```
 
+## Step 4e — Set your privacy policy URL ⚠️
+
+> **This step is required before going live with real users.**
+
+Open your `content.ts` file and set `legal.privacyPolicyUrl` to the full URL of your privacy policy:
+
+```typescript
+legal: {
+  privacyPolicyUrl: "https://yourdomain.com/privacy",
+}
+```
+
+**Why this matters:** ScoreKit collects personal data (name, email, company). A required consent checkbox is built into the email gate and cannot be disabled — respondents must tick it before submitting. The checkbox links to your privacy policy URL, and every webhook payload includes a timestamped consent record (`consent_given`, `consent_timestamp`, `privacy_policy_url`).
+
+Your privacy policy must cover:
+- That you collect name, email, company, and assessment responses
+- That you'll email them their report
+- How long you retain their data (ScoreKit stores reports for 1 year)
+- Your contact details for data requests
+
+If you don't have a privacy policy yet, draft one before launch. A simple, plain-English policy is better than none.
+
 ## Step 5 — Deploy
 
 Push to `main`. Vercel builds and deploys automatically.

@@ -108,6 +108,34 @@ export interface TemplateContent {
     buttonText: string;
     url?: string;
   };
+  legal: {
+    /**
+     * REQUIRED. Full URL to your privacy policy.
+     * Shown as a link in the consent checkbox on the email gate.
+     * Must be a publicly accessible URL — respondents will click it.
+     * The consent checkbox is ALWAYS shown and ALWAYS required.
+     * You cannot disable it: ScoreKit collects personal data (name, email,
+     * company) and requires explicit consent before submitting.
+     *
+     * The following data is recorded in every webhook payload:
+     *   consent_given: true
+     *   consent_timestamp: ISO 8601 datetime
+     *   privacy_policy_url: the URL you supply here
+     *
+     * This gives you a timestamped, policy-versioned consent record
+     * for every respondent — suitable for GDPR and similar frameworks.
+     */
+    privacyPolicyUrl: string;
+
+    /**
+     * OPTIONAL. Override the default consent checkbox label.
+     * Default: "I agree to the [Privacy Policy] and consent to receiving
+     *           my report and occasional relevant updates by email."
+     * Only override if your legal requirements differ — the default is
+     * deliberately broad enough to cover report delivery + follow-up.
+     */
+    consentText?: string;
+  };
 }
 
 // =============================================================================
@@ -473,6 +501,35 @@ export const starterContent: TemplateContent = {
     // OPTIONAL. Full URL the button links to. If omitted, the button is not rendered.
     // EXAMPLE: "https://accelerator-x.ai/book"
     url: "https://YOUR_DOMAIN/YOUR_BOOKING_PATH",
+  },
+
+  // ---------------------------------------------------------------------------
+  // legal
+  // WHAT THIS DOES: Powers the consent checkbox on the email gate form.
+  //
+  // ScoreKit collects personal data (name, email, company). A required consent
+  // checkbox is ALWAYS shown before form submission — this is not optional and
+  // cannot be disabled. This section configures what that checkbox says and
+  // links to.
+  //
+  // Every webhook payload includes:
+  //   consent_given: true
+  //   consent_timestamp: "<ISO 8601 datetime>"
+  //   privacy_policy_url: "<your URL>"
+  //
+  // This gives you a timestamped, auditable consent record for every
+  // respondent — suitable for GDPR (UK/EU), CASL, and similar frameworks.
+  // ---------------------------------------------------------------------------
+  legal: {
+    // REQUIRED. Must be a publicly accessible URL — respondents will click it.
+    // EXAMPLE: "https://yourdomain.com/privacy"
+    privacyPolicyUrl: "https://YOUR_DOMAIN/privacy",
+
+    // OPTIONAL. Override the consent checkbox label.
+    // Default: "I agree to the [Privacy Policy] and consent to receiving
+    //           my report and occasional relevant updates by email."
+    // Only set this if your legal requirements genuinely differ.
+    // consentText: "YOUR_CUSTOM_CONSENT_TEXT",
   },
 };
 
