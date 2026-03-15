@@ -122,7 +122,7 @@ export const questions: Question[] = [
     text: "Why are you exploring AI readiness now?",
     category: "context",
     questionType: "trigger",
-    inputType: "multiselect",
+    inputType: "multi-select",
     options: [
       { id: "competitive", label: "Competitors are pulling ahead" },
       { id: "efficiency", label: "Need to improve efficiency" },
