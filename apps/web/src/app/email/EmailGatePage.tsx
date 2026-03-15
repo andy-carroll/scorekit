@@ -10,6 +10,8 @@ interface EmailGatePageProps {
   subheading: string;
   ctaText: string;
   templateId: string;
+  privacyPolicyUrl: string;
+  consentText?: string;
 }
 
 const normalizeWebsite = (value: string): string => {
@@ -19,13 +21,14 @@ const normalizeWebsite = (value: string): string => {
   return `https://${trimmed}`;
 };
 
-export function EmailGatePage({ heading, subheading, ctaText, templateId }: EmailGatePageProps) {
+export function EmailGatePage({ heading, subheading, ctaText, templateId, privacyPolicyUrl, consentText }: EmailGatePageProps) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
   const [role, setRole] = useState("");
   const [website, setWebsite] = useState("");
+  const [consented, setConsented] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const sendWebhook = (payload: Record<string, unknown>) => {
@@ -96,6 +99,9 @@ export function EmailGatePage({ heading, subheading, ctaText, templateId }: Emai
         primary_constraint: undefined,
         pillar_scores: result.pillarScores,
         answers,
+        consent_given: true,
+        consent_timestamp: new Date().toISOString(),
+        privacy_policy_url: privacyPolicyUrl,
       });
     }
 
@@ -198,8 +204,34 @@ export function EmailGatePage({ heading, subheading, ctaText, templateId }: Emai
               />
             </div>
 
-            <p className="muted-text text-center mt-4">
-              We&apos;ll also send a PDF copy to your inbox. No spam, ever.
+            <label className="flex items-start gap-3 cursor-pointer mt-4">
+              <input
+                type="checkbox"
+                required
+                checked={consented}
+                onChange={(e) => setConsented(e.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300 accent-[var(--color-primary)]"
+              />
+              <span className="text-sm text-gray-600 leading-snug">
+                {consentText ?? (
+                  <>
+                    I agree to the{" "}
+                    <a
+                      href={privacyPolicyUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline hover:text-gray-900"
+                    >
+                      Privacy Policy
+                    </a>{" "}
+                    and consent to receiving my report and occasional relevant updates by email.
+                  </>
+                )}
+              </span>
+            </label>
+
+            <p className="muted-text text-center mt-2">
+              We&apos;ll send a PDF copy to your inbox. No spam, ever.
             </p>
           </div>
         </div>

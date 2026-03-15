@@ -11,6 +11,8 @@ export default function EmailPage() {
       subheading={`Enter your details to unlock your personalised ${content.meta.templateName}.`}
       ctaText="Get My Free Report"
       templateId={templateId}
+      privacyPolicyUrl={content.legal.privacyPolicyUrl}
+      consentText={content.legal.consentText}
     />
   );
 }

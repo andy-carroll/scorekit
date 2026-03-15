@@ -115,6 +115,12 @@ export interface TemplateContent {
     buttonText: string;
     url?: string;
   };
+  legal: {
+    /** URL to the deployer's privacy policy — shown on the email gate consent checkbox */
+    privacyPolicyUrl: string;
+    /** Optional override for the consent checkbox label */
+    consentText?: string;
+  };
 }
 
 export const aiReadinessContent: TemplateContent = {
@@ -384,6 +390,10 @@ export const aiReadinessContent: TemplateContent = {
     headline: "Ready to accelerate your AI journey?",
     body: "Book a free 30-minute strategy session. We'll review your results together and map out your first 90 days.",
     buttonText: "Book Your Free Strategy Session",
+  },
+
+  legal: {
+    privacyPolicyUrl: "https://accelerator-x.ai/privacy",
   },
 };
 
