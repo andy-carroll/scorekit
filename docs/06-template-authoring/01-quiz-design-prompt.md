@@ -44,8 +44,17 @@ These gather demographic and goal information to personalise the report. They ar
 
 - **ID** (e.g. `ctx-goal`, `ctx-experience`)
 - **Question text**
-- **Input type**: `select` (dropdown), `multi-select` (checkboxes), or `text` (free text)
-- **Options** (for select and multi-select): 4–8 choices
+- **Input type** — choose the right one for the question:
+
+| `inputType` | Renders as | When to use |
+|---|---|---|
+| `radio` | Clickable option cards | Scored (diagnostic) questions — one answer only |
+| `select` | Dropdown | Single-answer context questions (industry, company size, role) |
+| `multi-select` | Checkboxes | Questions where multiple answers apply ("why now?", "what's blocking you?") |
+| `text` | Open text field | Free-form context ("describe your goal in your own words") |
+| `number` | Numeric input | Quantities (team size, budget range) |
+
+- **Options** (for `select` and `multi-select`): 4–8 choices
 
 Typical context questions cover: who they are, their starting point, what they want, what's blocked them before, what success looks like.
 
