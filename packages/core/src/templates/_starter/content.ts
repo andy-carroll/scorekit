@@ -4,11 +4,20 @@
  * All copy for your assessment report.
  * Replace every "YOUR_VALUE_HERE" placeholder before using this file.
  *
+ * ⚠️  IMPORTANT: These fields drive BOTH the web report AND the PDF that gets
+ *     emailed to every respondent. If any field is wrong, missing, or still a
+ *     placeholder, your leads will receive a broken PDF. The most critical
+ *     fields for PDF quality are: bandIntros, pillarLabels, pillarInsights,
+ *     recommendations, nextSteps, cta, and brand.colors/logo.
+ *     See docs/05-open-source/PDF-RENDERER.md for the full PDF architecture.
+ *
  * HOW TO USE:
  *   1. Copy this directory to packages/core/src/templates/[your-id]/
  *   2. Fill in every placeholder below
  *   3. Rename the exported constant (see bottom of file)
  *   4. Follow steps 4a–4d in docs/06-template-authoring/README.md to install
+ *   5. Generate a test PDF and review every page before going live:
+ *        node apps/web/scripts/test-pdf.mjs
  *
  * SHORTCUT: Instead of filling this in manually, use the generation prompt:
  *   docs/06-template-authoring/03-template-generation-prompt.md

@@ -109,6 +109,39 @@ Push to `main`. Vercel builds and deploys automatically.
 
 ---
 
+## ⚠️ Your content.ts drives the PDF — get it right
+
+**This is the most important thing to understand as a template author.**
+
+When a respondent completes your quiz, ScoreKit generates a branded PDF report that is:
+1. Emailed to them automatically (as an attachment)
+2. Available for download on the report page
+
+**Every piece of text in that PDF comes from your `content.ts` file.** If a field is wrong, missing, or placeholder, the PDF your leads receive will contain that broken content. There is no separate "PDF config" — the same `content.ts` fields power both the web report and the PDF.
+
+The fields that matter most for PDF quality:
+
+| Field | What goes wrong if it's bad |
+|-------|---------------------------|
+| `bandIntros` | The hero section shows a nonsensical headline and intro for the respondent's score band |
+| `pillarLabels` | Every pillar name throughout the entire PDF is wrong |
+| `pillarInsights` | The "Insights & Recommendations" page shows incorrect or placeholder diagnostic text |
+| `recommendations` | The actionable advice cards show placeholder or irrelevant recommendations |
+| `nextSteps` | The "Next Steps" section on page 1 shows meaningless actions |
+| `cta` | The call-to-action blocks (page 1, page 3, final page) show wrong headline/button text or link to the wrong URL |
+| `brand.colors` | The entire PDF uses wrong colours — headers, accent stripes, chips, CTA buttons |
+| `brand.logo.light` | The logo in the PDF header is missing (must be `.png` — pdfkit cannot render SVG) |
+
+**Before you go live**, generate a test PDF and review every page. Use the test script:
+
+```bash
+node apps/web/scripts/test-pdf.mjs
+```
+
+This generates a PDF from the test fixture without needing to complete the quiz. See `docs/05-open-source/PDF-RENDERER.md` for full PDF architecture details.
+
+---
+
 ## Reference files
 
 | File | Purpose |

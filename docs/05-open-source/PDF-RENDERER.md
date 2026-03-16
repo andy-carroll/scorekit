@@ -61,13 +61,12 @@ Both call the same `renderPdf()` function. The PDF a user downloads is identical
 
 **Layout:**
 1. **Header bar** — "Insights & Recommendations" title + subtitle
-2. **Strength card** — highest-scoring pillar, name + score + insight text
+2. **Strength card** — highest-scoring pillar, name + score/level chip ("4.0/5 · Strong") + insight text
 3. **Focus area cards** (×3) — the three lowest-scoring pillars, each with:
-   - Pillar name + score/level chip ("2.1/5 · Needs focus")
+   - Pillar name + score/level chip ("2.1/5 · Needs focus"), chip aligned with label row
    - Colour-coded accent stripe (red/primary/emerald matching HTML report)
    - Insight title (brief framing sentence)
    - Insight body (2–3 sentence explanation)
-   - Score bar
    - Recommendation box (headline + action)
 4. **CTA repeat** — same branded CTA from page 1
 
@@ -103,8 +102,15 @@ Appended after the last answer appendix content — a branded "book a call" pane
 `drawGlobalFooters(doc, theme, report, reportUrl)`
 
 Drawn on **every page** after all content is rendered (uses pdfkit's `bufferPages` + `switchToPage` API). Each footer includes:
-- Left: "Prepared for [name], [company] · View full report" (hyperlinked)
+- Thin divider line
+- Left: "Prepared for [name], [company] · View full report online >" — the link portion is rendered in the brand's primary colour and is a clickable hyperlink to the online report
 - Right: page number ("1 / 6")
+
+**pdfkit footer gotchas** (documented here because they are non-obvious and easy to reintroduce):
+- `doc.page.margins.bottom` must be temporarily zeroed before drawing in the margin area — pdfkit auto-flows text to a new page when `y >= pageH - bottomMargin`, even with `lineBreak: false`
+- Never use `continued: true` after `switchToPage()` — it spawns overflow pages
+- Never call `widthOfString()` after `switchToPage()` — it returns NaN
+- All text calls must use `lineBreak: false`
 
 **Data sources:**
 - `mapAnswersToPillars()` from `@scorekit/core` — maps raw answers to pillar groups with display labels
@@ -217,10 +223,33 @@ Font family is constrained to pdfkit's built-in fonts (`Helvetica`, `Helvetica-B
 
 ---
 
+## Testing
+
+A dev test script generates a PDF from a saved fixture without needing to complete the quiz:
+
+```bash
+node apps/web/scripts/test-pdf.mjs          # requires dev server running (pnpm dev)
+PORT=3001 node apps/web/scripts/test-pdf.mjs # if dev server is on a different port
+```
+
+Output: `apps/web/test-output.pdf` (git-ignored). On macOS, it opens in Preview automatically.
+
+The test fixture is at `apps/web/test-fixtures/report.json` — a complete `ReportRecord` with all pillar scores, answers, and lead info. Edit it to test different score bands or edge cases.
+
+**Always regenerate and review the PDF after any change to:**
+- `route.ts` or `theme.ts` (layout/rendering code)
+- `content.ts` fields that the PDF reads (see table above)
+- Logo files (must be `.png`, correct path in `brand.logo.light`)
+
+---
+
 ## File locations
 
 ```
 apps/web/src/app/api/report/pdf/
   route.ts     — renderPdf(), page renderers, POST handler
   theme.ts     — buildPdfTheme() — reads brand from template
+
+apps/web/scripts/test-pdf.mjs       — PDF dev test script
+apps/web/test-fixtures/report.json  — test fixture (ReportRecord)
 ```
