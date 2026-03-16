@@ -505,7 +505,7 @@ function renderPage2InsightsAndRecommendations(
 
   let cursorY = 140;
 
-  // Strength callout — expanded to include insight text (HTML parity).
+  // Strength callout — expanded to include insight text and score chip (HTML parity).
   if (strongest) {
     const level = toLevel(strongest.score);
     const strengthInsightText = pillarInsights[strongest.pillarId]?.[level]?.insight ?? "";
@@ -513,13 +513,23 @@ function renderPage2InsightsAndRecommendations(
     const innerX = pageX + 18;
     const innerW = contentW - 36;
 
+    // Score chip (same style as focus cards for visual consistency)
+    const strongChipText = `${strongest.score.toFixed(1)}/5 · ${levelLabel(level)}`;
+    doc.font("Helvetica-Bold").fontSize(10);
+    const strongChipW = clamp(doc.widthOfString(strongChipText) + 20, 90, 150);
+
+    doc.font("Helvetica-Bold").fontSize(14);
+    const strongTitleH = doc.heightOfString(pillLabelFor(strongest.pillarId), {
+      width: innerW - (strongChipW + 12),
+    });
+
     doc.font("Helvetica").fontSize(10);
     const insightH = strengthInsightText
       ? doc.heightOfString(strengthInsightText, { width: innerW, lineGap: 2 })
       : 0;
 
     // Dynamic height: label + title + optional insight + padding
-    const strengthCardH = Math.ceil(16 + 14 + 20 + (insightH > 0 ? 8 + insightH + 14 : 16));
+    const strengthCardH = Math.ceil(16 + 14 + strongTitleH + 6 + (insightH > 0 ? insightH + 14 : 10));
 
     doc
       .save()
@@ -534,23 +544,45 @@ function renderPage2InsightsAndRecommendations(
       .fontSize(10)
       .fillColor(colors.mutedText)
       .text("STRENGTH", innerX, cursorY + 16);
+
+    const strongTitleY = cursorY + 32;
     doc
       .font("Helvetica-Bold")
-      .fontSize(13)
+      .fontSize(14)
       .fillColor(colors.text)
-      .text(
-        `${pillLabelFor(strongest.pillarId)} (${strongest.score.toFixed(1)}/5)`,
-        innerX,
-        cursorY + 32,
-        { width: innerW },
-      );
+      .text(pillLabelFor(strongest.pillarId), innerX, strongTitleY, {
+        width: innerW - (strongChipW + 12),
+      });
+
+    // Score chip — top-right of the card, aligned with the label row
+    const strongChipH = 22;
+    const strongChipX = pageX + contentW - strongChipW - 18;
+    const strongChipY = cursorY + 14;
+    doc
+      .save()
+      .strokeOpacity(0.16)
+      .lineWidth(1)
+      .roundedRect(strongChipX, strongChipY, strongChipW, strongChipH, 999)
+      .fillAndStroke(colors.pageBg, colors.secondary)
+      .restore();
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(9)
+      .fillColor(colors.mutedText)
+      .text(strongChipText, strongChipX + 10, strongChipY + 6, {
+        width: strongChipW - 20,
+        align: "center",
+      });
 
     if (strengthInsightText) {
       doc
         .font("Helvetica")
         .fontSize(10)
         .fillColor(colors.mutedText)
-        .text(strengthInsightText, innerX, cursorY + 54, { width: innerW, lineGap: 2 });
+        .text(strengthInsightText, innerX, strongTitleY + strongTitleH + 6, {
+          width: innerW,
+          lineGap: 2,
+        });
     }
 
     cursorY += strengthCardH + 18;
@@ -587,12 +619,12 @@ function renderPage2InsightsAndRecommendations(
     const insightBodyH = doc.heightOfString(insightBodyText, { width: innerW, lineGap: 2 });
 
     // --- Step 2: Compute RELATIVE offsets from card top ---
+    // No progress bar — the score chip + accent stripe already communicate level.
     const relLabel = 16;
     const relTitle = relLabel + 16;
     const relInsightTitle = relTitle + titleH + 6;
     const relInsightBody = relInsightTitle + insightTitleH + 6;
-    const relScoreBar = relInsightBody + insightBodyH + 12;
-    const relRec = relScoreBar + 14;
+    const relRec = relInsightBody + insightBodyH + 12;
     const cardH = Math.ceil(relRec + 40);
 
     // --- Step 3: Pagination check (may reset cursorY) ---
@@ -607,7 +639,6 @@ function renderPage2InsightsAndRecommendations(
     const yTitle = cursorY + relTitle;
     const yInsightTitle = cursorY + relInsightTitle;
     const yInsightBody = cursorY + relInsightBody;
-    const yScoreBar = cursorY + relScoreBar;
     const yRec = cursorY + relRec;
 
     const accentColor = scoreColor(p.score, colors.primary);
@@ -625,7 +656,7 @@ function renderPage2InsightsAndRecommendations(
 
     const chipH = 22;
     const chipX = pageX + contentW - chipW - 18;
-    const chipY = yTitle + 2;
+    const chipY = yLabel - 2; // Align with the label row, not the title
     doc
       .save()
       .strokeOpacity(0.16)
@@ -650,15 +681,6 @@ function renderPage2InsightsAndRecommendations(
       .fontSize(10)
       .fillColor(colors.text)
       .text(insightBodyText, innerX, yInsightBody, { width: innerW, lineGap: 2 });
-
-    doc
-      .save()
-      .strokeOpacity(0.14)
-      .lineWidth(1)
-      .roundedRect(innerX, yScoreBar, innerW, 8, 6)
-      .fillAndStroke(colors.pageBg, colors.secondary)
-      .restore();
-    doc.save().roundedRect(innerX, yScoreBar, innerW * clamp(p.score / 5, 0, 1), 8, 6).fill(accentColor).restore();
 
     doc
       .save()
@@ -1057,22 +1079,30 @@ function drawGlobalFooters(
       .stroke(colors.border)
       .restore();
 
-    // Left side: single combined footer string — avoids `continued` and
-    // `widthOfString` which can produce NaN after switchToPage().
+    // Left side: two-part footer — prefix in muted grey, link in primary colour.
+    // Rendered as two separate .text() calls at explicit x positions to avoid
+    // `continued` (spawns overflow pages) and `widthOfString` (returns NaN)
+    // after switchToPage(). Positions are estimated from font metrics at 7.5pt.
     // IMPORTANT: All text calls use lineBreak: false to prevent pdfkit from
     // creating overflow pages when drawing on buffered pages via switchToPage().
-    const footerText = `Prepared for ${report.lead.name}, ${report.lead.company}  ·  View full report`;
+    const footerPrefix = `Prepared for ${report.lead.name}, ${report.lead.company}  ·  `;
+    const footerLink = "View full report online  >";
+    // At Helvetica 7.5pt, average char width ≈ 3.6pt. Estimate prefix width:
+    const estPrefixW = footerPrefix.length * 3.6;
+    const estLinkW = footerLink.length * 3.6;
     doc
       .font("Helvetica")
       .fontSize(7.5)
       .fillColor(colors.mutedText)
-      .text(footerText, pageX, footerY, { lineBreak: false });
+      .text(footerPrefix, pageX, footerY, { lineBreak: false });
+    doc
+      .font("Helvetica")
+      .fontSize(7.5)
+      .fillColor(colors.primary)
+      .text(footerLink, pageX + estPrefixW, footerY, { lineBreak: false });
 
-    // Overlay the "View full report" portion with a clickable hyperlink.
-    // Approximate position: the link covers the last ~80pt of the footer text.
-    const linkW = 62;
-    const linkX = pageX + contentW - 60 - linkW;
-    doc.link(linkX, footerY - 2, linkW + 20, 12, reportUrl);
+    // Clickable hyperlink overlay covering the "View full report online ↗" text
+    doc.link(pageX + estPrefixW, footerY - 2, estLinkW + 10, 14, reportUrl);
 
     // Right side: page number
     const pageLabel = `${i + 1} / ${totalPages}`;
