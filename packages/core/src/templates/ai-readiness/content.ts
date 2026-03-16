@@ -390,6 +390,7 @@ export const aiReadinessContent: TemplateContent = {
     headline: "Ready to accelerate your AI journey?",
     body: "Book a free 30-minute strategy session. We'll review your results together and map out your first 90 days.",
     buttonText: "Book Your Free Strategy Session",
+    url: "https://calendar.app.google/JsmYqtkKvuLacvhs8",
   },
 
   legal: {

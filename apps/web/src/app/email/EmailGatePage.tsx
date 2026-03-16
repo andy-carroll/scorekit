@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { getReportStore } from "@/lib/report-store";
 import type { ScoreResult } from "@/lib/report-store/types";
 
 interface EmailGatePageProps {
@@ -70,16 +69,25 @@ export function EmailGatePage({ heading, subheading, ctaText, templateId, privac
     const result = JSON.parse(storedResult) as ScoreResult;
     const normalizedWebsite = normalizeWebsite(website);
 
-    const store = getReportStore();
-    const { token } = await store.createReport({
-      templateId,
-      answers,
-      result,
-      lead: { email, name, company, role, website: normalizedWebsite },
+    // Create report server-side so Upstash env vars are available
+    const createRes = await fetch("/api/report/create", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        templateId,
+        answers,
+        result,
+        lead: { email, name, company, role, website: normalizedWebsite },
+      }),
     });
 
-    // Get the full report record for email delivery
-    const reportRecord = await store.getReport(token);
+    if (!createRes.ok) {
+      console.error("[REPORT] Failed to create report:", await createRes.text());
+      setIsSubmitting(false);
+      return;
+    }
+
+    const { token, report: reportRecord } = await createRes.json() as { token: string; report: import("@/lib/report-store/types").ReportRecord };
 
     // Fire-and-forget webhook for Airtable/n8n ingestion
     if (typeof window !== "undefined") {
