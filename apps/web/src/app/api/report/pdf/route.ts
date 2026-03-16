@@ -3,6 +3,12 @@ import PDFDocument from "pdfkit";
 import fs from "node:fs";
 import path from "node:path";
 
+// TODO (Part 2 — post-launch): Replace direct aiReadinessContent import with
+//   getActiveTemplateContent() from "@/lib/active-template"
+//   so the PDF renderer is template-agnostic. Both this file and theme.ts need
+//   the same change. Safe to do here (server-only route) but deferred until the
+//   broader "questions into template" architecture work lands.
+//   See docs/05-open-source/PDF-RENDERER.md for full details.
 import { aiReadinessContent, mapAnswersToPillars, type Template } from "@scorekit/core";
 import { sections, getQuestionsForSection } from "@/lib/questions";
 import type { ReportRecord } from "@/lib/report-store/types";
@@ -13,6 +19,34 @@ type PdfRequestBody = {
 };
 
 export const runtime = "nodejs";
+
+// ---------------------------------------------------------------------------
+// Shared helpers (module-level so all page renderers can use them)
+// ---------------------------------------------------------------------------
+
+/**
+ * Semantic bar/chip colour — mirrors the HTML report's colour logic.
+ * low (≤ 2.2): red-500, medium (≤ 3.6): brand primary, high (> 3.6): emerald-500
+ */
+function scoreColor(score: number, primary: string): string {
+  if (score <= 2.2) return "#ef4444";
+  if (score <= 3.6) return primary;
+  return "#10b981";
+}
+
+function toLevel(score: number): "low" | "medium" | "high" {
+  if (score <= 2.2) return "low";
+  if (score <= 3.6) return "medium";
+  return "high";
+}
+
+function levelLabel(l: "low" | "medium" | "high"): string {
+  if (l === "low") return "Needs focus";
+  if (l === "medium") return "Building";
+  return "Strong";
+}
+
+// ---------------------------------------------------------------------------
 
 function buildPseudoTemplate(): Template {
   return {
@@ -59,10 +93,15 @@ function buildPseudoTemplate(): Template {
   };
 }
 
+// ---------------------------------------------------------------------------
+// Page 1 — Executive Snapshot
+// ---------------------------------------------------------------------------
+
 function renderPage1ExecutiveSnapshot(
   doc: PDFKit.PDFDocument,
   report: ReportRecord,
   theme: ReturnType<typeof buildPdfTheme>,
+  reportUrl: string,
 ) {
   const { colors } = theme;
   const { pillarLabels, bandIntros, nextSteps, cta } = aiReadinessContent;
@@ -73,15 +112,15 @@ function renderPage1ExecutiveSnapshot(
   const contentW = pageW - doc.page.margins.left - doc.page.margins.right;
 
   const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
+  // shorten() is kept only for UI copy that has hard layout constraints (button labels,
+  // CTA headline). Narrative content (band intro, step descriptions, insights) is shown in full.
   const shorten = (s: string, maxLen: number) => (s.length <= maxLen ? s : `${s.slice(0, maxLen - 1).trimEnd()}…`);
   const fitTextToWidth = (text: string, maxWidth: number, minChars = 10) => {
     if (doc.widthOfString(text) <= maxWidth) return text;
-
     for (let n = text.length; n > minChars; n--) {
       const candidate = `${text.slice(0, n - 1).trimEnd()}…`;
       if (doc.widthOfString(candidate) <= maxWidth) return candidate;
     }
-
     return `${text.slice(0, minChars - 1).trimEnd()}…`;
   };
 
@@ -143,7 +182,7 @@ function renderPage1ExecutiveSnapshot(
           logoRendered = true;
           break;
         } catch {
-          // ignore logo issues for now
+          // ignore logo issues
         }
       }
       if (logoRendered) break;
@@ -187,10 +226,10 @@ function renderPage1ExecutiveSnapshot(
   const bandLabel = report.result.band;
   const bandCopy = bandIntros[bandLabel];
   const bandHeadline = bandCopy?.headline ?? "Your AI readiness in context";
-  const bandIntro = bandCopy?.intro ?? "";
+  // Full band intro — not truncated. Authored text should appear as written.
+  const bandIntroText = bandCopy?.intro ?? "";
 
   const heroHeadlineText = shorten(bandHeadline, 110);
-  const heroIntroText = shorten(bandIntro, 340);
 
   // Measure hero height based on actual wrapped text
   const heroHeadlineY = heroY + 20;
@@ -199,9 +238,10 @@ function renderPage1ExecutiveSnapshot(
 
   const heroIntroY = heroHeadlineY + heroHeadlineH + 6;
   doc.font("Helvetica").fontSize(10);
-  const introH = doc.heightOfString(heroIntroText, { width: rightW, lineGap: 2 });
+  const introH = doc.heightOfString(bandIntroText, { width: rightW, lineGap: 2 });
 
-  const computedHeroH = clamp(Math.ceil(20 + heroHeadlineH + 6 + introH + 28), 140, 200);
+  // Max increased to 220 to accommodate full authored intro text without clipping.
+  const computedHeroH = clamp(Math.ceil(20 + heroHeadlineH + 6 + introH + 28), 140, 220);
 
   doc
     .save()
@@ -246,7 +286,7 @@ function renderPage1ExecutiveSnapshot(
     .font("Helvetica")
     .fontSize(10)
     .fillColor(colors.mutedText)
-    .text(heroIntroText, rightX, heroIntroY, { width: rightW, lineGap: 2 });
+    .text(bandIntroText, rightX, heroIntroY, { width: rightW, lineGap: 2 });
 
   const gridTopY = heroY + computedHeroH + 26;
   const gutter = 24;
@@ -286,9 +326,9 @@ function renderPage1ExecutiveSnapshot(
     leftY += oppH + 10;
   }
 
-  const steps = nextSteps.slice(0, 3);
-  for (let i = 0; i < steps.length; i++) {
-    const step = steps[i];
+  // Show all next steps (HTML parity — no arbitrary slice).
+  for (let i = 0; i < nextSteps.length; i++) {
+    const step = nextSteps[i];
 
     const textX = col1X + 28;
     const textW = colW - 28;
@@ -297,8 +337,14 @@ function renderPage1ExecutiveSnapshot(
     doc.font("Helvetica-Bold").fontSize(11);
     const titleH = doc.heightOfString(step.title, { width: textW, lineGap: 2 });
 
+    // Step 2 (index 1): inject the weakest pillar name to personalise the description,
+    // matching the HTML report's dynamic text ("For you, that's [pillar]. ...").
+    const descText =
+      i === 1 && weakest
+        ? `For you, that's ${pillLabelFor(weakest.pillarId)}. ${step.description}`
+        : step.description;
+
     doc.font("Helvetica").fontSize(10);
-    const descText = shorten(step.description, 140);
     const descY = titleY + titleH + 4;
     const descH = doc.heightOfString(descText, { width: textW, lineGap: 2 });
 
@@ -333,8 +379,11 @@ function renderPage1ExecutiveSnapshot(
   const barW = colW;
   const barH = 8;
 
+  // Colour-coded bars matching the HTML report: red (low), primary (medium), emerald (high).
   for (const pillarId of orderedPillars) {
     const score = report.result.pillarScores[pillarId] ?? 0;
+    const barColor = scoreColor(score, colors.primary);
+
     doc
       .font("Helvetica")
       .fontSize(10)
@@ -348,7 +397,7 @@ function renderPage1ExecutiveSnapshot(
 
     const barY = rightY + 16;
     doc.save().roundedRect(col2X, barY, barW, barH, 4).fill(colors.pageBg).stroke(colors.border).restore();
-    doc.save().roundedRect(col2X, barY, barW * clamp(score / 5, 0, 1), barH, 4).fill(colors.primary).restore();
+    doc.save().roundedRect(col2X, barY, barW * clamp(score / 5, 0, 1), barH, 4).fill(barColor).restore();
 
     rightY += 34;
   }
@@ -358,7 +407,7 @@ function renderPage1ExecutiveSnapshot(
 
   const ctaY = bodyBottomY + 18;
   const footerY = pageH - doc.page.margins.bottom - 18;
-  const ctaH = clamp(Math.min(120, footerY - ctaY - 10), 76, 120);
+  const ctaH = clamp(Math.min(120, footerY - ctaY - 34), 76, 120);
 
   doc.save().roundedRect(pageX, ctaY, contentW, ctaH, 14).fill(colors.headerBg).restore();
   const ctaPad = 18;
@@ -390,22 +439,23 @@ function renderPage1ExecutiveSnapshot(
     .fillColor(colors.badgeText)
     .text(buttonLabel, buttonX + 10, buttonY + 11, { width: buttonW - 20, align: "center" });
 
-  doc
-    .font("Helvetica")
-    .fontSize(9)
-    .fillColor(colors.mutedText)
-    .text(
-      `Prepared for ${report.lead.name}, ${report.lead.company} • Report token: ${report.token}`,
-      pageX,
-      pageH - doc.page.margins.bottom - 18,
-      { width: contentW },
-    );
+  // Make the CTA button a real hyperlink.
+  if (cta.url) {
+    doc.link(buttonX, buttonY, buttonW, buttonH, cta.url);
+  }
+
+  // Footer is now drawn globally across all pages — see drawGlobalFooters().
 }
+
+// ---------------------------------------------------------------------------
+// Page 2 — Insights & Recommendations
+// ---------------------------------------------------------------------------
 
 function renderPage2InsightsAndRecommendations(
   doc: PDFKit.PDFDocument,
   report: ReportRecord,
   theme: ReturnType<typeof buildPdfTheme>,
+  reportUrl: string,
 ) {
   const { colors } = theme;
   const { pillarLabels, pillarInsights, recommendations, cta } = aiReadinessContent;
@@ -414,78 +464,103 @@ function renderPage2InsightsAndRecommendations(
   const pageH = doc.page.height;
   const pageX = doc.page.margins.left;
   const contentW = pageW - doc.page.margins.left - doc.page.margins.right;
+  const bottomMarginY = pageH - doc.page.margins.bottom;
 
   const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
   const shorten = (s: string, maxLen: number) => (s.length <= maxLen ? s : `${s.slice(0, maxLen - 1).trimEnd()}…`);
   const pillLabelFor = (pillarId: string) => pillarLabels[pillarId] || pillarId;
 
-  const toLevel = (score: number): "low" | "medium" | "high" => {
-    if (score <= 2.2) return "low";
-    if (score <= 3.6) return "medium";
-    return "high";
-  };
-
-  const levelLabel = (l: "low" | "medium" | "high") => {
-    if (l === "low") return "Needs focus";
-    if (l === "medium") return "Building";
-    return "Strong";
-  };
-
   const pillarEntries = Object.entries(report.result.pillarScores).map(([pillarId, score]) => ({ pillarId, score }));
   pillarEntries.sort((a, b) => a.score - b.score);
-  const focus = pillarEntries.slice(0, 2);
+  // Show the bottom 3 focus pillars (HTML parity — was 2 previously).
+  const focus = pillarEntries.slice(0, 3);
   const strongest = pillarEntries[pillarEntries.length - 1];
 
-  doc.addPage();
-
-  doc.save().rect(0, 0, pageW, 120).fill(colors.headerBg).restore();
-  doc
-    .save()
-    .fillColor(colors.primary)
-    .fillOpacity(0.14)
-    .moveTo(pageW - 160, 0)
-    .lineTo(pageW, 0)
-    .lineTo(pageW, 160)
-    .closePath()
-    .fill()
-    .restore();
-  doc
-    .font("Helvetica-Bold")
-    .fontSize(20)
-    .fillColor(colors.headerText)
-    .text("Insights & Recommendations", pageX, 44, { width: contentW });
-  doc
-    .font("Helvetica")
-    .fontSize(10)
-    .fillColor(colors.headerText)
-    .text("The most valuable actions to take in the next 30–90 days", pageX, 72, { width: contentW });
-
-  const startY = 140;
-
-  if (strongest) {
-    const y = startY;
+  const drawPageHeader = () => {
+    doc.save().rect(0, 0, pageW, 120).fill(colors.headerBg).restore();
     doc
       .save()
-      .roundedRect(pageX, y, contentW, 68, 14)
+      .fillColor(colors.primary)
+      .fillOpacity(0.14)
+      .moveTo(pageW - 160, 0)
+      .lineTo(pageW, 0)
+      .lineTo(pageW, 160)
+      .closePath()
+      .fill()
+      .restore();
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(20)
+      .fillColor(colors.headerText)
+      .text("Insights & Recommendations", pageX, 44, { width: contentW });
+    doc
+      .font("Helvetica")
+      .fontSize(10)
+      .fillColor(colors.headerText)
+      .text("The most valuable actions to take in the next 30–90 days", pageX, 72, { width: contentW });
+  };
+
+  doc.addPage();
+  drawPageHeader();
+
+  let cursorY = 140;
+
+  // Strength callout — expanded to include insight text (HTML parity).
+  if (strongest) {
+    const level = toLevel(strongest.score);
+    const strengthInsightText = pillarInsights[strongest.pillarId]?.[level]?.insight ?? "";
+
+    const innerX = pageX + 18;
+    const innerW = contentW - 36;
+
+    doc.font("Helvetica").fontSize(10);
+    const insightH = strengthInsightText
+      ? doc.heightOfString(strengthInsightText, { width: innerW, lineGap: 2 })
+      : 0;
+
+    // Dynamic height: label + title + optional insight + padding
+    const strengthCardH = Math.ceil(16 + 14 + 20 + (insightH > 0 ? 8 + insightH + 14 : 16));
+
+    doc
+      .save()
+      .roundedRect(pageX, cursorY, contentW, strengthCardH, 14)
       .fillAndStroke(colors.surface, colors.border)
       .restore();
+    // Accent left stripe (matches HTML's emerald callout styling).
+    doc.save().roundedRect(pageX, cursorY, 8, strengthCardH, 14).fill("#10b981").restore();
 
     doc
       .font("Helvetica-Bold")
       .fontSize(10)
       .fillColor(colors.mutedText)
-      .text("STRENGTH", pageX + 18, y + 16);
+      .text("STRENGTH", innerX, cursorY + 16);
     doc
       .font("Helvetica-Bold")
       .fontSize(13)
       .fillColor(colors.text)
-      .text(`${pillLabelFor(strongest.pillarId)} (${strongest.score.toFixed(1)}/5)`, pageX + 18, y + 32, {
-        width: contentW - 36,
-      });
+      .text(
+        `${pillLabelFor(strongest.pillarId)} (${strongest.score.toFixed(1)}/5)`,
+        innerX,
+        cursorY + 32,
+        { width: innerW },
+      );
+
+    if (strengthInsightText) {
+      doc
+        .font("Helvetica")
+        .fontSize(10)
+        .fillColor(colors.mutedText)
+        .text(strengthInsightText, innerX, cursorY + 54, { width: innerW, lineGap: 2 });
+    }
+
+    cursorY += strengthCardH + 18;
   }
 
-  let cursorY = startY + 86;
-
+  // Focus area cards — one per bottom-3 pillar, with pagination if needed.
+  // IMPORTANT: We compute RELATIVE offsets first (independent of position),
+  // then check pagination, then compute ABSOLUTE y-positions from the FINAL
+  // cursorY. This avoids the bug where y-positions computed from a pre-pagination
+  // cursorY become invalid after a page break resets cursorY.
   for (const p of focus) {
     const level = toLevel(p.score);
     const insight = pillarInsights[p.pillarId]?.[level];
@@ -493,14 +568,15 @@ function renderPage2InsightsAndRecommendations(
 
     const innerX = pageX + 18;
     const innerW = contentW - 36;
-    const titleText = `${pillLabelFor(p.pillarId)}`;
-    const insightTitleText = shorten(insight?.title ?? "", 90);
-    const insightBodyText = shorten(insight?.insight ?? "", 420);
+    const titleText = pillLabelFor(p.pillarId);
+    const insightTitleText = insight?.title ?? "";
+    const insightBodyText = insight?.insight ?? "";
 
     const chipText = `${p.score.toFixed(1)}/5 · ${levelLabel(level)}`;
     doc.font("Helvetica-Bold").fontSize(10);
     const chipW = clamp(doc.widthOfString(chipText) + 20, 90, 150);
 
+    // --- Step 1: Measure text heights (position-independent) ---
     doc.font("Helvetica-Bold").fontSize(14);
     const titleH = doc.heightOfString(titleText, { width: innerW - (chipW + 12) });
 
@@ -510,17 +586,34 @@ function renderPage2InsightsAndRecommendations(
     doc.font("Helvetica").fontSize(10);
     const insightBodyH = doc.heightOfString(insightBodyText, { width: innerW, lineGap: 2 });
 
-    const topPad = 16;
-    const yLabel = cursorY + topPad;
-    const yTitle = yLabel + 16;
-    const yInsightTitle = yTitle + titleH + 6;
-    const yInsightBody = yInsightTitle + insightTitleH + 6;
-    const yScoreBar = yInsightBody + insightBodyH + 12;
-    const yRec = yScoreBar + 14;
-    const cardH = clamp(Math.ceil(yRec + 40 - cursorY), 170, 230);
+    // --- Step 2: Compute RELATIVE offsets from card top ---
+    const relLabel = 16;
+    const relTitle = relLabel + 16;
+    const relInsightTitle = relTitle + titleH + 6;
+    const relInsightBody = relInsightTitle + insightTitleH + 6;
+    const relScoreBar = relInsightBody + insightBodyH + 12;
+    const relRec = relScoreBar + 14;
+    const cardH = Math.ceil(relRec + 40);
+
+    // --- Step 3: Pagination check (may reset cursorY) ---
+    if (cursorY + cardH > bottomMarginY - 8) {
+      doc.addPage();
+      drawPageHeader();
+      cursorY = 140;
+    }
+
+    // --- Step 4: Compute ABSOLUTE positions from FINAL cursorY ---
+    const yLabel = cursorY + relLabel;
+    const yTitle = cursorY + relTitle;
+    const yInsightTitle = cursorY + relInsightTitle;
+    const yInsightBody = cursorY + relInsightBody;
+    const yScoreBar = cursorY + relScoreBar;
+    const yRec = cursorY + relRec;
+
+    const accentColor = scoreColor(p.score, colors.primary);
 
     doc.save().roundedRect(pageX, cursorY, contentW, cardH, 14).fillAndStroke(colors.surface, colors.border).restore();
-    doc.save().roundedRect(pageX, cursorY, 8, cardH, 14).fill(colors.primary).restore();
+    doc.save().roundedRect(pageX, cursorY, 8, cardH, 14).fill(accentColor).restore();
 
     doc.font("Helvetica-Bold").fontSize(10).fillColor(colors.mutedText).text("FOCUS AREA", innerX, yLabel);
 
@@ -565,7 +658,7 @@ function renderPage2InsightsAndRecommendations(
       .roundedRect(innerX, yScoreBar, innerW, 8, 6)
       .fillAndStroke(colors.pageBg, colors.secondary)
       .restore();
-    doc.save().roundedRect(innerX, yScoreBar, innerW * clamp(p.score / 5, 0, 1), 8, 6).fill(colors.primary).restore();
+    doc.save().roundedRect(innerX, yScoreBar, innerW * clamp(p.score / 5, 0, 1), 8, 6).fill(accentColor).restore();
 
     doc
       .save()
@@ -578,42 +671,62 @@ function renderPage2InsightsAndRecommendations(
       .font("Helvetica-Bold")
       .fontSize(10)
       .fillColor(colors.text)
-      .text(shorten(rec?.headline ?? "Recommendation", 70), innerX + 12, yRec + 9, { width: innerW - 24 });
+      .text(rec?.headline ?? "Recommendation", innerX + 12, yRec + 9, { width: innerW - 24 });
     doc
       .font("Helvetica")
       .fontSize(10)
       .fillColor(colors.mutedText)
-      .text(shorten(rec?.action ?? "", 130), innerX + 12, yRec + 20, { width: innerW - 24 });
+      .text(rec?.action ?? "", innerX + 12, yRec + 20, { width: innerW - 24 });
 
     cursorY += cardH + 18;
   }
 
-  const ctaH = 86;
-  const ctaY = clamp(pageH - doc.page.margins.bottom - ctaH - 12, cursorY, pageH - doc.page.margins.bottom - ctaH - 12);
+  // CTA — placed directly after the last focus card (Step 2 fix: no more floating
+  // to page bottom, which left blank space when space was borderline).
+  // If the CTA doesn't fit on this page, move to a fresh page.
+  const ctaH = 76;
+  if (cursorY + ctaH > bottomMarginY) {
+    doc.addPage();
+    drawPageHeader();
+    cursorY = 140;
+  }
+  const ctaY = cursorY;
   doc.save().roundedRect(pageX, ctaY, contentW, ctaH, 14).fill(colors.headerBg).restore();
   doc
     .font("Helvetica-Bold")
     .fontSize(13)
     .fillColor(colors.headerText)
-    .text(shorten(cta.headline, 70), pageX + 18, ctaY + 16, { width: contentW - 36 });
+    .text(shorten(cta.headline, 70), pageX + 18, ctaY + 14, { width: contentW - 36 });
   doc
     .font("Helvetica")
     .fontSize(10)
     .fillColor(colors.headerText)
-    .text(shorten(cta.body, 150), pageX + 18, ctaY + 36, { width: contentW - 36, lineGap: 2 });
+    .text(cta.body, pageX + 18, ctaY + 34, { width: contentW - 36, lineGap: 2 });
+
+  if (cta.url) {
+    doc.link(pageX, ctaY, contentW, ctaH, cta.url);
+  }
 }
 
+// ---------------------------------------------------------------------------
+// Page 3+ — Answer Appendix
+// ---------------------------------------------------------------------------
+
+/**
+ * Renders the answer appendix pages and returns the final cursorY position
+ * so the caller can append a CTA block after the last pillar group.
+ */
 function renderPage3AnswerAppendix(
   doc: PDFKit.PDFDocument,
   theme: ReturnType<typeof buildPdfTheme>,
   mappedAnswersByPillar: ReturnType<typeof mapAnswersToPillars>,
   pillarScores?: Record<string, number>,
-) {
+): number {
   const { colors } = theme;
   const { pillarLabels } = aiReadinessContent;
 
   if (Object.keys(mappedAnswersByPillar).length === 0) {
-    return;
+    return 140;
   }
 
   const pageW = doc.page.width;
@@ -624,7 +737,7 @@ function renderPage3AnswerAppendix(
 
   const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
 
-  const drawHeader = () => {
+  const drawHeader = (subtitle: string) => {
     doc.save().rect(0, 0, pageW, 120).fill(colors.headerBg).restore();
     doc
       .save()
@@ -647,110 +760,342 @@ function renderPage3AnswerAppendix(
       .font("Helvetica")
       .fontSize(10)
       .fillColor(colors.headerText)
-      .text(
-        "Your answers, grouped by pillar. These are the raw inputs used to calculate your readiness scores.",
-        pageX,
-        72,
-        { width: contentW },
-      );
+      .text(subtitle, pageX, 72, { width: contentW });
   };
 
-  const ensureSpace = (neededHeight: number, cursorY: number) => {
+  const ensureSpace = (neededHeight: number, cursorY: number, sectionSubtitle: string) => {
     if (cursorY + neededHeight <= bottomY - 12) return cursorY;
     doc.addPage();
-    drawHeader();
+    drawHeader(sectionSubtitle);
     return 140;
   };
 
-  const drawScoreChip = (x: number, y: number, text: string) => {
-    doc.font("Helvetica-Bold").fontSize(10);
-    const chipW = clamp(doc.widthOfString(text) + 20, 72, 120);
-    const chipH = 22;
-    const chipX = x - chipW;
+  // Split pillars into scored (diagnostic) and unscored (context/profile) groups.
+  const allPillars = Object.values(mappedAnswersByPillar);
+  const scoredPillars = allPillars.filter((p) => pillarScores && p.pillarId in pillarScores);
+  const contextPillars = allPillars.filter((p) => !pillarScores || !(p.pillarId in pillarScores));
 
-    doc
-      .save()
-      .strokeOpacity(0.16)
-      .lineWidth(1)
-      .roundedRect(chipX, y, chipW, chipH, 999)
-      .fillAndStroke(colors.pageBg, colors.secondary)
-      .restore();
-    doc
-      .font("Helvetica-Bold")
-      .fontSize(9)
-      .fillColor(colors.mutedText)
-      .text(text, chipX + 10, y + 6, { width: chipW - 20, align: "center" });
-  };
+  // Compact table-row layout: one card per pillar containing all Q&A rows with thin
+  // dividers — matches the HTML report's dense, scannable format.
+  const renderPillarGroup = (pillars: typeof allPillars, isScored: boolean, sectionSubtitle: string, cursorY: number) => {
+    let y = cursorY;
 
-  doc.addPage();
-  drawHeader();
+    for (const pillar of pillars) {
+      const pillarTitle = pillarLabels[pillar.pillarId] || pillar.pillarName;
+      const score = isScored ? pillarScores?.[pillar.pillarId] : undefined;
+      const scoreText = typeof score === "number" ? `${score.toFixed(1)} / 5` : undefined;
+      const accentColor = isScored && typeof score === "number" ? scoreColor(score, colors.primary) : colors.accent;
 
-  let y = 140;
-  const pillarEntries = Object.values(mappedAnswersByPillar);
-
-  for (const pillar of pillarEntries) {
-    const pillarTitle = pillarLabels[pillar.pillarId] || pillar.pillarName;
-    const score = pillarScores?.[pillar.pillarId];
-    const scoreText = typeof score === "number" ? `${score.toFixed(1)}/5` : undefined;
-
-    y = ensureSpace(56, y);
-
-    doc.save().roundedRect(pageX, y, contentW, 46, 14).fillAndStroke(colors.surface, colors.border).restore();
-    doc.save().roundedRect(pageX, y, 8, 46, 14).fill(colors.accent).restore();
-
-    doc
-      .font("Helvetica-Bold")
-      .fontSize(12)
-      .fillColor(colors.text)
-      .text(pillarTitle, pageX + 18, y + 14, { width: contentW - 36 - 120 });
-
-    if (scoreText) {
-      drawScoreChip(pageX + contentW - 18, y + 12, scoreText);
-    }
-
-    y += 58;
-
-    for (const answer of pillar.answers) {
-      const qText = answer.questionText;
-      const aText = `Answer: ${answer.displayAnswer}`;
-
-      doc.font("Helvetica-Bold").fontSize(10);
-      const qH = doc.heightOfString(qText, { width: contentW - 64, lineGap: 2 });
-      doc.font("Helvetica").fontSize(10);
-      const aH = doc.heightOfString(aText, { width: contentW - 64, lineGap: 2 });
-
-      const cardH = clamp(Math.ceil(14 + qH + 6 + aH + 12), 52, 120);
-      y = ensureSpace(cardH + 8, y);
-
-      doc.save().roundedRect(pageX, y, contentW, cardH, 12).fillAndStroke(colors.pageBg, colors.border).restore();
-      doc.save().roundedRect(pageX, y, 4, cardH, 12).fill(colors.primary).restore();
-
-      const innerX = pageX + 14;
-      const innerY = y + 12;
-      const innerW = contentW - 28;
+      // --- Pillar header bar ---
+      y = ensureSpace(40, y, sectionSubtitle);
+      const headerH = 32;
+      doc
+        .save()
+        .roundedRect(pageX, y, contentW, headerH, 8)
+        .fill(colors.surface)
+        .restore();
+      doc.save().rect(pageX, y, 6, headerH).fill(accentColor).restore();
 
       doc
         .font("Helvetica-Bold")
         .fontSize(10)
         .fillColor(colors.text)
-        .text(qText, innerX, innerY, { width: innerW, lineGap: 2 });
+        .text(pillarTitle, pageX + 16, y + 10, { width: contentW - 120 });
 
-      doc
-        .font("Helvetica")
-        .fontSize(10)
-        .fillColor(colors.mutedText)
-        .text(aText, innerX, innerY + qH + 6, { width: innerW, lineGap: 2 });
+      if (scoreText) {
+        doc
+          .font("Helvetica")
+          .fontSize(9)
+          .fillColor(colors.mutedText)
+          .text(scoreText, pageX + contentW - 80, y + 10, { width: 68, align: "right" });
+      }
 
-      y += cardH + 10;
+      y += headerH + 2;
+
+      // --- Q&A rows (compact, tight spacing) ---
+      for (let qi = 0; qi < pillar.answers.length; qi++) {
+        const answer = pillar.answers[qi];
+        const qText = answer.questionText;
+        const aText = answer.displayAnswer;
+
+        doc.font("Helvetica").fontSize(9);
+        const qH = doc.heightOfString(qText, { width: contentW - 32 });
+        doc.font("Helvetica-Bold").fontSize(9);
+        const aH = doc.heightOfString(aText, { width: contentW - 32 });
+
+        const rowH = Math.ceil(6 + qH + 2 + aH + 6);
+        y = ensureSpace(rowH + 2, y, sectionSubtitle);
+
+        // Question text (muted, small)
+        doc
+          .font("Helvetica")
+          .fontSize(9)
+          .fillColor(colors.mutedText)
+          .text(qText, pageX + 16, y + 6, { width: contentW - 32 });
+
+        // Answer text (bold, darker)
+        doc
+          .font("Helvetica-Bold")
+          .fontSize(9)
+          .fillColor(colors.text)
+          .text(aText, pageX + 16, y + 6 + qH + 2, { width: contentW - 32 });
+
+        y += rowH;
+
+        // Thin divider between rows (except after the last row)
+        if (qi < pillar.answers.length - 1) {
+          doc
+            .save()
+            .moveTo(pageX + 16, y)
+            .lineTo(pageX + contentW - 16, y)
+            .lineWidth(0.5)
+            .strokeOpacity(0.3)
+            .stroke(colors.border)
+            .restore();
+          y += 1;
+        }
+      }
+
+      y += 14; // gap between pillar groups
     }
 
-    y += 6;
+    return y;
+  };
+
+  // --- Scored pillars section ---
+  if (scoredPillars.length > 0) {
+    const scoredSubtitle = "Your answers to the scored questions — the inputs used to calculate your readiness scores.";
+    doc.addPage();
+    drawHeader(scoredSubtitle);
+
+    let y = 140;
+
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(11)
+      .fillColor(colors.text)
+      .text("How we calculated your scores", pageX, y);
+    doc
+      .font("Helvetica")
+      .fontSize(9)
+      .fillColor(colors.mutedText)
+      .text(scoredSubtitle, pageX, y + 14, { width: contentW });
+    y += 34;
+
+    y = renderPillarGroup(scoredPillars, true, scoredSubtitle, y);
+
+    // --- Context/Profile section ---
+    if (contextPillars.length > 0) {
+      const profileSubtitle = "The context you provided at the start of the assessment.";
+
+      if (y + 120 > bottomY) {
+        doc.addPage();
+        drawHeader(profileSubtitle);
+        y = 140;
+      } else {
+        y += 10;
+      }
+
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(11)
+        .fillColor(colors.text)
+        .text("Your Profile", pageX, y);
+      doc
+        .font("Helvetica")
+        .fontSize(9)
+        .fillColor(colors.mutedText)
+        .text(profileSubtitle, pageX, y + 14, { width: contentW });
+      y += 34;
+
+      y = renderPillarGroup(contextPillars, false, profileSubtitle, y);
+    }
+
+    return y;
+  } else {
+    const subtitle = "Your answers, grouped by pillar.";
+    doc.addPage();
+    drawHeader(subtitle);
+    return renderPillarGroup(allPillars, false, subtitle, 140);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Main renderer
+// ---------------------------------------------------------------------------
+
+/**
+ * Draws the CTA block at the end of the answer appendix — a compelling
+ * "book a call" prompt so the PDF doesn't just trail off after raw answers.
+ */
+function renderFinalCta(
+  doc: PDFKit.PDFDocument,
+  theme: ReturnType<typeof buildPdfTheme>,
+  cursorY: number,
+) {
+  const { colors } = theme;
+  const { cta } = aiReadinessContent;
+
+  const pageW = doc.page.width;
+  const pageH = doc.page.height;
+  const pageX = doc.page.margins.left;
+  const contentW = pageW - doc.page.margins.left - doc.page.margins.right;
+  const bottomY = pageH - doc.page.margins.bottom;
+
+  const shorten = (s: string, maxLen: number) =>
+    s.length <= maxLen ? s : `${s.slice(0, maxLen - 1).trimEnd()}…`;
+
+  // Measure CTA content to size the block dynamically.
+  const ctaPad = 20;
+  const innerW = contentW - ctaPad * 2;
+  const buttonW = 240;
+  const buttonH = 36;
+
+  doc.font("Helvetica-Bold").fontSize(15);
+  const headlineText = shorten(cta.headline, 80);
+  const headlineH = doc.heightOfString(headlineText, { width: innerW });
+
+  doc.font("Helvetica").fontSize(10);
+  const bodyText = cta.body;
+  const bodyH = doc.heightOfString(bodyText, { width: innerW, lineGap: 2 });
+
+  const ctaH = Math.ceil(ctaPad + headlineH + 8 + bodyH + 16 + buttonH + ctaPad);
+
+  // Pagination: if CTA doesn't fit on this page, start a new one.
+  let y = cursorY + 10;
+  if (y + ctaH > bottomY) {
+    doc.addPage();
+    y = doc.page.margins.top + 20;
+  }
+
+  // Background card
+  doc
+    .save()
+    .roundedRect(pageX, y, contentW, ctaH, 14)
+    .fill(colors.headerBg)
+    .restore();
+
+  // Headline
+  doc
+    .font("Helvetica-Bold")
+    .fontSize(15)
+    .fillColor(colors.headerText)
+    .text(headlineText, pageX + ctaPad, y + ctaPad, { width: innerW });
+
+  // Body
+  doc
+    .font("Helvetica")
+    .fontSize(10)
+    .fillColor(colors.headerText)
+    .text(bodyText, pageX + ctaPad, y + ctaPad + headlineH + 8, {
+      width: innerW,
+      lineGap: 2,
+    });
+
+  // CTA button — centred
+  const buttonX = pageX + Math.floor((contentW - buttonW) / 2);
+  const buttonY = y + ctaH - ctaPad - buttonH;
+
+  doc
+    .save()
+    .roundedRect(buttonX, buttonY, buttonW, buttonH, 999)
+    .fill(colors.primary)
+    .restore();
+
+  doc
+    .font("Helvetica-Bold")
+    .fontSize(11)
+    .fillColor(colors.badgeText)
+    .text(cta.buttonText, buttonX + 12, buttonY + 11, {
+      width: buttonW - 24,
+      align: "center",
+    });
+
+  // Make the entire CTA block a clickable hyperlink.
+  if (cta.url) {
+    doc.link(pageX, y, contentW, ctaH, cta.url);
+  }
+}
+
+/**
+ * Draws a consistent footer bar on every page: report URL link + page number.
+ * Called once after all content is rendered — iterates over the buffered pages
+ * using pdfkit's page switching API.
+ */
+function drawGlobalFooters(
+  doc: PDFKit.PDFDocument,
+  theme: ReturnType<typeof buildPdfTheme>,
+  report: ReportRecord,
+  reportUrl: string,
+) {
+  const { colors } = theme;
+  const totalPages = doc.bufferedPageRange().count;
+
+  for (let i = 0; i < totalPages; i++) {
+    doc.switchToPage(i);
+
+    const pageW = doc.page.width;
+    const pageH = doc.page.height;
+    const pageX = doc.page.margins.left;
+    const contentW = pageW - doc.page.margins.left - doc.page.margins.right;
+
+    // Draw the footer IN the bottom margin area (below the content boundary).
+    // pdfkit auto-flows text to a new page when y >= (pageH - bottomMargin),
+    // so we temporarily zero the bottom margin while drawing the footer, then
+    // restore it. This keeps footer rendering completely independent of content.
+    const savedBottomMargin = doc.page.margins.bottom;
+    doc.page.margins.bottom = 0;
+    const footerY = pageH - 30;
+
+    // Thin divider line above the footer
+    doc
+      .save()
+      .moveTo(pageX, footerY - 4)
+      .lineTo(pageX + contentW, footerY - 4)
+      .lineWidth(0.5)
+      .strokeOpacity(0.3)
+      .stroke(colors.border)
+      .restore();
+
+    // Left side: single combined footer string — avoids `continued` and
+    // `widthOfString` which can produce NaN after switchToPage().
+    // IMPORTANT: All text calls use lineBreak: false to prevent pdfkit from
+    // creating overflow pages when drawing on buffered pages via switchToPage().
+    const footerText = `Prepared for ${report.lead.name}, ${report.lead.company}  ·  View full report`;
+    doc
+      .font("Helvetica")
+      .fontSize(7.5)
+      .fillColor(colors.mutedText)
+      .text(footerText, pageX, footerY, { lineBreak: false });
+
+    // Overlay the "View full report" portion with a clickable hyperlink.
+    // Approximate position: the link covers the last ~80pt of the footer text.
+    const linkW = 62;
+    const linkX = pageX + contentW - 60 - linkW;
+    doc.link(linkX, footerY - 2, linkW + 20, 12, reportUrl);
+
+    // Right side: page number
+    const pageLabel = `${i + 1} / ${totalPages}`;
+    doc
+      .font("Helvetica")
+      .fontSize(7.5)
+      .fillColor(colors.mutedText)
+      .text(pageLabel, pageX + contentW - 50, footerY, {
+        width: 50,
+        align: "right",
+        lineBreak: false,
+      });
+
+    // Restore the bottom margin so future operations (if any) see original margins.
+    doc.page.margins.bottom = savedBottomMargin;
   }
 }
 
 export async function renderPdf(report: ReportRecord): Promise<Buffer> {
   return new Promise((resolve, reject) => {
-    const doc = new PDFDocument({ size: "A4", margin: 48 });
+    // bufferPages: true enables page switching after all content is rendered,
+    // which is required for drawing footers on every page.
+    const doc = new PDFDocument({ size: "A4", margin: 48, bufferPages: true });
     const chunks: Buffer[] = [];
 
     doc.on("data", (chunk) => chunks.push(Buffer.from(chunk)));
@@ -759,25 +1104,38 @@ export async function renderPdf(report: ReportRecord): Promise<Buffer> {
 
     const theme = buildPdfTheme();
 
-    // Page 1 – Executive snapshot
-    renderPage1ExecutiveSnapshot(doc, report, theme);
+    // Compute the shareable URL for this report. Used in footer and CTA hyperlinks.
+    const appUrl = (process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000").replace(/\/$/, "");
+    const reportUrl = `${appUrl}/report/${report.token}`;
 
-    renderPage2InsightsAndRecommendations(doc, report, theme);
+    // Page 1 — Executive snapshot
+    renderPage1ExecutiveSnapshot(doc, report, theme, reportUrl);
 
-    // Page 2 – Answer Appendix (grouped by pillar)
+    // Page 2 — Insights & recommendations (may overflow to page 3 with 3 focus cards)
+    renderPage2InsightsAndRecommendations(doc, report, theme, reportUrl);
 
-    // Build a minimal Template-shaped object from quiz sections/questions so we
-    // can reuse the shared mapAnswersToPillars helper from @scorekit/core.
+    // Answer appendix — scored Q&A then context/profile, with automatic pagination
     const pseudoTemplate: Template = buildPseudoTemplate();
-
     const answers = report.answers as Record<string, number | string | string[]>;
     const mappedAnswersByPillar = mapAnswersToPillars({ template: pseudoTemplate, answers });
 
-    renderPage3AnswerAppendix(doc, theme, mappedAnswersByPillar, report.result.pillarScores);
+    const finalY = renderPage3AnswerAppendix(doc, theme, mappedAnswersByPillar, report.result.pillarScores);
+
+    // Final CTA — compelling "book a call" prompt at the end of the document.
+    // Ensures the PDF doesn't trail off after raw answers with no call to action.
+    renderFinalCta(doc, theme, finalY);
+
+    // Global footers — report URL link + page numbers on every page.
+    // Must be called after all content pages are created (uses page switching).
+    drawGlobalFooters(doc, theme, report, reportUrl);
 
     doc.end();
   });
 }
+
+// ---------------------------------------------------------------------------
+// HTTP handler
+// ---------------------------------------------------------------------------
 
 export async function POST(req: Request): Promise<Response> {
   let body: PdfRequestBody;

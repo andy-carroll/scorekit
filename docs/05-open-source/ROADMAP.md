@@ -30,6 +30,11 @@
   - Output: `brand.colors` JSON + `public/logos/<brand>.svg`
   - PDF-ready: `pnpm convert-logos`
 
+- [ ] **PDF renderer — replace hardcoded `aiReadinessContent` with `getActiveTemplateContent()`** — `route.ts` and `theme.ts` both import the AI Readiness template directly. Until this is fixed, deploying a different template will produce a PDF containing AI Readiness copy. Low-risk change (server-only files) but bundled with the Part 2 architecture work so it's done once cleanly.
+  - Replace `import { aiReadinessContent }` in both files with `getActiveTemplateContent()` from `@/lib/active-template`
+  - Replace `buildPseudoTemplate()` (which hardcodes sections/questions) with template-package data
+  - See `docs/05-open-source/PDF-RENDERER.md` for full context
+
 ## V1.1 (backlog)
 
 - [ ] **Optional free-form field at end of each scored section** — an unscored, optional text input shown after each pillar's questions: *"Anything else you'd like to add about [pillar name]?"* Captures nuance that the 1–5 scale can't. Richer discovery data before a sales call; could feed AI-generated commentary in a future premium tier. Not urgent — the scored questions already provide strong signal.

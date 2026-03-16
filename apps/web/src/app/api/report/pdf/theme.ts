@@ -1,3 +1,7 @@
+// TODO (Part 2 — post-launch): Replace direct aiReadinessContent import with
+//   getActiveTemplateContent() from "@/lib/active-template" so PDF theming is
+//   driven by whichever template is active (SCOREKIT_TEMPLATE_ID env var).
+//   See docs/05-open-source/PDF-RENDERER.md for full details.
 import { aiReadinessContent } from "@scorekit/core";
 
 export type PdfTheme = {

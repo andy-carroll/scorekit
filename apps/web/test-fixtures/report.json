@@ -1,0 +1,58 @@
+{
+  "_comment": "Dev fixture for PDF testing. POST this to /api/report/pdf to generate a PDF without completing the quiz. See scripts/test-pdf.mjs.",
+  "token": "dev-fixture-001",
+  "createdAt": "2026-03-16T10:00:00.000Z",
+  "templateId": "ai-readiness",
+  "lead": {
+    "email": "sarah.mitchell@example.com",
+    "name": "Sarah Mitchell",
+    "company": "Apex Consulting Group",
+    "role": "director",
+    "website": "https://apexconsulting.example.com"
+  },
+  "result": {
+    "total": 65,
+    "max": 120,
+    "percentage": 54,
+    "band": "Progressing",
+    "pillarScores": {
+      "leadership": 4.0,
+      "data": 1.8,
+      "people": 2.4,
+      "process": 3.0,
+      "culture": 2.25
+    }
+  },
+  "answers": {
+    "ctx-role": "director",
+    "ctx-employees": "51-200",
+    "ctx-industry": "professional",
+    "ctx-trigger": ["efficiency", "competitive"],
+    "ctx-pain": "We're losing competitive advantage as other firms adopt AI tools faster than we are.",
+    "ctx-aspiration": "A clear, practical roadmap for AI adoption that the whole leadership team can rally behind.",
+    "lead-1": 5,
+    "lead-2": 4,
+    "lead-3": 4,
+    "lead-4": 4,
+    "lead-5": 3,
+    "data-1": 2,
+    "data-2": 1,
+    "data-3": 2,
+    "data-4": 2,
+    "data-5": 2,
+    "people-1": 3,
+    "people-2": 2,
+    "people-3": 3,
+    "people-4": 2,
+    "people-5": 2,
+    "process-1": 3,
+    "process-2": 3,
+    "process-3": 3,
+    "process-4": 3,
+    "process-5": 3,
+    "culture-1": 2,
+    "culture-2": 2,
+    "culture-3": 3,
+    "culture-4": 2
+  }
+}
