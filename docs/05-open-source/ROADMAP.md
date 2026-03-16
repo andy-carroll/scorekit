@@ -15,6 +15,13 @@
 
 ## V1.x (near-term)
 
+- [ ] **"Other" free-text capture on context questions** — when a respondent selects an option with `id: "other"`, a required text input appears asking them to specify. Applies to `select`, `multi-select`, and `radio` input types on context (unscored) questions only.
+  - Store free text as a companion key: `{questionId}-other-text` in the answers object — no schema changes
+  - Display in report Q&A section as *"Other — [their text]"* instead of bare *"Other"*
+  - Flows through to webhook payload automatically
+  - **Design principle (must be documented):** "Other" is not valid on scored (diagnostic) questions. Scored questions use a 1–5 maturity scale where every option maps to a specific numeric value — "Other" has no meaningful score and would either distort pillar averages or break them. If respondents are reaching for "Other" on a scored question, the options need to be rewritten. This is enforced by convention, not code.
+  - Files to change: `QuestionCard.tsx` (conditional text input), `quiz/page.tsx` (store companion key), report view (display other-text)
+
 - [ ] FitMum template (second live client)
 - [ ] Improved analytics — completion rate, drop-off by question, score distribution
 - [ ] Automatic brand extraction from a URL (logo + palette → `TemplateContent.brand`)
@@ -24,6 +31,8 @@
   - PDF-ready: `pnpm convert-logos`
 
 ## V1.1 (backlog)
+
+- [ ] **Optional free-form field at end of each scored section** — an unscored, optional text input shown after each pillar's questions: *"Anything else you'd like to add about [pillar name]?"* Captures nuance that the 1–5 scale can't. Richer discovery data before a sales call; could feed AI-generated commentary in a future premium tier. Not urgent — the scored questions already provide strong signal.
 
 - [ ] Deep research appendix module (separate artefact attached to report)
   - Confirm / rerun / reject controls
