@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import type { ScoreResult } from "@/lib/report-store/types";
 
@@ -30,6 +30,16 @@ export function EmailGatePage({ heading, subheading, ctaText, templateId, privac
   const [consented, setConsented] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [hasResult, setHasResult] = useState<boolean | null>(null); // null = not yet checked
+
+  useEffect(() => {
+    const result = sessionStorage.getItem("scorekit_result");
+    if (!result) {
+      router.push("/quiz");
+    } else {
+      setHasResult(true);
+    }
+  }, [router]);
 
   const sendWebhook = (payload: Record<string, unknown>) => {
     const webhookUrl = process.env.NEXT_PUBLIC_WEBHOOK_URL;
@@ -42,16 +52,6 @@ export function EmailGatePage({ heading, subheading, ctaText, templateId, privac
       console.error("Webhook submission failed:", error);
     });
   };
-
-  const hasResult = useMemo(() => {
-    if (typeof window === "undefined") return false;
-    return !!sessionStorage.getItem("scorekit_result");
-  }, []);
-
-  if (!hasResult && typeof window !== "undefined") {
-    router.push("/quiz");
-    return null;
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -149,6 +149,7 @@ export function EmailGatePage({ heading, subheading, ctaText, templateId, privac
   }
 
   return (
+
     <form onSubmit={handleSubmit} className="page-bg flow-shell">
       <div className="flow-panel flow-panel-sm">
         <div className="flow-panel-header">
