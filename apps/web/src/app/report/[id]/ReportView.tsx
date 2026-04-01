@@ -368,7 +368,7 @@ export function ReportView({ token, initialReport, content }: ReportViewProps) {
               {cta.body}
             </p>
             {cta.url ? (
-              <a href={cta.url} className="btn-primary">{cta.buttonText}</a>
+              <a href={cta.url} target="_blank" rel="noopener noreferrer" className="btn-primary">{cta.buttonText}</a>
             ) : (
               <button className="btn-primary">{cta.buttonText}</button>
             )}
