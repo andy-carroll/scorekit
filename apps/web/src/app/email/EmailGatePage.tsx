@@ -29,6 +29,7 @@ export function EmailGatePage({ heading, subheading, ctaText, templateId, privac
   const [website, setWebsite] = useState("");
   const [consented, setConsented] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const sendWebhook = (payload: Record<string, unknown>) => {
     const webhookUrl = process.env.NEXT_PUBLIC_WEBHOOK_URL;
@@ -55,79 +56,88 @@ export function EmailGatePage({ heading, subheading, ctaText, templateId, privac
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitError(null);
 
-    const storedAnswers = sessionStorage.getItem("scorekit_answers");
-    const storedResult = sessionStorage.getItem("scorekit_result");
+    try {
+      const storedAnswers = sessionStorage.getItem("scorekit_answers");
+      const storedResult = sessionStorage.getItem("scorekit_result");
 
-    if (!storedResult) {
-      setIsSubmitting(false);
-      router.push("/quiz");
-      return;
-    }
+      if (!storedResult) {
+        setIsSubmitting(false);
+        router.push("/quiz");
+        return;
+      }
 
-    const answers = storedAnswers ? (JSON.parse(storedAnswers) as Record<string, unknown>) : {};
-    const result = JSON.parse(storedResult) as ScoreResult;
-    const normalizedWebsite = normalizeWebsite(website);
+      const answers = storedAnswers ? (JSON.parse(storedAnswers) as Record<string, unknown>) : {};
+      const result = JSON.parse(storedResult) as ScoreResult;
+      const normalizedWebsite = normalizeWebsite(website);
 
-    // Create report server-side so Upstash env vars are available
-    const createRes = await fetch("/api/report/create", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        templateId,
-        answers,
-        result,
-        lead: { email, name, company, role, website: normalizedWebsite },
-      }),
-    });
-
-    if (!createRes.ok) {
-      console.error("[REPORT] Failed to create report:", await createRes.text());
-      setIsSubmitting(false);
-      return;
-    }
-
-    const { token, report: reportRecord } = await createRes.json() as { token: string; report: import("@/lib/report-store/types").ReportRecord };
-
-    // Fire-and-forget webhook for Airtable/n8n ingestion
-    if (typeof window !== "undefined") {
-      const reportUrl = `${window.location.origin}/report/${token}`;
-      sendWebhook({
-        source: "scorekit",
-        template_id: templateId,
-        token,
-        report_url: reportUrl,
-        email,
-        name,
-        company,
-        role,
-        website: normalizedWebsite,
-        overall_score: result.percentage,
-        overall_band: result.band,
-        primary_constraint: undefined,
-        pillar_scores: result.pillarScores,
-        answers,
-        consent_given: true,
-        consent_timestamp: new Date().toISOString(),
-        privacy_policy_url: privacyPolicyUrl,
-      });
-    }
-
-    // Trigger email delivery asynchronously (don't wait for it)
-    if (reportRecord) {
-      fetch("/api/report/email", {
+      // Create report server-side so Upstash env vars are available
+      const createRes = await fetch("/api/report/create", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ token, report: reportRecord }),
-      }).catch((error) => {
-        console.error("Failed to trigger email delivery:", error);
+        body: JSON.stringify({
+          templateId,
+          answers,
+          result,
+          lead: { email, name, company, role, website: normalizedWebsite },
+        }),
       });
+
+      if (!createRes.ok) {
+        const errText = await createRes.text().catch(() => "Unknown error");
+        console.error("[REPORT] Failed to create report:", errText);
+        setSubmitError("Something went wrong generating your report. Please try again.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      const { token, report: reportRecord } = await createRes.json() as { token: string; report: import("@/lib/report-store/types").ReportRecord };
+
+      // Fire-and-forget webhook for Airtable/n8n ingestion
+      if (typeof window !== "undefined") {
+        const reportUrl = `${window.location.origin}/report/${token}`;
+        sendWebhook({
+          source: "scorekit",
+          template_id: templateId,
+          token,
+          report_url: reportUrl,
+          email,
+          name,
+          company,
+          role,
+          website: normalizedWebsite,
+          overall_score: result.percentage,
+          overall_band: result.band,
+          primary_constraint: undefined,
+          pillar_scores: result.pillarScores,
+          answers,
+          consent_given: true,
+          consent_timestamp: new Date().toISOString(),
+          privacy_policy_url: privacyPolicyUrl,
+        });
+      }
+
+      // Trigger email delivery asynchronously (don't wait for it)
+      if (reportRecord) {
+        fetch("/api/report/email", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ token, report: reportRecord }),
+        }).catch((error) => {
+          console.error("Failed to trigger email delivery:", error);
+        });
+      }
+
+      // Brief delay for UX feedback
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      router.push(`/report/${token}`);
+    } catch (err) {
+      console.error("[REPORT] Unexpected error:", err);
+      setSubmitError("Something went wrong. Please try again.");
+      setIsSubmitting(false);
     }
-
-    // Brief delay for UX feedback
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    router.push(`/report/${token}`);
   };
 
   if (!hasResult) {
@@ -241,6 +251,10 @@ export function EmailGatePage({ heading, subheading, ctaText, templateId, privac
             <p className="muted-text text-center mt-2">
               We&apos;ll send a PDF copy to your inbox. No spam, ever.
             </p>
+
+            {submitError && (
+              <p className="text-sm text-red-600 text-center mt-2">{submitError}</p>
+            )}
           </div>
         </div>
 
