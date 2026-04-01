@@ -6,8 +6,7 @@ export function getReportStore(): ReportStore {
   const url =
     process.env.UPSTASH_REDIS_REST_URL ??
     process.env.UPSTASH_REDIS_REST_KV_REST_API_URL ??
-    process.env.KV_REST_API_URL ??
-    process.env.REDIS_URL;
+    process.env.KV_REST_API_URL;
   if (url) {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { createUpstashReportStore } = require("./upstash") as typeof import("./upstash");
