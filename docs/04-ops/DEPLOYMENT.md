@@ -7,7 +7,7 @@ Deploy ScoreKit to Vercel in ~15 minutes.
 ## Prerequisites
 
 - Vercel account
-- Upstash account (or use Vercel KV — same API)
+- Upstash account (via Vercel Marketplace — see Step 3)
 - Brevo account (free tier supports up to 300 emails/day)
 - n8n instance with the ScoreKit webhook workflow (see `docs/03-engineering/N8N-SETUP.md`)
 
@@ -49,17 +49,21 @@ See `docs/04-ops/ENV-VARS.md` for full descriptions.
 
 ---
 
-## Step 3: Create Upstash KV Database
+## Step 3: Create Upstash Redis Database
 
-**Option A — via Vercel (recommended):**
-1. Vercel Dashboard → Storage → Create Database → KV
-2. Select your project region
-3. Click **Connect to Project** — env vars are added automatically
+> **Note:** Vercel KV is sunset. Do not use Storage → KV. Use the Marketplace route below.
 
-**Option B — via Upstash directly:**
+**Via Vercel Marketplace (recommended):**
+1. Vercel Dashboard → your project → **Integrations** → **Marketplace**
+2. Search **Upstash** → **Add Integration**
+3. Create a new Redis database, connect it to your project
+4. Leave the **Custom Prefix** field as default — Vercel injects `KV_REST_API_URL` and `KV_REST_API_TOKEN` automatically
+5. Redeploy after connecting
+
+**Via Upstash console (manual):**
 1. [console.upstash.com](https://console.upstash.com) → Create Database → choose closest region
 2. Copy `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` from the REST API tab
-3. Paste into Vercel env vars
+3. Add manually in Vercel → Settings → Environment Variables
 
 ---
 
@@ -180,7 +184,7 @@ cp apps/web/.env.example apps/web/.env.local
 # Edit .env.local with your values
 
 # Start dev server
-pnpm dev --filter=web
+pnpm dev
 # → http://localhost:3000
 ```
 

@@ -23,16 +23,20 @@ Copy `apps/web/.env.example` to `apps/web/.env.local` for local development.
 
 ---
 
-## Report Storage (Upstash / Vercel KV)
+## Report Storage (Upstash Redis)
 
 | Variable | Required | Description |
 |---|---|---|
-| `UPSTASH_REDIS_REST_URL` | Recommended | REST URL from Upstash or Vercel KV. Without this, reports fall back to localStorage (dev-only — no cross-device sharing). |
-| `UPSTASH_REDIS_REST_TOKEN` | Recommended | API token for above. |
+| `KV_REST_API_URL` | Recommended | REST URL — injected automatically when using Vercel Marketplace → Upstash. Without this, reports fall back to localStorage (dev-only — no cross-device sharing). |
+| `KV_REST_API_TOKEN` | Recommended | API token — injected automatically alongside above. |
+| `UPSTASH_REDIS_REST_URL` | Alt | If manually copying from Upstash console, use this name instead — takes priority over `KV_REST_API_URL`. |
+| `UPSTASH_REDIS_REST_TOKEN` | Alt | Auth token for above. |
 
-**Create Upstash KV:**
-- Vercel Dashboard → Storage → KV → Create Database → copy env vars, or
-- [console.upstash.com](https://console.upstash.com) → Create Database → REST API → copy URL + token.
+**Setup (recommended):** Vercel Dashboard → your project → **Integrations** → Marketplace → search **Upstash** → Add → connect to your project. Env vars are injected automatically as `KV_REST_API_URL` + `KV_REST_API_TOKEN`.
+
+> **Note:** Vercel KV is sunset. Do not use the Storage → KV path — it no longer works. Use the Marketplace route above.
+
+> **Gotcha:** If you have stale `UPSTASH_REDIS_REST_KV_*` env vars from an old integration that you can't delete via the dashboard, use `vercel env rm UPSTASH_REDIS_REST_KV_REST_API_URL` via the Vercel CLI. These vars point to archived databases and will cause `ENOTFOUND` errors.
 
 Reports are stored with a 1-year TTL.
 
