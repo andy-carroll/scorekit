@@ -405,46 +405,86 @@ function renderPage1ExecutiveSnapshot(
   const bodyBottomY = Math.max(leftY, rightY) + 16;
   drawDivider(bodyBottomY);
 
-  const ctaY = bodyBottomY + 18;
-  const footerY = pageH - doc.page.margins.bottom - 18;
-  const ctaH = clamp(Math.min(120, footerY - ctaY - 34), 76, 120);
-
-  doc.save().roundedRect(pageX, ctaY, contentW, ctaH, 14).fill(colors.headerBg).restore();
-  const ctaPad = 18;
-  const buttonW = 220;
-  const buttonH = 34;
-  const buttonX = pageX + contentW - buttonW - ctaPad;
-  const buttonY = ctaY + Math.max(12, Math.floor((ctaH - buttonH) / 2));
-
-  const ctaTextX = pageX + ctaPad;
-  const ctaTextW = contentW - buttonW - ctaPad * 3;
-  const ctaHeadlineY = ctaY + 16;
-
-  doc.font("Helvetica-Bold").fontSize(14).fillColor(colors.headerText);
-  const headlineText = shorten(cta.headline, 70);
-  const ctaHeadlineH = doc.heightOfString(headlineText, { width: ctaTextW });
-  doc.text(headlineText, ctaTextX, ctaHeadlineY, { width: ctaTextW });
-
-  const ctaBodyY = ctaHeadlineY + ctaHeadlineH + 6;
-  doc.font("Helvetica").fontSize(10).fillColor(colors.headerText);
-  const bodyText = shorten(cta.body, 150);
-  doc.text(bodyText, ctaTextX, ctaBodyY, { width: ctaTextW, lineGap: 2 });
-
-  doc.save().roundedRect(buttonX, buttonY, buttonW, buttonH, 999).fill(colors.primary).restore();
-  doc.font("Helvetica-Bold").fontSize(9);
-  const buttonLabel = fitTextToWidth(cta.buttonText, buttonW - 20, 14);
-  doc
-    .font("Helvetica-Bold")
-    .fontSize(9)
-    .fillColor(colors.badgeText)
-    .text(buttonLabel, buttonX + 10, buttonY + 11, { width: buttonW - 20, align: "center" });
-
-  // Make the CTA button a real hyperlink.
-  if (cta.url) {
-    doc.link(buttonX, buttonY, buttonW, buttonH, cta.url);
-  }
+  const bottomY = pageH - doc.page.margins.bottom;
+  drawCtaCard(doc, theme, bodyBottomY + 18, bottomY, () => {});
 
   // Footer is now drawn globally across all pages — see drawGlobalFooters().
+}
+
+// ---------------------------------------------------------------------------
+// Shared CTA card — used on both the insights page and the final appendix page
+// ---------------------------------------------------------------------------
+
+/**
+ * Draws a CTA card: headline + body text, then a centred square-edged button.
+ * Handles pagination — adds a new page if there isn't enough room.
+ * Returns the Y position immediately after the card.
+ */
+function drawCtaCard(
+  doc: PDFKit.PDFDocument,
+  theme: ReturnType<typeof buildPdfTheme>,
+  cursorY: number,
+  bottomY: number,
+  onNewPage: () => void,
+): number {
+  const { colors } = theme;
+  const { cta } = aiReadinessContent;
+  const pageX = doc.page.margins.left;
+  const contentW = doc.page.width - doc.page.margins.left - doc.page.margins.right;
+
+  const ctaPad = 20;
+  const innerW = contentW - ctaPad * 2;
+  const buttonW = 240;
+  const buttonH = 32;
+
+  doc.font("Helvetica-Bold").fontSize(15);
+  const headlineH = doc.heightOfString(cta.headline, { width: innerW });
+
+  doc.font("Helvetica").fontSize(10);
+  const bodyH = doc.heightOfString(cta.body, { width: innerW, lineGap: 2 });
+
+  const ctaH = Math.ceil(ctaPad + headlineH + 8 + bodyH + 16 + buttonH + ctaPad);
+
+  let y = cursorY;
+  if (y + ctaH > bottomY) {
+    doc.addPage();
+    onNewPage();
+    y = doc.page.margins.top + 20;
+  }
+
+  // Background card
+  doc.save().roundedRect(pageX, y, contentW, ctaH, 14).fill(colors.headerBg).restore();
+
+  // Headline
+  doc
+    .font("Helvetica-Bold")
+    .fontSize(15)
+    .fillColor(colors.headerText)
+    .text(cta.headline, pageX + ctaPad, y + ctaPad, { width: innerW });
+
+  // Body
+  doc
+    .font("Helvetica")
+    .fontSize(10)
+    .fillColor(colors.headerText)
+    .text(cta.body, pageX + ctaPad, y + ctaPad + headlineH + 8, { width: innerW, lineGap: 2 });
+
+  // Centred square-edged button
+  const buttonX = pageX + Math.floor((contentW - buttonW) / 2);
+  const buttonY = y + ctaH - ctaPad - buttonH;
+
+  doc.save().roundedRect(buttonX, buttonY, buttonW, buttonH, 6).fill(colors.primary).restore();
+  doc
+    .font("Helvetica-Bold")
+    .fontSize(11)
+    .fillColor(colors.badgeText)
+    .text(cta.buttonText, buttonX + 12, buttonY + 10, { width: buttonW - 24, align: "center" });
+
+  if (cta.url) {
+    doc.link(pageX, y, contentW, ctaH, cta.url);
+  }
+
+  return y + ctaH;
 }
 
 // ---------------------------------------------------------------------------
@@ -703,46 +743,8 @@ function renderPage2InsightsAndRecommendations(
     cursorY += cardH + 18;
   }
 
-  // CTA — placed directly after the last focus card (Step 2 fix: no more floating
-  // to page bottom, which left blank space when space was borderline).
-  // If the CTA doesn't fit on this page, move to a fresh page.
-  const buttonW = 160;
-  const buttonH = 28;
-  const ctaH = 76;
-  if (cursorY + ctaH > bottomMarginY) {
-    doc.addPage();
-    drawPageHeader();
-    cursorY = 140;
-  }
-  const ctaY = cursorY;
-  const ctaPad = 18;
-  const ctaTextW = contentW - buttonW - ctaPad * 3;
-  const buttonX = pageX + contentW - buttonW - ctaPad;
-  const buttonY = ctaY + Math.floor((ctaH - buttonH) / 2);
-
-  doc.save().roundedRect(pageX, ctaY, contentW, ctaH, 14).fill(colors.headerBg).restore();
-  doc
-    .font("Helvetica-Bold")
-    .fontSize(13)
-    .fillColor(colors.headerText)
-    .text(shorten(cta.headline, 70), pageX + ctaPad, ctaY + 14, { width: ctaTextW });
-  doc
-    .font("Helvetica")
-    .fontSize(10)
-    .fillColor(colors.headerText)
-    .text(cta.body, pageX + ctaPad, ctaY + 34, { width: ctaTextW, lineGap: 2 });
-
-  // Button
-  doc.save().roundedRect(buttonX, buttonY, buttonW, buttonH, 6).fill(colors.accent).restore();
-  doc
-    .font("Helvetica-Bold")
-    .fontSize(9)
-    .fillColor("#ffffff")
-    .text(shorten(cta.buttonText, 28), buttonX, buttonY + 9, { width: buttonW, align: "center" });
-
-  if (cta.url) {
-    doc.link(pageX, ctaY, contentW, ctaH, cta.url);
-  }
+  // CTA — shared design via drawCtaCard
+  drawCtaCard(doc, theme, cursorY, bottomMarginY, () => { drawPageHeader(); });
 }
 
 // ---------------------------------------------------------------------------
@@ -970,88 +972,9 @@ function renderFinalCta(
   theme: ReturnType<typeof buildPdfTheme>,
   cursorY: number,
 ) {
-  const { colors } = theme;
-  const { cta } = aiReadinessContent;
-
-  const pageW = doc.page.width;
   const pageH = doc.page.height;
-  const pageX = doc.page.margins.left;
-  const contentW = pageW - doc.page.margins.left - doc.page.margins.right;
   const bottomY = pageH - doc.page.margins.bottom;
-
-  const shorten = (s: string, maxLen: number) =>
-    s.length <= maxLen ? s : `${s.slice(0, maxLen - 1).trimEnd()}…`;
-
-  // Measure CTA content to size the block dynamically.
-  const ctaPad = 20;
-  const innerW = contentW - ctaPad * 2;
-  const buttonW = 240;
-  const buttonH = 36;
-
-  doc.font("Helvetica-Bold").fontSize(15);
-  const headlineText = shorten(cta.headline, 80);
-  const headlineH = doc.heightOfString(headlineText, { width: innerW });
-
-  doc.font("Helvetica").fontSize(10);
-  const bodyText = cta.body;
-  const bodyH = doc.heightOfString(bodyText, { width: innerW, lineGap: 2 });
-
-  const ctaH = Math.ceil(ctaPad + headlineH + 8 + bodyH + 16 + buttonH + ctaPad);
-
-  // Pagination: if CTA doesn't fit on this page, start a new one.
-  let y = cursorY + 10;
-  if (y + ctaH > bottomY) {
-    doc.addPage();
-    y = doc.page.margins.top + 20;
-  }
-
-  // Background card
-  doc
-    .save()
-    .roundedRect(pageX, y, contentW, ctaH, 14)
-    .fill(colors.headerBg)
-    .restore();
-
-  // Headline
-  doc
-    .font("Helvetica-Bold")
-    .fontSize(15)
-    .fillColor(colors.headerText)
-    .text(headlineText, pageX + ctaPad, y + ctaPad, { width: innerW });
-
-  // Body
-  doc
-    .font("Helvetica")
-    .fontSize(10)
-    .fillColor(colors.headerText)
-    .text(bodyText, pageX + ctaPad, y + ctaPad + headlineH + 8, {
-      width: innerW,
-      lineGap: 2,
-    });
-
-  // CTA button — centred
-  const buttonX = pageX + Math.floor((contentW - buttonW) / 2);
-  const buttonY = y + ctaH - ctaPad - buttonH;
-
-  doc
-    .save()
-    .roundedRect(buttonX, buttonY, buttonW, buttonH, 999)
-    .fill(colors.primary)
-    .restore();
-
-  doc
-    .font("Helvetica-Bold")
-    .fontSize(11)
-    .fillColor(colors.badgeText)
-    .text(cta.buttonText, buttonX + 12, buttonY + 11, {
-      width: buttonW - 24,
-      align: "center",
-    });
-
-  // Make the entire CTA block a clickable hyperlink.
-  if (cta.url) {
-    doc.link(pageX, y, contentW, ctaH, cta.url);
-  }
+  drawCtaCard(doc, theme, cursorY + 10, bottomY, () => {});
 }
 
 /**
