@@ -114,7 +114,7 @@ export const questions: Question[] = [
       { id: "healthcare", label: "Healthcare" },
       { id: "manufacturing", label: "Manufacturing" },
       { id: "retail", label: "Retail / E-commerce" },
-      { id: "professional", label: "Professional Services" },
+      { id: "professional", label: "Professional Services / Consulting" },
       { id: "media", label: "Media / Entertainment" },
       { id: "education", label: "Education" },
       { id: "other", label: "Other" },
