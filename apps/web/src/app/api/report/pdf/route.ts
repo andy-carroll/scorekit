@@ -706,6 +706,8 @@ function renderPage2InsightsAndRecommendations(
   // CTA — placed directly after the last focus card (Step 2 fix: no more floating
   // to page bottom, which left blank space when space was borderline).
   // If the CTA doesn't fit on this page, move to a fresh page.
+  const buttonW = 160;
+  const buttonH = 28;
   const ctaH = 76;
   if (cursorY + ctaH > bottomMarginY) {
     doc.addPage();
@@ -713,17 +715,30 @@ function renderPage2InsightsAndRecommendations(
     cursorY = 140;
   }
   const ctaY = cursorY;
+  const ctaPad = 18;
+  const ctaTextW = contentW - buttonW - ctaPad * 3;
+  const buttonX = pageX + contentW - buttonW - ctaPad;
+  const buttonY = ctaY + Math.floor((ctaH - buttonH) / 2);
+
   doc.save().roundedRect(pageX, ctaY, contentW, ctaH, 14).fill(colors.headerBg).restore();
   doc
     .font("Helvetica-Bold")
     .fontSize(13)
     .fillColor(colors.headerText)
-    .text(shorten(cta.headline, 70), pageX + 18, ctaY + 14, { width: contentW - 36 });
+    .text(shorten(cta.headline, 70), pageX + ctaPad, ctaY + 14, { width: ctaTextW });
   doc
     .font("Helvetica")
     .fontSize(10)
     .fillColor(colors.headerText)
-    .text(cta.body, pageX + 18, ctaY + 34, { width: contentW - 36, lineGap: 2 });
+    .text(cta.body, pageX + ctaPad, ctaY + 34, { width: ctaTextW, lineGap: 2 });
+
+  // Button
+  doc.save().roundedRect(buttonX, buttonY, buttonW, buttonH, 6).fill(colors.accent).restore();
+  doc
+    .font("Helvetica-Bold")
+    .fontSize(9)
+    .fillColor("#ffffff")
+    .text(shorten(cta.buttonText, 28), buttonX, buttonY + 9, { width: buttonW, align: "center" });
 
   if (cta.url) {
     doc.link(pageX, ctaY, contentW, ctaH, cta.url);
