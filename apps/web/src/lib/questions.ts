@@ -78,11 +78,13 @@ export const questions: Question[] = [
     inputType: "select",
     options: [
       { id: "founder", label: "Founder / CEO" },
+      { id: "partner", label: "Partner / Managing Director" },
       { id: "c-suite", label: "C-Suite Executive" },
       { id: "director", label: "Director / VP" },
       { id: "manager", label: "Manager / Team Lead" },
-      { id: "individual", label: "Individual Contributor" },
+      { id: "specialist", label: "Specialist / Professional" },
       { id: "consultant", label: "Consultant / Advisor" },
+      { id: "analyst", label: "Analyst / Associate" },
     ] as UnscoredOption[],
   },
   {
@@ -96,8 +98,8 @@ export const questions: Question[] = [
       { id: "11-50", label: "11–50" },
       { id: "51-200", label: "51–200" },
       { id: "201-500", label: "201–500" },
-      { id: "501-1500", label: "501–1,500" },
-      { id: "1500+", label: "1,500+" },
+      { id: "501-1000", label: "501–1,000" },
+      { id: "1001+", label: "1,001+" },
     ] as UnscoredOption[],
   },
   {
