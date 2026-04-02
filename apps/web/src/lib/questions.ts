@@ -129,6 +129,7 @@ export const questions: Question[] = [
       { id: "efficiency", label: "Need to improve efficiency" },
       { id: "growth", label: "Preparing for growth" },
       { id: "mandate", label: "Board or leadership mandate" },
+      { id: "compliance", label: "Regulatory or compliance pressure" },
       { id: "curiosity", label: "General curiosity" },
       { id: "other", label: "Other" },
     ] as UnscoredOption[],
@@ -179,7 +180,7 @@ export const questions: Question[] = [
       { value: 2, label: "Informal — someone has taken interest" },
       { value: 3, label: "Partial — shared responsibility" },
       { value: 4, label: "Yes — named owner with some authority" },
-      { value: 5, label: "Yes — executive sponsor with budget and mandate" },
+      { value: 5, label: "Yes — executive sponsor with budget, mandate and AI governance accountability" },
     ] as ScoredOption[],
   },
   {
@@ -273,7 +274,7 @@ export const questions: Question[] = [
       { value: 2, label: "Informal guidelines only" },
       { value: 3, label: "Some policies documented" },
       { value: 4, label: "Comprehensive policies in place" },
-      { value: 5, label: "Policies enforced with regular review" },
+      { value: 5, label: "AI & data governance policies enforced with regular review" },
     ] as ScoredOption[],
   },
   {
@@ -416,7 +417,7 @@ export const questions: Question[] = [
       { value: 2, label: "Informal ideas discussed" },
       { value: 3, label: "Some use cases documented" },
       { value: 4, label: "Prioritised backlog of use cases" },
-      { value: 5, label: "Roadmap with business cases" },
+      { value: 5, label: "Roadmap with business cases and risk/compliance considerations" },
     ] as ScoredOption[],
   },
   {
@@ -533,6 +534,7 @@ export const questions: Question[] = [
       { id: "culture", label: "Resistance to change" },
       { id: "leadership", label: "Lack of leadership support" },
       { id: "tools", label: "Too many tools, unclear which to use" },
+      { id: "governance", label: "Governance or compliance uncertainty" },
     ] as UnscoredOption[],
   },
   {
