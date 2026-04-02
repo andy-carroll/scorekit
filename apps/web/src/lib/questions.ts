@@ -482,8 +482,8 @@ export const questions: Question[] = [
       { value: 1, label: "Very slow — months of approval required" },
       { value: 2, label: "Slow — weeks of process" },
       { value: 3, label: "Moderate — can pilot in days" },
-      { value: 4, label: "Fast — can test same day" },
-      { value: 5, label: "Very fast — experimentation is encouraged" },
+      { value: 4, label: "Quickly — low friction, most tools can be tried without heavy approval" },
+      { value: 5, label: "Almost immediately — we have protected time and/or budget for experimentation" },
     ] as ScoredOption[],
   },
   {
