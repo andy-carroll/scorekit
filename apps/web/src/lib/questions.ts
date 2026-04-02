@@ -96,7 +96,8 @@ export const questions: Question[] = [
       { id: "11-50", label: "11–50" },
       { id: "51-200", label: "51–200" },
       { id: "201-500", label: "201–500" },
-      { id: "500+", label: "500+" },
+      { id: "501-1500", label: "501–1,500" },
+      { id: "1500+", label: "1,500+" },
     ] as UnscoredOption[],
   },
   {
@@ -347,11 +348,11 @@ export const questions: Question[] = [
     questionType: "capability",
     inputType: "radio",
     options: [
-      { value: 1, label: "Not at all confident" },
-      { value: 2, label: "Slightly confident" },
-      { value: 3, label: "Somewhat confident" },
-      { value: 4, label: "Fairly confident" },
-      { value: 5, label: "Very confident" },
+      { value: 1, label: "Not confident — most avoid AI tools entirely" },
+      { value: 2, label: "Low — occasional use but no real fluency" },
+      { value: 3, label: "Moderate — comfortable with common tools (ChatGPT etc.)" },
+      { value: 4, label: "Good — regularly using AI to improve output and speed" },
+      { value: 5, label: "High — team actively builds prompts, workflows, and integrations" },
     ] as ScoredOption[],
   },
   {
