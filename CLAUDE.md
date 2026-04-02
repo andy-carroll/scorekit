@@ -51,6 +51,9 @@ Read `docs/05-open-source/PDF-RENDERER.md` before touching any PDF code. Key got
 - The PDF renderer currently hardcodes `aiReadinessContent` — see the "Known limitation" section in the docs
 
 Test PDF changes with: `node apps/web/scripts/test-pdf.mjs` (requires dev server running)
+- If `node` is not found via Bash tool, prefix: `PATH="/usr/local/bin:/opt/homebrew/bin:$PATH" node ...`
+- Dev server may bind to port 3001 if 3000 is taken — use `PORT=3001 node apps/web/scripts/test-pdf.mjs`
+- All three CTA blocks (page 1, page 2, final appendix) use the shared `drawCtaCard()` helper — don't add a fourth inline, route changes through that function
 
 ## What NOT to do
 
