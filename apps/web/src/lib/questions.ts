@@ -466,9 +466,9 @@ export const questions: Question[] = [
     options: [
       { value: 1, label: "Failure is penalised or hidden" },
       { value: 2, label: "Failure is tolerated but not discussed" },
-      { value: 3, label: "Failure is accepted as part of innovation" },
+      { value: 3, label: "Failure is accepted — people aren't penalised for trying things that don't work" },
       { value: 4, label: "Failure is analysed for learnings" },
-      { value: 5, label: "Failure is celebrated as a learning opportunity" },
+      { value: 5, label: "Failure is shared openly — we debrief, document, and build the learning into how we work" },
     ] as ScoredOption[],
   },
   {
@@ -498,7 +498,7 @@ export const questions: Question[] = [
       { value: 2, label: "Skeptical — need convincing" },
       { value: 3, label: "Open-minded — willing to try new approaches" },
       { value: 4, label: "Enthusiastic — actively seeking improvements" },
-      { value: 5, label: "Champions of change — driving adoption" },
+      { value: 5, label: "We actively champion new ways of working and help others make the shift" },
     ] as ScoredOption[],
   },
   {
@@ -511,8 +511,8 @@ export const questions: Question[] = [
     options: [
       { value: 1, label: "Not at all — knowledge stays siloed" },
       { value: 2, label: "Rarely — occasional informal sharing" },
-      { value: 3, label: "Sometimes — team meetings or docs" },
-      { value: 4, label: "Often — regular knowledge sharing sessions" },
+      { value: 3, label: "We share AI learnings occasionally, but it's ad hoc and inconsistent" },
+      { value: 4, label: "We have regular, structured ways to share what's working with AI across teams" },
       { value: 5, label: "Systematically — documented and accessible to all" },
     ] as ScoredOption[],
   },
