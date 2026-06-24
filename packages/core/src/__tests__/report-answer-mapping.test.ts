@@ -108,8 +108,8 @@ describe("mapAnswersToPillars", () => {
       estimatedMinutes: 5,
       pillars: [{ id: "leadership", name: "Leadership & Vision", description: "", order: 1 }],
       questions: [
-        { id: "q1", text: "One?", pillarId: "leadership", inputType: "radio" },
-        { id: "q2", text: "Two?", pillarId: "leadership", inputType: "radio" },
+        { id: "q1", text: "One?", pillarId: "leadership", inputType: "radio", category: "diagnostic", questionType: "maturity", options: [] },
+        { id: "q2", text: "Two?", pillarId: "leadership", inputType: "radio", category: "diagnostic", questionType: "maturity", options: [] },
       ],
       recommendations: [],
       copy: {
@@ -130,7 +130,6 @@ describe("mapAnswersToPillars", () => {
           ctaText: "",
         },
       },
-      recommendations: [],
     };
 
     const answers: Record<string, number | string | string[]> = { q1: 1 };
@@ -148,8 +147,8 @@ describe("mapAnswersToPillars", () => {
       name: "Test",
       description: "Test template",
       estimatedMinutes: 5,
-      pillars: [{ id: "leadership", name: "Leadership & Vision" }],
-      questions: [{ id: "q1", text: "Known", pillarId: "leadership", inputType: "radio" }],
+      pillars: [{ id: "leadership", name: "Leadership & Vision", description: "", order: 1 }],
+      questions: [{ id: "q1", text: "Known", pillarId: "leadership", inputType: "radio", category: "diagnostic", questionType: "maturity", options: [] }],
       recommendations: [],
       copy: {
         landing: {
@@ -169,7 +168,6 @@ describe("mapAnswersToPillars", () => {
           ctaText: "",
         },
       },
-      recommendations: [],
     };
 
     const answers: Record<string, number | string | string[]> = { q1: 1, q_unknown: 5 };
@@ -187,11 +185,11 @@ describe("mapAnswersToPillars", () => {
       name: "Test",
       description: "Test template",
       estimatedMinutes: 5,
-      pillars: [{ id: "leadership", name: "Leadership & Vision" }],
+      pillars: [{ id: "leadership", name: "Leadership & Vision", description: "", order: 1 }],
       questions: [
-        { id: "q1", text: "First", pillarId: "leadership", inputType: "radio" },
-        { id: "q2", text: "Second", pillarId: "leadership", inputType: "radio" },
-        { id: "q3", text: "Third", pillarId: "leadership", inputType: "radio" },
+        { id: "q1", text: "First", pillarId: "leadership", inputType: "radio", category: "diagnostic", questionType: "maturity", options: [] },
+        { id: "q2", text: "Second", pillarId: "leadership", inputType: "radio", category: "diagnostic", questionType: "maturity", options: [] },
+        { id: "q3", text: "Third", pillarId: "leadership", inputType: "radio", category: "diagnostic", questionType: "maturity", options: [] },
       ],
       recommendations: [],
       copy: {
@@ -212,7 +210,6 @@ describe("mapAnswersToPillars", () => {
           ctaText: "",
         },
       },
-      recommendations: [],
     };
 
     const answers: Record<string, number | string | string[]> = { q2: 1, q1: 1, q3: 1 };
