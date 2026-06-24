@@ -9,13 +9,16 @@
 Every piece of work follows this loop:
 
 ```text
-1. PICK    → Select ticket from backlog, mark in_progress
+1. PICK    → Select a GitHub issue, open a worktree branch
 2. CLARIFY → Ensure spec is clear, ask questions if not
 3. TEST    → Write failing test(s) for acceptance criteria
 4. BUILD   → Implement until tests pass
 5. VERIFY  → Local UAT (manual check it actually works)
-6. COMMIT  → Push with clear commit message
-7. CLOSE   → Close ticket, update docs, pull next
+6. COMMIT  → Push the branch, open a PR (never push main directly)
+7. CLOSE   → Merge the reviewed PR, close the issue, update docs
+
+> Sessions are bookended by the `/session-start` and `/session-end` skills,
+> which read the `session_protocol` config in the repo root `CLAUDE.md`.
 ```
 
 **Never skip steps 5-7.** This is where quality and documentation happen.
@@ -27,8 +30,9 @@ Every piece of work follows this loop:
 Before starting:
 
 ```bash
-bd list --status open -l [current-phase]  # See what's ready
-bd update [ticket-id] --status in_progress
+gh issue list --state open                 # See what's ready
+gh issue view [number]                      # Read acceptance criteria
+gh issue develop [number] --checkout        # Branch + worktree for the issue
 ```
 
 **Check**:
@@ -158,9 +162,9 @@ cd apps/web && pnpm dev
 
 ---
 
-## 6. COMMIT — Push to GitHub
+## 6. COMMIT — Push the branch, open a PR
 
-Only after UAT passes:
+Only after UAT passes. **Never push to `main` directly** — work flows through a branch/worktree and a PR:
 
 ```bash
 git add -A
@@ -169,26 +173,29 @@ git commit -m "feat: [description]
 - [detail 1]
 - [detail 2]
 
-Closes [ticket-id]"
+Closes #[issue-number]"
 
-git push origin main
+git push -u origin HEAD
+gh pr create --fill        # or let /session-end open + merge it
 ```
 
 **Commit message includes**:
 
 - Type (feat/fix/test/docs/chore)
 - Clear description
-- Ticket reference
+- `Closes #N` so the issue auto-closes on merge
 
 ---
 
 ## 7. CLOSE — Complete the Loop
 
-### Close the ticket
+### Merge and close
 
 ```bash
-bd close [ticket-id] --reason "[summary of what was done]"
+gh pr merge --squash --delete-branch   # the reviewed PR; Closes #N auto-closes the issue
 ```
+
+`/session-end` runs the fresh-eyes review and performs this merge as its final, review-gated step.
 
 ### Update documentation
 
@@ -196,20 +203,11 @@ bd close [ticket-id] --reason "[summary of what was done]"
 - Any spec docs that changed during implementation
 - ADR if architectural decision was made
 
-### Export and commit Beads
+### Pull next issue
 
 ```bash
-bd export -o .beads/issues.jsonl
-git add .beads/issues.jsonl
-git commit -m "chore: update beads"
-git push origin main
-```
-
-### Pull next ticket
-
-```bash
-bd list --status open -l [current-phase]
-bd update [next-ticket] --status in_progress
+gh issue list --state open
+gh issue develop [number] --checkout
 ```
 
 ---
@@ -325,8 +323,8 @@ pnpm typecheck
 
 ```bash
 # Start session
-bd list --status in_progress        # What's active?
-bd list --status open -l phase-2    # What's next?
+/session-start                      # Orient: git, last handoff, open issues, next action
+gh issue list --state open          # What's next?
 
 # During work
 pnpm dev                            # Start dev server
@@ -334,9 +332,7 @@ pnpm test:watch                     # Tests in watch mode
 pnpm typecheck                      # Check types
 
 # End work
-bd close [id] --reason "[summary]"
-bd export -o .beads/issues.jsonl
-git add -A && git commit && git push
+/session-end                        # Verify, review, merge PR, close issues, write handoff
 ```
 
 ### The Golden Rule

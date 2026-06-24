@@ -3,9 +3,15 @@
 ## NOW: Current Focus
 
 **Status**: Building  
-**Last Updated**: 18 Jan 2026
+**Last Updated**: 24 Jun 2026
 
-**Design system complete.** All pages (landing, quiz, email, report) now use the Accelerator theme via centralized CSS variables and component classes.
+> **Work tracking:** GitHub Issues (`gh issue list`). Migrated off Beads in Jun 2026.
+> Per-session handoffs live in `docs/sessions/`. Sessions open/close with `/session-start` and `/session-end`.
+
+**Live + design system complete.** V1 AI Readiness Assessment is live at quiz.accelerator-x.ai.
+All pages (landing, quiz, email, report) use the Accelerator theme; the PDF report, n8n webhook,
+and tokenised report sharing are all shipped. Current focus is refining quiz question copy for an
+enterprise audience.
 
 **Recent work:**
 
@@ -30,7 +36,7 @@
 - Production webhook URL confirmed and test webhook validated via curl
 - n8n workflow outline agreed: Prospect upsert → Submission create → optional GHL sync
 
-**Ensure alignment with BEADS tickets system** [BEADS_REFERENCE.md](BEADS_REFERENCE.md)
+**Open work is tracked in [GitHub Issues](https://github.com/andy-carroll/scorekit/issues).**
 
 ## Completed
 
@@ -81,14 +87,17 @@
   - Landing page redesigned with dark hero, cap-height highlights
   - Button and typography refinements
 
-## Next: Theme Rollout + PDF
+## Next
 
-**Priority:** PDF generation for shareable reports.
+Open issues (see [GitHub](https://github.com/andy-carroll/scorekit/issues)):
 
-| Ticket | Description |
-|--------|-------------|
-| `scorekit-qzo` | PDF generation & sharing |
-| `scorekit-su6` | Write recommendations + patterns |
+| Issue | Description |
+|-------|-------------|
+| [#6](https://github.com/andy-carroll/scorekit/issues/6) | Report V2: UAT & polish |
+| [#5](https://github.com/andy-carroll/scorekit/issues/5) | chore: pin Node to an LTS version |
+| [#3](https://github.com/andy-carroll/scorekit/issues/3) | Template: COO project/admin chaos |
+| [#4](https://github.com/andy-carroll/scorekit/issues/4) | Template: Recruitment agency |
+| [#7](https://github.com/andy-carroll/scorekit/issues/7) | EPIC: Business-case report engine (deferred) |
 
 ## Implementation phases
 

@@ -23,14 +23,6 @@ coverage/
 .vscode/
 .idea/
 
-# Beads runtime artifacts (keep issues.jsonl etc in repo)
-.beads/*.db
-.beads/*.db-*
-.beads/daemon.lock
-.beads/daemon.log
-.beads/daemon.pid
-.beads/bd.sock
-
 # misc
 *.swp
 .vercel

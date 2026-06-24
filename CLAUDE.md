@@ -122,3 +122,33 @@ docs/
     02-worksheet.md           ← Structured fill-in questionnaire
     03-template-generation-prompt.md  ← AI prompt to generate content.ts
 ```
+
+## Session protocol — repo config
+
+This repo uses the canonical `session-start` / `session-end` skills. The block below tells those
+skills how this repo works. Keep the YAML current; the comments explain each key.
+
+```yaml
+session_protocol:
+  handoff_dir: docs/sessions
+  handoff_filename: "{YYYY-MM-DD}-{HHMM}.md"
+  verify_command: "pnpm typecheck && pnpm test && pnpm build"  # must pass before close (mirrors CI)
+  deploy_check: null              # Vercel auto-deploys on merge to main; no CLI check wired
+  review:
+    enabled: true                 # fresh-eyes review of the session diff before merge
+    command: "/code-review"
+  stakeholder_summary:
+    enabled: false                # opt-in; no stakeholder Slack channel configured yet
+    channel: null
+  work_tracking:
+    issues: true                  # GitHub Issues drive the work (migrated off Beads, Jun 2026)
+    labels: [bug, documentation, enhancement, template, chore, epic]
+    branch_policy: worktree       # work each issue in a worktree branch
+    push_policy: never-main       # never push main directly; session-end merges the reviewed PR
+  structural_docs:
+    decisions: docs/adr/          # numbered ADRs (e.g. 0001-architecture-baseline.md)
+    architecture: docs/03-engineering/ARCHITECTURE.md
+  extra_orientation:
+    - "docs/00-overview/NOW.md — current status / focus"
+    - "PDF is the highest-stakes output: read docs/05-open-source/PDF-RENDERER.md before any PDF change"
+```
