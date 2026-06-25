@@ -7,13 +7,18 @@
  *
  * Usage:
  *   node scripts/test-pdf.mjs
- *   PORT=3001 node scripts/test-pdf.mjs       # if running on a different port
+ *   PORT=3001 node scripts/test-pdf.mjs                              # different port
+ *   FIXTURE=test-fixtures/report-ai-capability.json node scripts/test-pdf.mjs  # another template
+ *
+ * The dev server must run with SCOREKIT_TEMPLATE_ID (and its NEXT_PUBLIC_ twin)
+ * matching the template the fixture targets, so the PDF renders that template's
+ * copy and question set.
  *
  * Output: apps/web/test-output.pdf  (git-ignored)
  */
 
 import { readFileSync, writeFileSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { join, dirname, isAbsolute, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execSync } from "node:child_process";
 
@@ -21,7 +26,12 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT ?? 3000;
 const BASE_URL = `http://localhost:${PORT}`;
 
-const fixturePath = join(__dirname, "../test-fixtures/report.json");
+// FIXTURE may be absolute or relative to apps/web (the package root).
+const fixturePath = process.env.FIXTURE
+  ? isAbsolute(process.env.FIXTURE)
+    ? process.env.FIXTURE
+    : resolve(__dirname, "..", process.env.FIXTURE)
+  : join(__dirname, "../test-fixtures/report.json");
 const fixture = JSON.parse(readFileSync(fixturePath, "utf8"));
 
 // Strip the _comment key — not part of the schema

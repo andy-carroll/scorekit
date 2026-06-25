@@ -105,6 +105,19 @@ export interface TemplateContent {
       howWeScore?: string;
       profile?: string;
     };
+    /**
+     * PDF-only label overrides. Each defaults to the AI Readiness wording when
+     * omitted, so existing AI Readiness PDFs are unchanged. Override these for
+     * templates where "readiness" is the wrong noun (e.g. a capability report).
+     */
+    pdfLabels?: {
+      /** Hero label above the overall score. Default: "OVERALL READINESS". */
+      overall?: string;
+      /** Pillar-breakdown column label on page 1. Default: "Readiness by pillar". */
+      pillarScores?: string;
+      /** Answer-appendix subtitle. Default mentions "readiness scores". */
+      scoredAppendixSubtitle?: string;
+    };
   };
   /**
    * Optional custom score bands. When present, calculateScore() resolves the

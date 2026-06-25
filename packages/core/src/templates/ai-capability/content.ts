@@ -90,6 +90,12 @@ export const aiCapabilityContent: TemplateContent = {
       nextSteps: "Your next steps",
       howWeScore: "How we calculated your scores",
     },
+    pdfLabels: {
+      overall: "OVERALL CAPABILITY",
+      pillarScores: "Capability by dimension",
+      scoredAppendixSubtitle:
+        "Your answers to the scored questions — the inputs used to calculate your capability scores.",
+    },
   },
 
   // Five capability levels. minScore inclusive, maxScore exclusive (top band

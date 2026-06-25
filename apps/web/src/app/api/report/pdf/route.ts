@@ -3,15 +3,14 @@ import PDFDocument from "pdfkit";
 import fs from "node:fs";
 import path from "node:path";
 
-// TODO (Part 2 — post-launch): Replace direct aiReadinessContent import with
-//   getActiveTemplateContent() from "@/lib/active-template"
-//   so the PDF renderer is template-agnostic. Both this file and theme.ts need
-//   the same change. Safe to do here (server-only route) but deferred until the
-//   broader "questions into template" architecture work lands.
-//   See docs/05-open-source/PDF-RENDERER.md for full details.
-import { aiReadinessContent, mapAnswersToPillars, type Template } from "@scorekit/core";
+import { mapAnswersToPillars, type Template } from "@scorekit/core";
 import { sections, getQuestionsForSection } from "@/lib/questions";
+import { getActiveTemplateContent } from "@/lib/active-template";
 import type { ReportRecord } from "@/lib/report-store/types";
+
+// Active template content (server-side; resolved from SCOREKIT_TEMPLATE_ID).
+// Defaults to ai-readiness, so existing AI Readiness PDFs are unchanged.
+const content = getActiveTemplateContent();
 
 type PdfRequestBody = {
   token: string;
@@ -50,10 +49,10 @@ function levelLabel(l: "low" | "medium" | "high"): string {
 
 function buildPseudoTemplate(): Template {
   return {
-    id: aiReadinessContent.meta.templateId,
-    version: aiReadinessContent.meta.version,
-    name: aiReadinessContent.meta.templateName,
-    description: "AI Readiness assessment (PDF)",
+    id: content.meta.templateId,
+    version: content.meta.version,
+    name: content.meta.templateName,
+    description: `${content.meta.templateName} (PDF)`,
     estimatedMinutes: 15,
     pillars: sections.map((section, index) => ({
       id: section.id,
@@ -74,20 +73,20 @@ function buildPseudoTemplate(): Template {
     recommendations: [],
     copy: {
       landing: {
-        headline: aiReadinessContent.landing.headline,
-        subheadline: aiReadinessContent.landing.subheadline,
+        headline: content.landing.headline,
+        subheadline: content.landing.subheadline,
         valueProps: [],
         timeEstimate: "15 minutes",
-        ctaText: aiReadinessContent.landing.ctaText,
+        ctaText: content.landing.ctaText,
       },
       report: {
-        title: "AI Readiness Report",
+        title: content.meta.reportTitle ?? content.meta.templateName,
         openingInsightTemplates: {},
         pillarDescriptions: {},
         roadmapIntro: "",
         businessCaseIntro: "",
-        ctaHeadline: aiReadinessContent.cta.headline,
-        ctaText: aiReadinessContent.cta.body,
+        ctaHeadline: content.cta.headline,
+        ctaText: content.cta.body,
       },
     },
   };
@@ -104,7 +103,7 @@ function renderPage1ExecutiveSnapshot(
   reportUrl: string,
 ) {
   const { colors } = theme;
-  const { pillarLabels, bandIntros, nextSteps, cta } = aiReadinessContent;
+  const { pillarLabels, bandIntros, nextSteps, cta } = content;
 
   const pageW = doc.page.width;
   const pageH = doc.page.height;
@@ -200,7 +199,7 @@ function renderPage1ExecutiveSnapshot(
     .font("Helvetica-Bold")
     .fontSize(22)
     .fillColor(colors.headerText)
-    .text(aiReadinessContent.meta.templateName, headerTextX, headerTextY, { width: contentW });
+    .text(content.meta.templateName, headerTextX, headerTextY, { width: contentW });
 
   doc
     .font("Helvetica")
@@ -253,7 +252,7 @@ function renderPage1ExecutiveSnapshot(
     .font("Helvetica")
     .fontSize(10)
     .fillColor(colors.mutedText)
-    .text("OVERALL READINESS", leftX, heroY + 18);
+    .text(content.report?.pdfLabels?.overall ?? "OVERALL READINESS", leftX, heroY + 18);
 
   doc
     .font("Helvetica-Bold")
@@ -372,7 +371,7 @@ function renderPage1ExecutiveSnapshot(
     leftY += blockH + 14;
   }
 
-  drawSectionLabel(col2X, gridTopY, "Readiness by pillar");
+  drawSectionLabel(col2X, gridTopY, content.report?.pdfLabels?.pillarScores ?? "Readiness by pillar");
   let rightY = gridTopY + 18;
 
   const orderedPillars = Object.keys(pillarLabels);
@@ -428,7 +427,7 @@ function drawCtaCard(
   onNewPage: () => void,
 ): number {
   const { colors } = theme;
-  const { cta } = aiReadinessContent;
+  const { cta } = content;
   const pageX = doc.page.margins.left;
   const contentW = doc.page.width - doc.page.margins.left - doc.page.margins.right;
 
@@ -498,7 +497,7 @@ function renderPage2InsightsAndRecommendations(
   reportUrl: string,
 ) {
   const { colors } = theme;
-  const { pillarLabels, pillarInsights, recommendations, cta } = aiReadinessContent;
+  const { pillarLabels, pillarInsights, recommendations, cta } = content;
 
   const pageW = doc.page.width;
   const pageH = doc.page.height;
@@ -762,7 +761,7 @@ function renderPage3AnswerAppendix(
   pillarScores?: Record<string, number>,
 ): number {
   const { colors } = theme;
-  const { pillarLabels } = aiReadinessContent;
+  const { pillarLabels } = content;
 
   if (Object.keys(mappedAnswersByPillar).length === 0) {
     return 140;
@@ -903,7 +902,9 @@ function renderPage3AnswerAppendix(
 
   // --- Scored pillars section ---
   if (scoredPillars.length > 0) {
-    const scoredSubtitle = "Your answers to the scored questions — the inputs used to calculate your readiness scores.";
+    const scoredSubtitle =
+      content.report?.pdfLabels?.scoredAppendixSubtitle ??
+      "Your answers to the scored questions — the inputs used to calculate your readiness scores.";
     doc.addPage();
     drawHeader(scoredSubtitle);
 
