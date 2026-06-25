@@ -17,6 +17,8 @@ describe("POST /api/report/pdf", () => {
         email: "jane@company.com",
         name: "Jane",
         company: "Company",
+        role: "CEO",
+        website: "https://company.com",
       },
       result: {
         total: 10,

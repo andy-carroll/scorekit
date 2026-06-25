@@ -294,10 +294,11 @@ CI runs automatically on every push to `main` and on pull requests.
 **What it does:**
 
 1. Checkout code
-2. Setup Node.js 20 + pnpm
-3. Install dependencies
-4. Run tests (`pnpm test`)
-5. Build (`pnpm build`)
+2. Setup pnpm + Node.js (version pinned in `.nvmrc` — currently 22 LTS)
+3. Install dependencies (`pnpm install --frozen-lockfile`)
+4. Typecheck (`pnpm typecheck`)
+5. Run tests (`pnpm test`)
+6. Build (`pnpm build`)
 
 **If CI fails:**
 
