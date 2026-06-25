@@ -5,6 +5,8 @@
  * Structured for easy editing and version control.
  */
 
+import type { Band } from "../../types";
+
 export type ScoreLevel = "low" | "medium" | "high";
 
 export interface BandContent {
@@ -104,6 +106,14 @@ export interface TemplateContent {
       profile?: string;
     };
   };
+  /**
+   * Optional custom score bands. When present, calculateScore() resolves the
+   * respondent's band from these by percentage (minScore inclusive, maxScore
+   * exclusive; top band inclusive). Each band's `name` MUST match a key in
+   * `bandIntros`. When omitted, calculateScore() falls back to the default
+   * 4-band logic (Starting/Emerging/Progressing/Leader).
+   */
+  bands?: Band[];
   bandIntros: Record<string, BandContent>;
   pillarLabels: Record<string, string>;
   pillarInsights: Record<string, Record<ScoreLevel, PillarInsight>>;
