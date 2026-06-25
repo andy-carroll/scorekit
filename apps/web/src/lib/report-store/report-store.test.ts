@@ -23,6 +23,8 @@ describe("ReportStore (local)", () => {
         name: "Jane",
         email: "jane@example.com",
         company: "Acme",
+        role: "CEO",
+        website: "https://acme.com",
       },
     });
 
