@@ -1,18 +1,9 @@
-// AI Readiness assessment template with pillar-grouped questions
-// 30 questions total: 6 context + 24 diagnostic
-// Using @scorekit/core types
-import type { DiagnosticQuestion, ContextQuestion, ScoredOption, UnscoredOption } from "@scorekit/core";
-
-export type Question = DiagnosticQuestion | ContextQuestion;
-
-// Section definitions for pillar-grouped flow
-export interface Section {
-  id: string;
-  name: string;
-  description: string;
-  type: "context" | "pillar";
-  questionIds: string[];
-}
+// AI Readiness assessment — pillar-grouped questions.
+// 30 questions total: 6 context + 24 diagnostic.
+// Exposes only the data arrays (`sections`, `questions`); shared types live in
+// ./types and the scoring/lookup helpers live in ./index.
+import type { ScoredOption, UnscoredOption } from "@scorekit/core";
+import type { Question, Section } from "./types";
 
 export const sections: Section[] = [
   {
@@ -548,62 +539,3 @@ export const questions: Question[] = [
     inputType: "text",
   },
 ];
-
-// Helper to get questions for a section
-export function getQuestionsForSection(sectionId: string): Question[] {
-  const section = sections.find((s) => s.id === sectionId);
-  if (!section) return [];
-  return section.questionIds
-    .map((qId) => questions.find((q) => q.id === qId))
-    .filter((q): q is Question => q !== undefined);
-}
-
-// Get pillar sections only (excluding context)
-export function getPillarSections(): Section[] {
-  return sections.filter((s) => s.type === "pillar");
-}
-
-export function calculateScore(answers: Record<string, number>): {
-  total: number;
-  max: number;
-  percentage: number;
-  pillarScores: Record<string, number>;
-  band: string;
-} {
-  const pillarScores: Record<string, number> = {};
-  const pillarTotals: Record<string, { sum: number; count: number }> = {};
-  let total = 0;
-  let scoredQuestionCount = 0;
-
-  // Only score diagnostic questions (those with pillarId)
-  for (const q of questions) {
-    if (q.category === "diagnostic" && "pillarId" in q && q.pillarId) {
-      const answer = typeof answers[q.id] === "number" ? answers[q.id] : 1;
-      total += answer;
-      scoredQuestionCount++;
-
-      // Accumulate pillar scores
-      if (!pillarTotals[q.pillarId]) {
-        pillarTotals[q.pillarId] = { sum: 0, count: 0 };
-      }
-      pillarTotals[q.pillarId].sum += answer;
-      pillarTotals[q.pillarId].count++;
-    }
-  }
-
-  // Calculate average score per pillar (1-5 scale)
-  for (const [pillarId, { sum, count }] of Object.entries(pillarTotals)) {
-    pillarScores[pillarId] = Math.round((sum / count) * 10) / 10; // Round to 1 decimal
-  }
-
-  const max = scoredQuestionCount * 5;
-  const percentage = max > 0 ? Math.round((total / max) * 100) : 0;
-
-  let band: string;
-  if (percentage >= 80) band = "Leader";
-  else if (percentage >= 60) band = "Progressing";
-  else if (percentage >= 40) band = "Emerging";
-  else band = "Starting";
-
-  return { total, max, percentage, pillarScores, band };
-}
