@@ -146,34 +146,31 @@ All three page renderers accept this theme object and use it for every colour va
 
 ---
 
-## ⚠️ Known limitation: hardcoded to AI Readiness template
+## ✅ Resolved: PDF renders the active template's content
 
-**Current state:** `route.ts` and `theme.ts` both import `aiReadinessContent` directly:
-
-```typescript
-import { aiReadinessContent, ... } from "@scorekit/core";
-```
-
-This means all copy inside the PDF — band intros, pillar labels, pillar insights, recommendations, next steps, CTA — is hardcoded to the AI Readiness template. Deploying a different template (`SCOREKIT_TEMPLATE_ID=fitmum`) will generate a PDF with AI Readiness copy inside it.
-
-**The email route does not have this problem** — `/api/report/email/route.ts` correctly uses `getActiveTemplateContent()`.
-
-**Planned fix (Part 2 of the architecture roadmap):**
-
-Replace the direct import in both files:
+**Current state (resolved in #14):** `route.ts` and `theme.ts` resolve copy and
+theme from the active template via `getActiveTemplateContent()`:
 
 ```typescript
-// BEFORE (both route.ts and theme.ts)
-import { aiReadinessContent } from "@scorekit/core";
-
-// AFTER
 import { getActiveTemplateContent } from "@/lib/active-template";
-const content = getActiveTemplateContent();
+const content = getActiveTemplateContent(); // reads SCOREKIT_TEMPLATE_ID
 ```
 
-This is safe to do because both files are server-side only (`export const runtime = "nodejs"`). `getActiveTemplateContent()` reads the server-only `SCOREKIT_TEMPLATE_ID` env var — that's fine here.
+All copy inside the PDF — band intros, pillar labels, pillar insights,
+recommendations, next steps, CTA — and the theme colours now follow whichever
+template is active. This is safe because both files are server-side only
+(`export const runtime = "nodejs"`), and `getActiveTemplateContent()` reads the
+server-only `SCOREKIT_TEMPLATE_ID` env var. Default resolves to ai-readiness, so
+existing AI Readiness PDFs are unchanged.
 
-**Why it's deferred:** The fix is low-risk in isolation but is bundled with the broader "questions into template" architecture work (Part 2), which also needs `buildPseudoTemplate()` replaced. Doing both together avoids a partial state.
+> **Deployment note:** a non-readiness template needs **both** `SCOREKIT_TEMPLATE_ID`
+> (server: report content + PDF) **and** `NEXT_PUBLIC_SCOREKIT_TEMPLATE_ID`
+> (client: which question set the quiz renders) set to the same value.
+
+`buildPseudoTemplate()` (below) still derives pillar structure from the active
+question set rather than from `content.pillars`; that broader "pillars in
+content" refactor remains future work, but it no longer blocks per-template PDF
+copy.
 
 ---
 
@@ -204,7 +201,7 @@ For the PDF to render correctly with your template, your `content.ts` must inclu
 | `recommendations` | Page 2 | `{ [pillarId]: { headline, action } }` |
 | `cta` | Pages 1, 2, and final page | `{ headline, body, buttonText, url }` |
 
-**Currently these are only read from `aiReadinessContent` directly.** Until the hardcoded dependency is resolved, a new template's copy will not appear in the PDF. The _starter template and template authoring guide note this as a known limitation.
+These are read from the **active** template's content (resolved via `getActiveTemplateContent()`), so a registered template's copy appears in its PDF as long as `SCOREKIT_TEMPLATE_ID` (and its `NEXT_PUBLIC_` twin) are set.
 
 ---
 

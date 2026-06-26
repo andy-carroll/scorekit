@@ -30,11 +30,12 @@
  * ============================================================
  */
 
-import { aiReadinessContent } from "@scorekit/core";
+import { aiReadinessContent, aiCapabilityContent } from "@scorekit/core";
 import type { TemplateContent } from "@scorekit/core";
 
 const TEMPLATES: Record<string, TemplateContent> = {
   "ai-readiness": aiReadinessContent,
+  "ai-capability": aiCapabilityContent,
 };
 
 export function getActiveTemplateContent(): TemplateContent {

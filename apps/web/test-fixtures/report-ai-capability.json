@@ -1,0 +1,43 @@
+{
+  "_comment": "Dev fixture for PDF testing of the ai-capability template. Run: SCOREKIT_TEMPLATE_ID=ai-capability NEXT_PUBLIC_SCOREKIT_TEMPLATE_ID=ai-capability pnpm dev, then FIXTURE=test-fixtures/report-ai-capability.json node scripts/test-pdf.mjs",
+  "token": "dev-fixture-capability-001",
+  "createdAt": "2026-06-25T10:00:00.000Z",
+  "templateId": "ai-capability",
+  "lead": {
+    "email": "alex.rivera@example.com",
+    "name": "Alex Rivera",
+    "company": "Northwind Strategy",
+    "role": "lead",
+    "website": "https://northwind.example.com"
+  },
+  "result": {
+    "total": 35,
+    "max": 60,
+    "percentage": 58,
+    "band": "Applying",
+    "pillarScores": {
+      "foundations": 2.5,
+      "practical-craft": 4.0,
+      "critical-evaluation": 3.0,
+      "workflow-integration": 4.5,
+      "responsible-use": 2.0,
+      "building-scaling": 1.5
+    }
+  },
+  "answers": {
+    "found-1": 2,
+    "found-2": 3,
+    "craft-1": 4,
+    "craft-2": 4,
+    "eval-1": 3,
+    "eval-2": 3,
+    "flow-1": 4,
+    "flow-2": 5,
+    "safe-1": 2,
+    "safe-2": 2,
+    "build-1": 1,
+    "build-2": 2,
+    "ctx-role": "lead",
+    "ctx-org-ai": "active"
+  }
+}
