@@ -61,7 +61,7 @@ function activeBands(): Band[] | undefined {
  *   inclusive at 100. Band `name` is returned (must match a `bandIntros` key).
  * - Without: the default AI-readiness 4-band logic (unchanged).
  */
-function bandForPercentage(percentage: number, bands?: Band[]): string {
+export function bandForPercentage(percentage: number, bands?: Band[]): string {
   if (bands && bands.length > 0) {
     const sorted = [...bands].sort((a, b) => a.minScore - b.minScore);
     for (const b of sorted) {

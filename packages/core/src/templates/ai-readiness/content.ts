@@ -237,6 +237,15 @@ export const aiReadinessContent: TemplateContent = {
       nextSteps: "Your Next Steps",
       howWeScore: "How we calculated your scores",
     },
+    // Explicit "readiness" wording for the PDF. The renderer's fallback defaults
+    // are template-agnostic ("OVERALL SCORE" etc.), so this template states its
+    // own nouns rather than relying on them — keeping its PDF output unchanged.
+    pdfLabels: {
+      overall: "OVERALL READINESS",
+      pillarScores: "Readiness by pillar",
+      scoredAppendixSubtitle:
+        "Your answers to the scored questions — the inputs used to calculate your readiness scores.",
+    },
   },
 
   bandIntros: {
