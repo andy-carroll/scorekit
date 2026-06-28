@@ -38,8 +38,33 @@ const TEMPLATES: Record<string, TemplateContent> = {
   "ai-capability": aiCapabilityContent,
 };
 
+const DEFAULT_TEMPLATE_ID = "ai-readiness";
+
 export function getActiveTemplateContent(): TemplateContent {
-  const id = process.env.SCOREKIT_TEMPLATE_ID ?? "ai-readiness";
+  // `||` (not `??`) so an empty-string env var is treated as unset, not as an
+  // invalid template id.
+  const id = process.env.SCOREKIT_TEMPLATE_ID || DEFAULT_TEMPLATE_ID;
+
+  // Guard against a split-brain deployment. The server selects report/PDF
+  // content from SCOREKIT_TEMPLATE_ID; the quiz (a client component) selects its
+  // question set — and therefore the score band it writes into the report — from
+  // NEXT_PUBLIC_SCOREKIT_TEMPLATE_ID. If the two effective values diverge, the
+  // stored band name won't match this template's bandIntros and reports/PDFs
+  // silently render the wrong template's copy. Fail fast at the first
+  // server-side resolution instead. Both default to the same id, so a
+  // single-template deployment (e.g. ai-readiness) is unaffected.
+  const clientId =
+    process.env.NEXT_PUBLIC_SCOREKIT_TEMPLATE_ID || DEFAULT_TEMPLATE_ID;
+  if (clientId !== id) {
+    throw new Error(
+      `Template misconfiguration: SCOREKIT_TEMPLATE_ID ("${id}") and ` +
+        `NEXT_PUBLIC_SCOREKIT_TEMPLATE_ID ("${clientId}") must be set to the ` +
+        `same template. The server resolves report/PDF content from the former; ` +
+        `the quiz resolves its question set from the latter — a mismatch produces ` +
+        `reports whose scores and content come from different templates.`
+    );
+  }
+
   const content = TEMPLATES[id];
   if (!content) {
     throw new Error(

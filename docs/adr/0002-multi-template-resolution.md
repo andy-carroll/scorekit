@@ -49,9 +49,11 @@ AI Readiness template, which blocked shipping a genuine second template:
 
 - A deployment must set **both** `SCOREKIT_TEMPLATE_ID` (server: content + PDF)
   **and** `NEXT_PUBLIC_SCOREKIT_TEMPLATE_ID` (client: question set) to the same
-  value. If they disagree, the band name computed client-side won't match the
-  server template's `bandIntros` keys and the report hero falls back silently.
-  A guard for this mismatch is tracked as a follow-up.
+  value. `getActiveTemplateContent()` enforces this: it throws if the effective
+  server and client template ids diverge, failing fast at the first server-side
+  resolution rather than silently emitting a report whose scores and content come
+  from different templates (#17). Both default to `ai-readiness`, so a
+  single-template deployment is unaffected.
 - Pillar structure for the PDF is still derived from the active question set via
   `buildPseudoTemplate()` rather than from `content.pillars`; a future
   "pillars in content" refactor remains open but no longer blocks per-template
