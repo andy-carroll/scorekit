@@ -106,16 +106,18 @@ export interface TemplateContent {
       profile?: string;
     };
     /**
-     * PDF-only label overrides. Each defaults to the AI Readiness wording when
-     * omitted, so existing AI Readiness PDFs are unchanged. Override these for
-     * templates where "readiness" is the wrong noun (e.g. a capability report).
+     * PDF-only label overrides. When omitted, each falls back to a
+     * template-agnostic default (see PDF_LABEL_DEFAULTS in the pdf route) — so a
+     * template never accidentally renders another template's noun. Set these for
+     * any template-specific wording (e.g. "OVERALL READINESS" / "OVERALL
+     * CAPABILITY").
      */
     pdfLabels?: {
-      /** Hero label above the overall score. Default: "OVERALL READINESS". */
+      /** Hero label above the overall score. Default: "OVERALL SCORE". */
       overall?: string;
-      /** Pillar-breakdown column label on page 1. Default: "Readiness by pillar". */
+      /** Pillar-breakdown column label on page 1. Default: "Score by area". */
       pillarScores?: string;
-      /** Answer-appendix subtitle. Default mentions "readiness scores". */
+      /** Answer-appendix subtitle. Default mentions "your scores" (no template noun). */
       scoredAppendixSubtitle?: string;
     };
   };
