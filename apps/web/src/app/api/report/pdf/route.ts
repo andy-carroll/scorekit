@@ -12,6 +12,22 @@ import type { ReportRecord } from "@/lib/report-store/types";
 // Defaults to ai-readiness, so existing AI Readiness PDFs are unchanged.
 const content = getActiveTemplateContent();
 
+/**
+ * Fallback PDF labels for templates that don't override them via
+ * `content.report.pdfLabels` (and the hero headline, via `bandIntros[band].headline`).
+ * Deliberately template-agnostic — they must never contain "readiness" (or any
+ * other template-specific noun), so an under-specified template can't leak the
+ * wrong wording. The AI Readiness template supplies its own "readiness" wording
+ * explicitly via its `pdfLabels`, so its output is unaffected.
+ */
+export const PDF_LABEL_DEFAULTS = {
+  heroHeadline: "Your results in context",
+  overall: "OVERALL SCORE",
+  pillarScores: "Score by area",
+  scoredAppendixSubtitle:
+    "Your answers to the scored questions — the inputs used to calculate your scores.",
+} as const;
+
 type PdfRequestBody = {
   token: string;
   report?: ReportRecord;
@@ -224,7 +240,7 @@ function renderPage1ExecutiveSnapshot(
 
   const bandLabel = report.result.band;
   const bandCopy = bandIntros[bandLabel];
-  const bandHeadline = bandCopy?.headline ?? "Your AI readiness in context";
+  const bandHeadline = bandCopy?.headline ?? PDF_LABEL_DEFAULTS.heroHeadline;
   // Full band intro — not truncated. Authored text should appear as written.
   const bandIntroText = bandCopy?.intro ?? "";
 
@@ -252,7 +268,7 @@ function renderPage1ExecutiveSnapshot(
     .font("Helvetica")
     .fontSize(10)
     .fillColor(colors.mutedText)
-    .text(content.report?.pdfLabels?.overall ?? "OVERALL READINESS", leftX, heroY + 18);
+    .text(content.report?.pdfLabels?.overall ?? PDF_LABEL_DEFAULTS.overall, leftX, heroY + 18);
 
   doc
     .font("Helvetica-Bold")
@@ -371,7 +387,7 @@ function renderPage1ExecutiveSnapshot(
     leftY += blockH + 14;
   }
 
-  drawSectionLabel(col2X, gridTopY, content.report?.pdfLabels?.pillarScores ?? "Readiness by pillar");
+  drawSectionLabel(col2X, gridTopY, content.report?.pdfLabels?.pillarScores ?? PDF_LABEL_DEFAULTS.pillarScores);
   let rightY = gridTopY + 18;
 
   const orderedPillars = Object.keys(pillarLabels);
@@ -904,7 +920,7 @@ function renderPage3AnswerAppendix(
   if (scoredPillars.length > 0) {
     const scoredSubtitle =
       content.report?.pdfLabels?.scoredAppendixSubtitle ??
-      "Your answers to the scored questions — the inputs used to calculate your readiness scores.";
+      PDF_LABEL_DEFAULTS.scoredAppendixSubtitle;
     doc.addPage();
     drawHeader(scoredSubtitle);
 
