@@ -21,7 +21,7 @@ export const aiCapabilityContent: TemplateContent = {
   meta: {
     templateId: "ai-capability",
     templateName: "AI Capability Assessment",
-    version: "1.0.0",
+    version: "1.1.0",
     pageTitle: "AI Capability Assessment | Accelerator-X",
     description:
       "Benchmark your individual AI capability across six dimensions — from foundations to building for others — and get clear, prioritised next steps.",

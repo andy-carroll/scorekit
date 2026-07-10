@@ -19,17 +19,49 @@ describe("ai-capability question set", () => {
   const diagnostic = capabilityQuestions.filter((q) => q.category === "diagnostic");
   const context = capabilityQuestions.filter((q) => q.category === "context");
 
-  it("has 12 diagnostic + 2 context questions", () => {
-    expect(diagnostic).toHaveLength(12);
-    expect(context).toHaveLength(2);
+  it("has 13 diagnostic + 4 context questions", () => {
+    expect(diagnostic).toHaveLength(13);
+    expect(context).toHaveLength(4);
   });
 
-  it("has exactly 2 diagnostic questions per dimension", () => {
+  it("has the v1.1 diagnostic question count per dimension (2/2/2/2/3/2)", () => {
+    const expectedCounts: Record<string, number> = {
+      foundations: 2,
+      "practical-craft": 2,
+      "critical-evaluation": 2,
+      "workflow-integration": 2,
+      "responsible-use": 3,
+      "building-scaling": 2,
+    };
     for (const pillarId of PILLAR_IDS) {
       const forPillar = diagnostic.filter(
         (q) => "pillarId" in q && q.pillarId === pillarId,
       );
-      expect(forPillar, pillarId).toHaveLength(2);
+      expect(forPillar, pillarId).toHaveLength(expectedCounts[pillarId]);
+    }
+  });
+
+  it("includes the two v1.1 free-text context questions with correct required flags", () => {
+    const recentWork = capabilityQuestions.find((q) => q.id === "ctx-recent-work");
+    const frustration = capabilityQuestions.find((q) => q.id === "ctx-frustration");
+
+    expect(recentWork).toBeDefined();
+    expect(recentWork?.category).toBe("context");
+    expect(recentWork?.inputType).toBe("text");
+    expect(recentWork?.required).toBe(true);
+
+    expect(frustration).toBeDefined();
+    expect(frustration?.category).toBe("context");
+    expect(frustration?.inputType).toBe("text");
+    expect(frustration?.required).toBe(false);
+  });
+
+  it("contains no em-dashes in diagnostic question or option copy", () => {
+    for (const q of diagnostic) {
+      expect(q.text, q.id).not.toContain("—");
+      for (const opt of q.options as ScoredOption[]) {
+        expect(opt.label, `${q.id} value ${opt.value}`).not.toContain("—");
+      }
     }
   });
 

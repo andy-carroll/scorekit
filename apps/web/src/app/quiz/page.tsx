@@ -94,8 +94,10 @@ export default function QuizPage() {
   
   // Check if current question has a valid answer
   const currentAnswer = currentQuestion ? answers[currentQuestion.id] : undefined;
-  const currentQuestionHasAnswer = currentAnswer !== undefined && currentAnswer !== "" && 
+  const currentQuestionHasAnswer = currentAnswer !== undefined && currentAnswer !== "" &&
     (Array.isArray(currentAnswer) ? currentAnswer.length > 0 : true);
+  // Optional questions (required: false) can be skipped without an answer.
+  const canAdvance = currentQuestionHasAnswer || currentQuestion?.required === false;
 
   const handleBack = () => {
     if (currentStep.type === "question" && currentStep.questionIndex > 0) {
@@ -202,7 +204,7 @@ export default function QuizPage() {
               ) : (
                 <button
                   onClick={handleManualNext}
-                  disabled={!currentQuestionHasAnswer}
+                  disabled={!canAdvance}
                   className="btn-primary"
                 >
                   Next →
