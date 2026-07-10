@@ -11,9 +11,9 @@
     "website": "https://northwind.example.com"
   },
   "result": {
-    "total": 35,
-    "max": 60,
-    "percentage": 58,
+    "total": 37,
+    "max": 65,
+    "percentage": 57,
     "band": "Applying",
     "pillarScores": {
       "foundations": 2.5,
@@ -35,8 +35,11 @@
     "flow-2": 5,
     "safe-1": 2,
     "safe-2": 2,
+    "safe-3": 2,
     "build-1": 1,
     "build-2": 2,
+    "ctx-recent-work": "Drafted a client proposal from a set of discovery call notes, then edited it heavily before sending.",
+    "ctx-frustration": "It sounds confident even when it's wrong, so I end up double-checking everything it produces.",
     "ctx-role": "lead",
     "ctx-org-ai": "active"
   }

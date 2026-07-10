@@ -942,7 +942,7 @@ function renderPage3AnswerAppendix(
 
     // --- Context/Profile section ---
     if (contextPillars.length > 0) {
-      const profileSubtitle = "The context you provided at the start of the assessment.";
+      const profileSubtitle = "The context you provided during the assessment.";
 
       if (y + 120 > bottomY) {
         doc.addPage();
