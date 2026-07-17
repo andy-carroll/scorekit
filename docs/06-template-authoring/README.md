@@ -18,6 +18,8 @@ ScoreKit is a white-label quiz platform. You deploy it once; every new quiz is j
 
 ## Step 1 — Design your quiz with AI
 
+**First read [`04-instrument-design-standard.md`](./04-instrument-design-standard.md)** — the shared grammar (5 options valued 1–5, 5 declared bands, anchor options, free-text anchors, how to size the question count) that every template follows.
+
 Open [`01-quiz-design-prompt.md`](./01-quiz-design-prompt.md). Fill in 5 lines about your quiz, paste the whole thing into Claude (or any LLM). You'll get back:
 
 - A set of assessment pillars tailored to your domain
@@ -149,6 +151,7 @@ This generates a PDF from the test fixture without needing to complete the quiz.
 | [`01-quiz-design-prompt.md`](./01-quiz-design-prompt.md) | AI prompt to design your quiz from scratch |
 | [`02-worksheet.md`](./02-worksheet.md) | Structured fill-in questionnaire |
 | [`03-template-generation-prompt.md`](./03-template-generation-prompt.md) | AI prompt to generate your content.ts |
+| [`04-instrument-design-standard.md`](./04-instrument-design-standard.md) | The shared instrument grammar every template follows (options, bands, anchors, length, bias) — read before Step 1 |
 | [`packages/core/src/templates/_starter/content.ts`](../../packages/core/src/templates/_starter/content.ts) | Heavily commented starter file — use as reference |
 | [`packages/core/src/templates/ai-readiness/content.ts`](../../packages/core/src/templates/ai-readiness/content.ts) | Live example (the AI Readiness quiz) |
 
