@@ -31,7 +31,12 @@ proposing to align counts between templates.
 4. **Five declared bands** via the template's `bands` field in `content.ts`
    (minScore inclusive, maxScore exclusive, top band catches 100). Never rely on
    the legacy hardcoded 4-band fallback for a new template. Band names in
-   sentence case; they must exactly match the `bandIntros` keys.
+   sentence case; they must exactly match the `bandIntros` keys. Note: this is
+   the standard for new templates going forward — `ai-capability` already
+   declares 5 bands this way, but `ai-readiness` (the original, live template)
+   predates the convention and still runs on the legacy 4-band fallback
+   (`bandIntros` has 4 keys, no `bands` field declared). Migrating it is a
+   deferred follow-up, not part of this doc.
 
 5. **Person-level instruments carry a required free-text anchor** — "the most
    recent piece of real work you used AI for." This is the honesty instrument
